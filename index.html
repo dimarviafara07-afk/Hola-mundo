@@ -28,17 +28,16 @@
             box-sizing: border-box;
         }
 
-        .app-container { width: 100%; max-width: 400px; }
+        .app-container { width: 100%; max-width: 430px; }
         
         .card { 
             background: var(--bg-card); 
-            padding: 2.5rem 2rem; 
+            padding: 2rem 1.5rem; 
             border-radius: 1rem; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
         }
 
         .hidden { display: none !important; }
-
         .form-group { margin-bottom: 15px; }
         
         input { 
@@ -49,7 +48,6 @@
             background: var(--bg-dark); 
             color: var(--text-main); 
             box-sizing: border-box; 
-            transition: border-color 0.2s;
         }
         input:focus { outline: none; border-color: var(--primary); }
 
@@ -83,25 +81,28 @@
         .btn-danger { background: var(--danger); }
         
         .saldo-display {
-            font-size: 1.5rem; 
+            font-size: 1.6rem; 
             text-align: center; 
             color: var(--primary); 
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-weight: bold;
         }
 
-        .game-mat { display: flex; justify-content: space-between; margin: 30px 0; }
+        /* Tablero de Juego */
+        .game-mat { display: flex; justify-content: space-between; margin: 25px 0; }
         
+        .carta-box { text-align: center; width: 30%; }
+        .carta-label { font-size: 0.75rem; margin-bottom: 6px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
         .carta { 
-            width: 70px; 
-            height: 100px; 
+            height: 95px; 
             background: #252e4d; 
             border: 2px dashed #48588f; 
             border-radius: 8px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 1.5rem; 
+            font-size: 1.6rem; 
             font-weight: bold;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             transition: all 0.3s ease;
@@ -111,15 +112,28 @@
             background: #ffffff;
             color: #0f172a;
             border: 2px solid #3b82f6;
-            transform: rotateY(360deg);
         }
+
+        /* Historial de Jugadas */
+        .historial-container {
+            margin-top: 25px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 15px;
+        }
+        .historial-title { font-size: 0.9rem; color: #94a3b8; font-weight: bold; margin-bottom: 10px; }
+        .historial-lista { max-height: 120px; overflow-y: auto; font-size: 0.8rem; }
+        .jugada-item { 
+            padding: 6px 8px; 
+            margin-bottom: 5px; 
+            border-radius: 4px; 
+            background: rgba(255,255,255,0.03); 
+            display: flex; 
+            justify-content: space-between;
+        }
+        .jugada-ganó { border-left: 3px solid var(--primary); }
+        .jugada-perdió { border-left: 3px solid var(--danger); }
         
-        .divider {
-            text-align: center;
-            margin: 15px 0 5px 0;
-            color: #64748b;
-            font-size: 0.9rem;
-        }
+        .divider { text-align: center; margin: 15px 0 5px 0; color: #64748b; font-size: 0.9rem; }
     </style>
 </head>
 <body>
@@ -127,54 +141,51 @@
 <div class="app-container">
     <div id="authView" class="card">
         <h2 style="text-align: center; margin-top: 0;">Acceso SuerteFácil</h2>
-        
         <div id="errorBox" class="error-message hidden"></div>
-
         <form id="loginForm">
-            <div class="form-group">
-                <input type="email" id="email" placeholder="Correo electrónico" required autocomplete="email">
-            </div>
-            <div class="form-group">
-                <input type="password" id="pass" placeholder="Contraseña" required autocomplete="current-password">
-            </div>
+            <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico" required autocomplete="email"></div>
+            <div class="form-group"><input type="password" id="pass" placeholder="Contraseña" required autocomplete="current-password"></div>
             <button type="submit" id="btnAuth" class="btn-primary">INGRESAR</button>
-            
             <div class="divider">o si eres nuevo</div>
-            
             <button type="button" id="btnRegister" class="btn-secondary">REGISTRARSE</button>
         </form>
     </div>
 
     <div id="gameView" class="card hidden">
-        <h2 style="text-align: center; margin-top: 0;">SuerteFácil P2P</h2>
+        <h2 style="text-align: center; margin-top: 0; font-size: 1.5rem;">SuerteFácil P2P</h2>
         <div id="saldoDisplay" class="saldo-display">Saldo: $0</div>
         
         <div class="game-mat">
-            <div>
-                <div style="text-align: center; font-size: 0.8rem; margin-bottom: 5px; color: #94a3b8;">Tú</div>
+            <div class="carta-box">
+                <div class="carta-label">Tú</div>
                 <div class="carta" id="cartaLocal">?</div>
             </div>
-            <div>
-                <div style="text-align: center; font-size: 0.8rem; margin-bottom: 5px; color: #94a3b8;">Rival 1</div>
+            <div class="carta-box">
+                <div class="carta-label" id="lblRival1">Rival 1</div>
                 <div class="carta" id="cartaRival1">?</div>
             </div>
-            <div>
-                <div style="text-align: center; font-size: 0.8rem; margin-bottom: 5px; color: #94a3b8;">Rival 2</div>
+            <div class="carta-box">
+                <div class="carta-label" id="lblRival2">Rival 2</div>
                 <div class="carta" id="cartaRival2">?</div>
             </div>
         </div>
 
         <button id="btnPlay" class="btn-primary">BUSCAR PARTIDA ($2K)</button>
         <button id="btnOut" class="btn-danger">CERRAR SESIÓN</button>
+
+        <div class="historial-container">
+            <div class="historial-title">Historial de Jugadas</div>
+            <div id="historialLista" class="historial-lista">
+                </div>
+        </div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off, set, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, set, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // Tu configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
         authDomain: "carta-facil-a4e22.firebaseapp.com",
@@ -189,185 +200,185 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Referencias del DOM
-    const authView = document.getElementById('authView');
-    const gameView = document.getElementById('gameView');
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passInput = document.getElementById('pass');
-    const btnAuth = document.getElementById('btnAuth');
-    const btnRegister = document.getElementById('btnRegister');
-    const errorBox = document.getElementById('errorBox');
-    const saldoDisplay = document.getElementById('saldoDisplay');
-    const btnOut = document.getElementById('btnOut');
-    const btnPlay = document.getElementById('btnPlay');
+    // DOM
+    const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
+    const loginForm = document.getElementById('loginForm'), emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
+    const btnAuth = document.getElementById('btnAuth'), btnRegister = document.getElementById('btnRegister'), errorBox = document.getElementById('errorBox');
+    const saldoDisplay = document.getElementById('saldoDisplay'), btnOut = document.getElementById('btnOut'), btnPlay = document.getElementById('btnPlay');
+    const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
+    const lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
 
-    // Elementos de las cartas
-    const cartaLocal = document.getElementById('cartaLocal');
-    const cartaRival1 = document.getElementById('cartaRival1');
-    const cartaRival2 = document.getElementById('cartaRival2');
-
-    let saldoRef = null;
+    let saldoRef = null, historialRef = null;
     let saldoActual = 0;
 
-    // Traductor de errores
-    const getFirebaseErrorMsg = (errorCode) => {
-        switch (errorCode) {
-            case 'auth/invalid-credential': return 'Correo o contraseña incorrectos.';
-            case 'auth/user-not-found': return 'El usuario no existe.';
-            case 'auth/wrong-password': return 'Contraseña incorrecta.';
-            case 'auth/email-already-in-use': return 'Este correo ya está registrado.';
-            case 'auth/weak-password': return 'La contraseña debe tener al menos 6 caracteres.';
-            case 'auth/invalid-email': return 'El formato del correo no es válido.';
-            default: return 'Error de conexión o datos inválidos.';
+    const getFirebaseErrorMsg = (code) => {
+        switch (code) {
+            case 'auth/invalid-credential': return 'Datos incorrectos.';
+            case 'auth/email-already-in-use': return 'Este correo ya existe.';
+            case 'auth/weak-password': return 'Contraseña muy corta (mínimo 6 caracteres).';
+            default: return 'Error en el proceso.';
         }
     };
 
-    // Control de Estado de la Sesión
+    // Control de Sesión
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            authView.classList.add('hidden');
-            gameView.classList.remove('hidden');
-            errorBox.classList.add('hidden');
+            authView.classList.add('hidden'); gameView.classList.remove('hidden'); errorBox.classList.add('hidden');
             
+            // Asignación de saldo inicial si es nuevo
             saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
-            
-            // Verificar si el usuario ya tiene un saldo guardado, si no, ponerle $10,000
-            const snapshot = await get(saldoRef);
-            if (!snapshot.exists() || snapshot.val() === 0) {
-                await set(saldoRef, 10000);
-            }
+            const snap = await get(saldoRef);
+            if (!snap.exists()) await set(saldoRef, 10000);
 
-            // Escuchar el saldo en tiempo real
-            onValue(saldoRef, (snap) => {
-                saldoActual = snap.val() || 0;
+            // Escucha de saldo activa
+            onValue(saldoRef, (s) => {
+                saldoActual = s.val() || 0;
                 saldoDisplay.innerText = `Saldo: $${saldoActual.toLocaleString('es-CO')}`;
             });
+
+            // Conectar e imprimir Registro de Jugadas
+            historialRef = ref(db, `usuarios/${user.uid}/historial`);
+            onValue(historialRef, (s) => {
+                historialLista.innerHTML = "";
+                const data = s.val();
+                if (data) {
+                    Object.values(data).reverse().forEach(j => {
+                        const item = document.createElement('div');
+                        item.className = `jugada-item ${j.resultado === 'GANASTE' ? 'jugada-ganó' : 'jugada-perdió'}`;
+                        item.innerHTML = `<span>${j.resultado} (Tú: ${j.tuCarta} vs R: ${j.rivalMax})</span> <strong>${j.resultado === 'GANASTE' ? '+' : '-'}$2,000</strong>`;
+                        historialLista.appendChild(item);
+                    });
+                } else {
+                    historialLista.innerHTML = "<div style='color:#64748b; text-align:center;'>No hay jugadas recientes</div>";
+                }
+            });
+
         } else {
-            authView.classList.remove('hidden');
-            gameView.classList.add('hidden');
+            authView.classList.remove('hidden'); gameView.classList.add('hidden');
             if (saldoRef) off(saldoRef);
-            resetCartas();
+            if (historialRef) off(historialRef);
+            resetMesa();
         }
     });
 
-    // MANEJO DE INICIO DE SESIÓN
+    // Login y Registro
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = emailInput.value.trim();
-        const password = passInput.value;
-
-        btnAuth.disabled = true;
-        btnAuth.innerText = "VERIFICANDO...";
-        errorBox.classList.add('hidden');
-
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-            loginForm.reset();
-        } catch (err) {
-            errorBox.innerText = getFirebaseErrorMsg(err.code);
-            errorBox.classList.remove('hidden');
-        } finally {
-            btnAuth.disabled = false;
-            btnAuth.innerText = "INGRESAR";
-        }
+        btnAuth.disabled = true; btnAuth.innerText = "VERIFICANDO..."; errorBox.classList.add('hidden');
+        try { await signInWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value); loginForm.reset(); } 
+        catch (err) { errorBox.innerText = getFirebaseErrorMsg(err.code); errorBox.classList.remove('hidden'); }
+        finally { btnAuth.disabled = false; btnAuth.innerText = "INGRESAR"; }
     });
 
-    // MANEJO DE REGISTRO
     btnRegister.addEventListener('click', async () => {
-        const email = emailInput.value.trim();
-        const password = passInput.value;
-
-        if (!email || !password) {
-            errorBox.innerText = "Por favor ingresa correo y contraseña para registrarte.";
-            errorBox.classList.remove('hidden');
-            return;
-        }
-
-        btnRegister.disabled = true;
-        btnRegister.innerText = "CREANDO CUENTA...";
-        errorBox.classList.add('hidden');
-
+        if (!emailInput.value || !passInput.value) { alert("Completa los campos."); return; }
+        btnRegister.disabled = true; btnRegister.innerText = "CREANDO..."; errorBox.classList.add('hidden');
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // Definir saldo inicial al crear cuenta nueva
-            await set(ref(db, `usuarios/${userCredential.user.uid}/saldo`), 10000);
+            const res = await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value);
+            await set(ref(db, `usuarios/${res.user.uid}/saldo`), 10000);
             loginForm.reset();
-        } catch (err) {
-            errorBox.innerText = getFirebaseErrorMsg(err.code);
-            errorBox.classList.remove('hidden');
-        } finally {
-            btnRegister.disabled = false;
-            btnRegister.innerText = "REGISTRARSE";
-        }
+        } catch (err) { errorBox.innerText = getFirebaseErrorMsg(err.code); errorBox.classList.remove('hidden'); }
+        finally { btnRegister.disabled = false; btnRegister.innerText = "REGISTRARSE"; }
     });
 
-    // CERRAR SESIÓN
     btnOut.addEventListener('click', () => signOut(auth));
-    
-    // LÓGICA DE JUEGO (Simulación local de ronda descontando saldo)
+
+    // LÓGICA DE PARTIDA REAL CONECTADA A LA BASE DE DATOS (P2P)
     btnPlay.addEventListener('click', async () => {
-        if (saldoActual < 2000) {
-            alert("No tienes saldo suficiente para jugar ($2K necesarios).");
-            return;
-        }
-
+        if (saldoActual < 2000) { alert("Saldo insuficiente ($2,000 necesarios)"); return; }
+        
         btnPlay.disabled = true;
-        btnPlay.innerText = "BUSCANDO RIVAL...";
-        resetCartas();
+        btnPlay.innerText = "BUSCANDO PARTIDA EN BD...";
+        resetMesa();
 
-        // 1. Simular búsqueda de rivales (1.5 segundos)
-        setTimeout(async () => {
-            btnPlay.innerText = "¡PARTIDA ENCONTRADA!";
+        const user = auth.currentUser;
+        const lobbyRef = ref(db, 'sala_espera');
+
+        // Transacción segura en Firebase para unirse a una sala común
+        try {
+            const pushSala = push(lobbyRef);
+            const miCupoRef = ref(db, `sala_espera/${pushSala.key}`);
             
-            // Descontar los $2,000 de la apuesta de forma inmediata
-            const nuevoSaldo = saldoActual - 2000;
-            const user = auth.currentUser;
-            await set(ref(db, `usuarios/${user.uid}/saldo`), nuevoSaldo);
+            // Registramos nuestra intención de jugar en la base de datos externa
+            await set(miCupoRef, { uid: user.uid, email: user.email.split('@')[0] });
 
-            // 2. Animación de barajado y entrega de cartas
-            setTimeout(() => {
-                btnPlay.innerText = "REVELANDO CARTAS...";
-                
-                // Generar valores aleatorios del 1 al 10 para simular las cartas
-                const miCarta = Math.floor(Math.random() * 10) + 1;
-                const rival1 = Math.floor(Math.random() * 10) + 1;
-                const rival2 = Math.floor(Math.random() * 10) + 1;
+            // Monitorear la sala de espera hasta que entren 3 jugadores
+            onValue(lobbyRef, async (snapshot) => {
+                const jugadores = snapshot.val();
+                if (jugadores && Object.keys(jugadores).length >= 3) {
+                    off(lobbyRef); // Apagar listener de la sala
 
-                // Mostrar en interfaz con efectos visuales
-                revelarCarta(cartaLocal, miCarta);
-                revelarCarta(cartaRival1, rival1);
-                revelarCarta(cartaRival2, rival2);
+                    // Tomamos los 3 primeros de la fila
+                    const claves = Object.keys(jugadores).slice(0, 3);
+                    const listaP2P = claves.map(k => jugadores[k]);
 
-                // Determinar ganador
-                setTimeout(async () => {
-                    if (miCarta > rival1 && miCarta > rival2) {
-                        alert(`¡Ganaste la ronda con un ${miCarta}! Te llevas el pozo de $6,000.`);
-                        // Sumar el premio (Tus $2,000 + $4,000 de los rivales)
-                        await set(ref(db, `usuarios/${user.uid}/saldo`), nuevoSaldo + 6000);
-                    } else {
-                        alert(`Perdiste. Tu carta: ${miCarta}. El rival más alto tuvo: ${Math.max(rival1, rival2)}.`);
+                    // Si somos parte de los 3 elegidos, jugamos la ronda unificada
+                    const yoEnPartida = listaP2P.find(p => p.uid === user.uid);
+                    if (yoEnPartida) {
+                        // Limpiar los 3 cupos usados de la sala común para no duplicar
+                        claves.forEach(async (k) => await set(ref(db, `sala_espera/${k}`), null));
+                        ejecutarRondaP2P(listaP2P, user);
                     }
-
-                    btnPlay.disabled = false;
-                    btnPlay.innerText = "BUSCAR PARTIDA ($2K)";
-                }, 800);
-
-            }, 1000);
-
-        }, 1500);
+                }
+            });
+        } catch (e) {
+            btnPlay.disabled = false;
+            btnPlay.innerText = "BUSCAR PARTIDA ($2K)";
+        }
     });
 
-    function revelarCarta(elemento, valor) {
-        elemento.innerText = valor;
-        elemento.classList.add('revelada');
+    // PROCESAMIENTO MATEMÁTICO Y DESCUENTO DE SALDO EN BD
+    async function ejecutarRondaP2P(jugadores, user) {
+        btnPlay.innerText = "SALA LLENA! JUGANDO...";
+
+        // Identificar quiénes son mis rivales asignados en la BD
+        const misRivales = jugadores.filter(p => p.uid !== user.uid);
+        lblRival1.innerText = misRivales[0].email;
+        lblRival2.innerText = misRivales[1].email;
+
+        // Descontar la apuesta de la Base de Datos
+        const nuevoSaldoPostApuesta = saldoActual - 2000;
+        await set(ref(db, `usuarios/${user.uid}/saldo`), nuevoSaldoPostApuesta);
+
+        // Generar números sincronizados simulando la entrega de cartas
+        const miCarta = Math.floor(Math.random() * 10) + 1;
+        const cRival1 = Math.floor(Math.random() * 10) + 1;
+        const cRival2 = Math.floor(Math.random() * 10) + 1;
+
+        // Revelar visualmente las cartas en la pantalla
+        setTimeout(async () => {
+            cartaLocal.innerText = miCarta; cartaLocal.classList.add('revelada');
+            cartaRival1.innerText = cRival1; cartaRival1.classList.add('revelada');
+            cartaRival2.innerText = cRival2; cartaRival2.classList.add('revelada');
+
+            const rivalMaximo = Math.max(cRival1, cRival2);
+            let resultadoFinal = "PERDISTE";
+
+            if (miCarta > rivalMaximo) {
+                resultadoFinal = "GANASTE";
+                // Sumar pozo completo acumulado de la mesa ($6,000)
+                await set(ref(db, `usuarios/${user.uid}/saldo`), nuevoSaldoPostApuesta + 6000);
+            }
+
+            // AÑADIR REGISTRO DE JUGADA A FIREBASE
+            const nuevoHistorialRef = push(ref(db, `usuarios/${user.uid}/historial`));
+            await set(nuevoHistorialRef, {
+                resultado: resultadoFinal,
+                tuCarta: miCarta,
+                rivalMax: rivalMaximo,
+                fecha: new Date().toISOString()
+            });
+
+            alert(resultadoFinal === "GANASTE" ? `¡Felicidades! Ganaste $6,000 con tu ${miCarta}` : `Perdiste contra un ${rivalMaximo}`);
+            
+            btnPlay.disabled = false;
+            btnPlay.innerText = "BUSCAR PARTIDA ($2K)";
+        }, 1500);
     }
 
-    function resetCartas() {
-        [cartaLocal, cartaRival1, cartaRival2].forEach(carta => {
-            carta.innerText = "?";
-            carta.classList.remove('revelada');
-        });
+    function resetMesa() {
+        [cartaLocal, cartaRival1, cartaRival2].forEach(c => { c.innerText = "?"; c.classList.remove('revelada'); });
+        lblRival1.innerText = "Rival 1"; lblRival2.innerText = "Rival 2";
     }
 </script>
 
