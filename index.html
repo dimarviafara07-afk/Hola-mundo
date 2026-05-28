@@ -6,13 +6,16 @@
     <title>SuerteFácil P2P</title>
     <style>
         :root {
-            --bg-dark: #0f172a;
-            --bg-card: #1e293b;
-            --primary: #22c55e;
-            --secondary: #3b82f6;
-            --danger: #ef4444;
-            --text-main: #f8fafc;
-            --border-color: #334155;
+            --bg-dark: #090d16;
+            --bg-card: #131c2e;
+            --bg-input: #0b111e;
+            --primary-gold: #d9b44a;
+            --primary-gold-hover: #bda03c;
+            --green-recargar: #22c55e;
+            --pink-jubilado: #f43f5e;
+            --text-main: #ffffff;
+            --text-muted: #64748b;
+            --border-gold: #d9b44a;
         }
 
         body { 
@@ -23,7 +26,7 @@
             justify-content: center; 
             align-items: center; 
             min-height: 100vh;
-            padding: 20px; 
+            padding: 15px; 
             margin: 0; 
             box-sizing: border-box;
         }
@@ -32,9 +35,10 @@
         
         .card { 
             background: var(--bg-card); 
-            padding: 2rem 1.5rem; 
-            border-radius: 1rem; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+            padding: 1.5rem; 
+            border-radius: 1.2rem; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6); 
+            margin-bottom: 15px;
         }
 
         .hidden { display: none !important; }
@@ -42,149 +46,206 @@
         
         input { 
             width: 100%; 
-            padding: 12px; 
-            border-radius: 6px; 
-            border: 1px solid var(--border-color); 
-            background: var(--bg-dark); 
+            padding: 14px; 
+            border-radius: 8px; 
+            border: 1px solid #243557; 
+            background: var(--bg-input); 
             color: var(--text-main); 
             box-sizing: border-box; 
+            font-size: 1rem;
         }
-        input:focus { outline: none; border-color: var(--primary); }
+        input:focus { outline: none; border-color: var(--primary-gold); }
 
         .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
+            background: rgba(244, 63, 94, 0.1);
+            color: #fda4af;
             padding: 10px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 0.85rem;
             margin-bottom: 15px;
             text-align: center;
-            border: 1px solid var(--danger);
+            border: 1px solid var(--pink-jubilado);
         }
 
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            cursor: pointer; 
-            border: none; 
-            color: white; 
-            font-weight: bold; 
-            border-radius: 6px; 
-            margin-top: 10px; 
-            transition: all 0.2s; 
+        /* DISEÑO DE LA CAPTURA DE PANTALLA */
+        /* Header Usuario */
+        .user-header { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+        .user-info h3 { margin: 0 0 5px 0; font-size: 1.3rem; letter-spacing: 0.5px; }
+        .btn-salir { background: rgba(244, 63, 94, 0.2); border: 1px solid var(--pink-jubilado); color: var(--pink-jubilado); padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
+        
+        .saldo-box { text-align: right; }
+        .saldo-title { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
+        .saldo-val { font-size: 1.6rem; color: var(--primary-gold); font-weight: bold; }
+        
+        .header-buttons { display: flex; gap: 8px; justify-content: flex-end; margin-top: 15px; width: 100%; }
+        .btn-recargar { background: var(--green-recargar); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+        .btn-jubilado { background: var(--pink-jubilado); color: white; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; }
+
+        /* Selector de Mesas */
+        .section-title { text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px; font-weight: 500; }
+        .mesas-grid { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; }
+        .mesas-grid::-webkit-scrollbar { display: none; }
+        
+        .mesa-btn {
+            flex: 0 0 76px;
+            background: #18253c;
+            border: 1px solid #243557;
+            border-radius: 10px;
+            padding: 10px 4px;
+            color: var(--text-main);
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2px;
+            transition: all 0.2s ease;
         }
-        button:active { transform: scale(0.98); }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
-        
-        .btn-primary { background: var(--primary); }
-        .btn-secondary { background: var(--secondary); margin-top: 15px; }
-        .btn-danger { background: var(--danger); }
-        
-        .saldo-display {
-            font-size: 1.6rem; 
-            text-align: center; 
-            color: var(--primary); 
-            margin-bottom: 15px;
+        .mesa-btn strong { font-size: 0.95rem; }
+        .mesa-btn.active {
+            background: var(--primary-gold);
+            color: #000000;
+            border-color: var(--primary-gold);
             font-weight: bold;
         }
 
-        /* Tablero de Juego */
-        .game-mat { display: flex; justify-content: space-between; margin: 25px 0; }
+        /* Tapete de Juego */
+        .tapete-card { border: 2px solid var(--border-gold); background: #0f182b; border-radius: 1.2rem; padding: 2rem 1rem; }
+        .game-mat { display: flex; justify-content: space-around; margin-bottom: 5px; }
+        .carta-box { text-align: center; width: 28%; display: flex; flex-direction: column; align-items: center; }
         
-        .carta-box { text-align: center; width: 30%; }
-        .carta-label { font-size: 0.75rem; margin-bottom: 6px; color: #94a3b8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
         .carta { 
-            height: 95px; 
-            background: #252e4d; 
-            border: 2px dashed #48588f; 
-            border-radius: 8px; 
+            width: 100%;
+            max-width: 75px;
+            height: 110px; 
+            background: #1d2942; 
+            border-radius: 12px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 1.6rem; 
+            font-size: 2rem; 
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            color: #43587d;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+        .carta.revelada { background: #ffffff; color: #090d16; transform: rotateY(360deg); }
+        .carta-label { font-size: 0.8rem; margin-top: 10px; color: var(--text-muted); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        .carta.revelada {
-            background: #ffffff;
-            color: #0f172a;
-            border: 2px solid #3b82f6;
+        /* Botón de Acción Principal */
+        .btn-buscar {
+            background: var(--primary-gold);
+            color: #000000;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.2s;
         }
+        .btn-buscar:active { transform: scale(0.98); }
+        .btn-buscar:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Historial de Jugadas */
-        .historial-container {
-            margin-top: 25px;
-            border-top: 1px solid var(--border-color);
-            padding-top: 15px;
+        /* Historial Footer */
+        .footer-historial {
+            background: #131c2e;
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-muted);
+            margin-top: 15px;
+            cursor: pointer;
         }
-        .historial-title { font-size: 0.9rem; color: #94a3b8; font-weight: bold; margin-bottom: 10px; }
-        .historial-lista { max-height: 120px; overflow-y: auto; font-size: 0.8rem; }
-        .jugada-item { 
-            padding: 6px 8px; 
-            margin-bottom: 5px; 
-            border-radius: 4px; 
-            background: rgba(255,255,255,0.03); 
-            display: flex; 
-            justify-content: space-between;
-        }
-        .jugada-ganó { border-left: 3px solid var(--primary); }
-        .jugada-perdió { border-left: 3px solid var(--danger); }
-        
-        .divider { text-align: center; margin: 15px 0 5px 0; color: #64748b; font-size: 0.9rem; }
+        .historial-lista { max-height: 110px; overflow-y: auto; margin-top: 10px; font-weight: normal; }
+        .historial-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1d2942; font-size: 0.8rem; color: #cbd5e1; }
+
+        .divider { text-align: center; margin: 15px 0 5px 0; color: #475569; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div id="authView" class="card">
-        <h2 style="text-align: center; margin-top: 0;">Acceso SuerteFácil</h2>
+        <h2 style="text-align: center; margin-top: 0; color: var(--primary-gold)">Acceso SuerteFácil</h2>
         <div id="errorBox" class="error-message hidden"></div>
         <form id="loginForm">
-            <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico" required autocomplete="email"></div>
-            <div class="form-group"><input type="password" id="pass" placeholder="Contraseña" required autocomplete="current-password"></div>
-            <button type="submit" id="btnAuth" class="btn-primary">INGRESAR</button>
+            <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico" required></div>
+            <div class="form-group"><input type="password" id="pass" placeholder="Contraseña" required></div>
+            <button type="submit" class="btn-buscar" style="margin-top:0;">INGRESAR</button>
             <div class="divider">o si eres nuevo</div>
-            <button type="button" id="btnRegister" class="btn-secondary">REGISTRARSE</button>
+            <button type="button" id="btnRegister" class="btn-buscar" style="background:#1d2942; color:white; font-size:1rem; padding:12px;">REGISTRARSE</button>
         </form>
     </div>
 
-    <div id="gameView" class="card hidden">
-        <h2 style="text-align: center; margin-top: 0; font-size: 1.5rem;">SuerteFácil P2P</h2>
-        <div id="saldoDisplay" class="saldo-display">Saldo: $0</div>
+    <div id="gameView" class="card hidden" style="background:transparent; padding:0; box-shadow:none;">
         
-        <div class="game-mat">
-            <div class="carta-box">
-                <div class="carta-label">Tú</div>
-                <div class="carta" id="cartaLocal">?</div>
-            </div>
-            <div class="carta-box">
-                <div class="carta-label" id="lblRival1">Rival 1</div>
-                <div class="carta" id="cartaRival1">?</div>
-            </div>
-            <div class="carta-box">
-                <div class="carta-label" id="lblRival2">Rival 2</div>
-                <div class="carta" id="cartaRival2">?</div>
-            </div>
-        </div>
-
-        <button id="btnPlay" class="btn-primary">BUSCAR PARTIDA ($2K)</button>
-        <button id="btnOut" class="btn-danger">CERRAR SESIÓN</button>
-
-        <div class="historial-container">
-            <div class="historial-title">Historial de Jugadas</div>
-            <div id="historialLista" class="historial-lista">
+        <div class="card">
+            <div class="user-header">
+                <div class="user-info">
+                    <h3 id="txtUsername">Usuario</h3>
+                    <button id="btnOut" class="btn-salir">Salir</button>
                 </div>
+                <div class="saldo-box">
+                    <div class="saldo-title">Tu Saldo</div>
+                    <div id="saldoDisplay" class="saldo-val">$0</div>
+                </div>
+            </div>
+            <div class="header-buttons">
+                <button id="btnRecargar" class="btn-recargar">+ RECARGAR</button>
+                <button class="btn-jubilado">- JUBILADO</button>
+            </div>
         </div>
+
+        <div class="card">
+            <div class="section-title">Selecciona tu Mesa</div>
+            <div class="mesas-grid">
+                <div class="mesa-btn active" data-mesa="N1" data-apuesta="2000" data-label="$2k"><strong>N1</strong><span>(2000 dólares)</span></div>
+                <div class="mesa-btn" data-mesa="N2" data-apuesta="4000" data-label="$4k"><strong>N2</strong><span>(4.000 dólares)</span></div>
+                <div class="mesa-btn" data-mesa="N3" data-apuesta="8000" data-label="$8k"><strong>N3</strong><span>(8.000 dólares)</span></div>
+                <div class="mesa-btn" data-mesa="N4" data-apuesta="16000" data-label="$16k"><strong>N4</strong><span>(16.000 dólares)</span></div>
+                <div class="mesa-btn" data-mesa="N5" data-apuesta="32000" data-label="$32k"><strong>N5</strong><span>(32.000 dólares)</span></div>
+            </div>
+        </div>
+
+        <div class="tapete-card">
+            <div class="game-mat">
+                <div class="carta-box">
+                    <div class="carta" id="cartaLocal">¿</div>
+                    <div class="carta-label" id="lblLocal">Tú</div>
+                </div>
+                <div class="carta-box">
+                    <div class="carta" id="cartaRival1">¿</div>
+                    <div class="carta-label" id="lblRival1">Rival 1...</div>
+                </div>
+                <div class="carta-box">
+                    <div class="carta" id="cartaRival2">¿</div>
+                    <div class="carta-label" id="lblRival2">Rival 2...</div>
+                </div>
+            </div>
+        </div>
+
+        <button id="btnPlay" class="btn-buscar">BUSCAR PARTIDA ($2k)</button>
+
+        <div class="footer-historial">
+            <span>ÚLTIMAS PARTIDAS (GANADORES)</span>
+            <div id="historialLista" class="historial-lista"></div>
+        </div>
+
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off, set, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -200,187 +261,119 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // DOM
+    // Elementos DOM
     const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
     const loginForm = document.getElementById('loginForm'), emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
-    const btnAuth = document.getElementById('btnAuth'), btnRegister = document.getElementById('btnRegister'), errorBox = document.getElementById('errorBox');
-    const saldoDisplay = document.getElementById('saldoDisplay'), btnOut = document.getElementById('btnOut'), btnPlay = document.getElementById('btnPlay');
+    const errorBox = document.getElementById('errorBox'), txtUsername = document.getElementById('txtUsername'), saldoDisplay = document.getElementById('saldoDisplay');
+    const btnOut = document.getElementById('btnOut'), btnRecargar = document.getElementById('btnRecargar'), btnPlay = document.getElementById('btnPlay'), btnRegister = document.getElementById('btnRegister');
     const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
-    const lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
+    const lblLocal = document.getElementById('lblLocal'), lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
+    const mesaBotones = document.querySelectorAll('.mesa-btn');
 
     let saldoRef = null, historialRef = null;
-    let saldoActual = 0;
+    let saldoActual = 0, apuestaActual = 2000, textoApuesta = "$2k", mesaSeleccionada = "N1";
 
-    const getFirebaseErrorMsg = (code) => {
-        switch (code) {
-            case 'auth/invalid-credential': return 'Datos incorrectos.';
-            case 'auth/email-already-in-use': return 'Este correo ya existe.';
-            case 'auth/weak-password': return 'Contraseña muy corta (mínimo 6 caracteres).';
-            default: return 'Error en el proceso.';
-        }
-    };
+    // Manejo de clicks en selectores de mesa de tu imagen
+    mesaBotones.forEach(btn => {
+        btn.addEventListener('click', () => {
+            mesaBotones.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            apuestaActual = parseInt(btn.getAttribute('data-apuesta'));
+            textoApuesta = btn.getAttribute('data-label');
+            mesaSeleccionada = btn.getAttribute('data-mesa');
+            if(!btnPlay.disabled) {
+                btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            }
+        });
+    });
 
-    // Control de Sesión
+    // Control del Estado de Sesión
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            authView.classList.add('hidden'); gameView.classList.remove('hidden'); errorBox.classList.add('hidden');
-            
-            // Asignación de saldo inicial si es nuevo
-            saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
-            const snap = await get(saldoRef);
-            if (!snap.exists()) await set(saldoRef, 10000);
+            authView.classList.add('hidden'); gameView.classList.remove('hidden');
+            const username = user.email.split('@')[0];
+            txtUsername.innerText = username;
+            lblLocal.innerText = username;
 
-            // Escucha de saldo activa
-            onValue(saldoRef, (s) => {
-                saldoActual = s.val() || 0;
-                saldoDisplay.innerText = `Saldo: $${saldoActual.toLocaleString('es-CO')}`;
+            saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
+            onValue(saldoRef, (snapshot) => {
+                saldoActual = snapshot.val() || 0;
+                saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
             });
 
-            // Conectar e imprimir Registro de Jugadas
             historialRef = ref(db, `usuarios/${user.uid}/historial`);
-            onValue(historialRef, (s) => {
+            onValue(historialRef, (snapshot) => {
                 historialLista.innerHTML = "";
-                const data = s.val();
-                if (data) {
-                    Object.values(data).reverse().forEach(j => {
-                        const item = document.createElement('div');
-                        item.className = `jugada-item ${j.resultado === 'GANASTE' ? 'jugada-ganó' : 'jugada-perdió'}`;
-                        item.innerHTML = `<span>${j.resultado} (Tú: ${j.tuCarta} vs R: ${j.rivalMax})</span> <strong>${j.resultado === 'GANASTE' ? '+' : '-'}$2,000</strong>`;
-                        historialLista.appendChild(item);
+                const data = snapshot.val();
+                if(data) {
+                    Object.values(data).reverse().slice(0, 4).forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = "historial-item";
+                        div.innerHTML = `<span>Mesa ${item.mesa} - ${item.resultado}</span><strong>${item.resultado==='GANÓ'?'+':'-'}$${item.monto.toLocaleString()}</strong>`;
+                        historialLista.appendChild(div);
                     });
                 } else {
-                    historialLista.innerHTML = "<div style='color:#64748b; text-align:center;'>No hay jugadas recientes</div>";
+                    historialLista.innerHTML = "<div style='font-size:0.8rem; color:#475569;'>No hay partidas registradas</div>";
                 }
             });
-
         } else {
             authView.classList.remove('hidden'); gameView.classList.add('hidden');
             if (saldoRef) off(saldoRef);
             if (historialRef) off(historialRef);
-            resetMesa();
         }
     });
 
-    // Login y Registro
+    // Botón Recargar de tu interfaz
+    btnRecargar.addEventListener('click', async () => {
+        const user = auth.currentUser;
+        if(user) {
+            await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual + 50000);
+        }
+    });
+
+    // Autenticación básica
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        btnAuth.disabled = true; btnAuth.innerText = "VERIFICANDO..."; errorBox.classList.add('hidden');
-        try { await signInWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value); loginForm.reset(); } 
-        catch (err) { errorBox.innerText = getFirebaseErrorMsg(err.code); errorBox.classList.remove('hidden'); }
-        finally { btnAuth.disabled = false; btnAuth.innerText = "INGRESAR"; }
+        try { await signInWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value); } 
+        catch (err) { errorBox.innerText = "Error de credenciales."; errorBox.classList.remove('hidden'); }
     });
 
     btnRegister.addEventListener('click', async () => {
-        if (!emailInput.value || !passInput.value) { alert("Completa los campos."); return; }
-        btnRegister.disabled = true; btnRegister.innerText = "CREANDO..."; errorBox.classList.add('hidden');
+        if(!emailInput.value || !passInput.value) return;
         try {
             const res = await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value);
             await set(ref(db, `usuarios/${res.user.uid}/saldo`), 10000);
-            loginForm.reset();
-        } catch (err) { errorBox.innerText = getFirebaseErrorMsg(err.code); errorBox.classList.remove('hidden'); }
-        finally { btnRegister.disabled = false; btnRegister.innerText = "REGISTRARSE"; }
+        } catch (err) { errorBox.innerText = "Error al registrar."; errorBox.classList.remove('hidden'); }
     });
 
     btnOut.addEventListener('click', () => signOut(auth));
 
-    // LÓGICA DE PARTIDA REAL CONECTADA A LA BASE DE DATOS (P2P)
+    // LÓGICA DE BÚSQUEDA MULTIJUGADOR REAL CON TUS DICTÁMENES VISUALES
     btnPlay.addEventListener('click', async () => {
-        if (saldoActual < 2000) { alert("Saldo insuficiente ($2,000 necesarios)"); return; }
-        
+        if (saldoActual < apuestaActual) {
+            alert(`No tienes saldo suficiente para la mesa ${mesaSeleccionada} (Requiere $${apuestaActual.toLocaleString()})`);
+            return;
+        }
+
         btnPlay.disabled = true;
-        btnPlay.innerText = "BUSCANDO PARTIDA EN BD...";
+        btnPlay.style.background = "#475569";
+        btnPlay.innerText = "BUSCANDO RIVALES...";
         resetMesa();
 
         const user = auth.currentUser;
-        const lobbyRef = ref(db, 'sala_espera');
+        const lobbyRef = ref(db, `salas_espera/${mesaSeleccionada}`);
+        const miCupoRef = push(lobbyRef);
 
-        // Transacción segura en Firebase para unirse a una sala común
-        try {
-            const pushSala = push(lobbyRef);
-            const miCupoRef = ref(db, `sala_espera/${pushSala.key}`);
-            
-            // Registramos nuestra intención de jugar en la base de datos externa
-            await set(miCupoRef, { uid: user.uid, email: user.email.split('@')[0] });
+        await set(miCupoRef, { uid: user.uid, name: user.email.split('@')[0] });
 
-            // Monitorear la sala de espera hasta que entren 3 jugadores
-            onValue(lobbyRef, async (snapshot) => {
-                const jugadores = snapshot.val();
-                if (jugadores && Object.keys(jugadores).length >= 3) {
-                    off(lobbyRef); // Apagar listener de la sala
+        onValue(lobbyRef, async (snapshot) => {
+            const lista = snapshot.val();
+            if (lista && Object.keys(lista).length >= 3) {
+                off(lobbyRef);
+                const keys = Object.keys(lista).slice(0, 3);
+                const jugadores = keys.map(k => lista[k]);
 
-                    // Tomamos los 3 primeros de la fila
-                    const claves = Object.keys(jugadores).slice(0, 3);
-                    const listaP2P = claves.map(k => jugadores[k]);
-
-                    // Si somos parte de los 3 elegidos, jugamos la ronda unificada
-                    const yoEnPartida = listaP2P.find(p => p.uid === user.uid);
-                    if (yoEnPartida) {
-                        // Limpiar los 3 cupos usados de la sala común para no duplicar
-                        claves.forEach(async (k) => await set(ref(db, `sala_espera/${k}`), null));
-                        ejecutarRondaP2P(listaP2P, user);
-                    }
+                if (jugadores.some(j => j.uid === user.uid)) {
+                    keys.forEach(async k => await set(ref(db, `salas_espera/${mesaSeleccionada}/${k}`), null));
+                    iniciarRondaP2P(jugadores, user);
                 }
-            });
-        } catch (e) {
-            btnPlay.disabled = false;
-            btnPlay.innerText = "BUSCAR PARTIDA ($2K)";
-        }
-    });
-
-    // PROCESAMIENTO MATEMÁTICO Y DESCUENTO DE SALDO EN BD
-    async function ejecutarRondaP2P(jugadores, user) {
-        btnPlay.innerText = "SALA LLENA! JUGANDO...";
-
-        // Identificar quiénes son mis rivales asignados en la BD
-        const misRivales = jugadores.filter(p => p.uid !== user.uid);
-        lblRival1.innerText = misRivales[0].email;
-        lblRival2.innerText = misRivales[1].email;
-
-        // Descontar la apuesta de la Base de Datos
-        const nuevoSaldoPostApuesta = saldoActual - 2000;
-        await set(ref(db, `usuarios/${user.uid}/saldo`), nuevoSaldoPostApuesta);
-
-        // Generar números sincronizados simulando la entrega de cartas
-        const miCarta = Math.floor(Math.random() * 10) + 1;
-        const cRival1 = Math.floor(Math.random() * 10) + 1;
-        const cRival2 = Math.floor(Math.random() * 10) + 1;
-
-        // Revelar visualmente las cartas en la pantalla
-        setTimeout(async () => {
-            cartaLocal.innerText = miCarta; cartaLocal.classList.add('revelada');
-            cartaRival1.innerText = cRival1; cartaRival1.classList.add('revelada');
-            cartaRival2.innerText = cRival2; cartaRival2.classList.add('revelada');
-
-            const rivalMaximo = Math.max(cRival1, cRival2);
-            let resultadoFinal = "PERDISTE";
-
-            if (miCarta > rivalMaximo) {
-                resultadoFinal = "GANASTE";
-                // Sumar pozo completo acumulado de la mesa ($6,000)
-                await set(ref(db, `usuarios/${user.uid}/saldo`), nuevoSaldoPostApuesta + 6000);
-            }
-
-            // AÑADIR REGISTRO DE JUGADA A FIREBASE
-            const nuevoHistorialRef = push(ref(db, `usuarios/${user.uid}/historial`));
-            await set(nuevoHistorialRef, {
-                resultado: resultadoFinal,
-                tuCarta: miCarta,
-                rivalMax: rivalMaximo,
-                fecha: new Date().toISOString()
-            });
-
-            alert(resultadoFinal === "GANASTE" ? `¡Felicidades! Ganaste $6,000 con tu ${miCarta}` : `Perdiste contra un ${rivalMaximo}`);
-            
-            btnPlay.disabled = false;
-            btnPlay.innerText = "BUSCAR PARTIDA ($2K)";
-        }, 1500);
-    }
-
-    function resetMesa() {
-        [cartaLocal, cartaRival1, cartaRival2].forEach(c => { c.innerText = "?"; c.classList.remove('revelada'); });
-        lblRival1.innerText = "Rival 1"; lblRival2.innerText = "Rival 2";
-    }
-</script>
-
-</body>
-</html>
