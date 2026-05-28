@@ -4,525 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carta Royale Club</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
 <style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
-body{
-  background:radial-gradient(circle at top,#18243b 0%,#0b1020 60%);
-  color:#f4f7fb;
-  font-family:'Inter',sans-serif;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  padding:20px;
-}
-
-.app-container{
-  width:100%;
-  max-width:460px;
-  display:flex;
-  flex-direction:column;
-  gap:18px;
-}
-
-.auth-container{
-  background:rgba(19,26,46,.95);
-  border:1px solid #28314f;
-  border-radius:24px;
-  padding:28px;
-  backdrop-filter:blur(12px);
-  box-shadow:0 15px 35px rgba(0,0,0,.45);
-  display:flex;
-  flex-direction:column;
-  gap:16px;
-}
-
-.auth-container h2{
-  font-size:1.8rem;
-  font-weight:800;
-  text-align:center;
-}
-
-.auth-subtitle{
-  text-align:center;
-  color:#94a3b8;
-  font-size:.92rem;
-  margin-top:-6px;
-  margin-bottom:10px;
-}
-
-.auth-input{
-  width:100%;
-  background:#0f172a;
-  border:1px solid #28314f;
-  border-radius:14px;
-  padding:15px;
-  color:white;
-  font-size:.95rem;
-}
-
-.auth-input:focus{
-  outline:none;
-  border-color:#00e07b;
-  box-shadow:0 0 0 4px rgba(0,224,123,.08);
-}
-
-.password-wrapper{
-  position:relative;
-}
-
-.password-wrapper .auth-input{
-  padding-right:50px;
-}
-
-.btn-toggle-password{
-  position:absolute;
-  right:15px;
-  top:50%;
-  transform:translateY(-50%);
-  background:none;
-  border:none;
-  color:#94a3b8;
-  cursor:pointer;
-}
-
-.auth-buttons{
-  display:flex;
-  gap:10px;
-}
-
-.btn-auth{
-  flex:1;
-  padding:14px;
-  border-radius:14px;
-  border:none;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.btn-login{
-  background:linear-gradient(135deg,#00e07b,#00b86b);
-  color:#08140d;
-  box-shadow:0 10px 20px rgba(0,224,123,.25);
-}
-
-.btn-register{
-  background:#151d31;
-  color:white;
-  border:1px solid #2e395b;
-}
-
-.game-interface{
-  display:none;
-  flex-direction:column;
-  gap:18px;
-}
-
-.header{
-  background:#131a2e;
-  border:1px solid #28314f;
-  border-radius:22px;
-  padding:18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.user-info-box{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.btn-logout{
-  background:#1f293f;
-  border:1px solid #32415f;
-  color:#ff5d7d;
-  padding:6px 10px;
-  border-radius:10px;
-  cursor:pointer;
-  font-size:.75rem;
-}
-
-.saldo-box{
-  text-align:right;
-}
-
-.saldo-monto{
-  font-size:1.7rem;
-  font-weight:800;
-  color:#00e07b;
-}
-
-.caja-botones-transaccion{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-}
-
-.btn-transaccion{
-  border:none;
-  border-radius:10px;
-  padding:8px 12px;
-  font-size:.72rem;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.btn-recargar-estilo{
-  background:#00e07b;
-  color:#08140d;
-}
-
-.btn-retirar-estilo{
-  background:#1f293f;
-  color:#ff5d7d;
-}
-
-.event-box{
-  background:linear-gradient(135deg,#131a2e,#18243b);
-  border:1px solid #28314f;
-  border-radius:20px;
-  padding:18px;
-}
-
-.event-title{
-  font-size:.8rem;
-  color:#00e07b;
-  font-weight:700;
-  margin-bottom:8px;
-}
-
-.event-main{
-  font-size:1.15rem;
-  font-weight:800;
-  margin-bottom:8px;
-}
-
-.event-sub{
-  color:#94a3b8;
-  font-size:.82rem;
-}
-
-.progression-container{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.mesa-btn{
-  background:#131a2e;
-  border:1px solid #28314f;
-  border-radius:18px;
-  padding:16px 12px;
-  color:white;
-  cursor:pointer;
-  text-align:left;
-  min-height:100px;
-}
-
-.mesa-btn.active{
-  border-color:#00e07b;
-  box-shadow:0 0 0 2px rgba(0,224,123,.15);
-}
-
-.mesa-nivel{
-  font-size:.72rem;
-  color:#94a3b8;
-  margin-bottom:8px;
-}
-
-.mesa-precio{
-  font-size:1.2rem;
-  font-weight:800;
-  margin-bottom:6px;
-}
-
-.mesa-premio{
-  color:#00e07b;
-  font-size:.82rem;
-}
-
-.game-mat{
-  background:radial-gradient(circle at top,#1f5c3d,#08140d 80%);
-  border-radius:28px;
-  padding:30px 20px;
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:14px;
-  box-shadow:inset 0 0 40px rgba(0,0,0,.55);
-}
-
-.slot-jugador{
-  text-align:center;
-}
-
-.carta{
-  width:82px;
-  height:118px;
-  margin:auto;
-  border-radius:18px;
-  background:linear-gradient(145deg,#ffffff,#dce5f5);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:2rem;
-  font-weight:800;
-  color:#08140d;
-  box-shadow:0 10px 20px rgba(0,0,0,.35);
-}
-
-.carta.waiting{
-  background:#23314f;
-  color:#506388;
-  border:2px dashed #506388;
-}
-
-.nombre-jugador{
-  margin-top:10px;
-  font-size:.8rem;
-  color:#d6dce6;
-  font-weight:600;
-}
-
-.btn-play{
-  width:100%;
-  border:none;
-  border-radius:20px;
-  padding:20px;
-  font-size:1rem;
-  font-weight:800;
-  cursor:pointer;
-  color:#08140d;
-  background:linear-gradient(135deg,#00e07b,#00b86b);
-  box-shadow:0 15px 25px rgba(0,224,123,.25);
-}
-
-.history{
-  background:#131a2e;
-  border:1px solid #28314f;
-  border-radius:22px;
-  padding:18px;
-}
-
-.history h3{
-  font-size:.9rem;
-  color:#94a3b8;
-  margin-bottom:12px;
-}
-
-.history-list{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-
-.history-item{
-  background:#18243b;
-  border-radius:14px;
-  padding:12px;
-  display:flex;
-  justify-content:space-between;
-  font-size:.85rem;
-}
-
-.modal-financiero{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.7);
-  justify-content:center;
-  align-items:center;
-  padding:20px;
-}
-
-.modal-content{
-  width:100%;
-  max-width:420px;
-  background:#131a2e;
-  border:1px solid #28314f;
-  border-radius:24px;
-  padding:24px;
-}
-
-.info-caja{
-  background:#0f172a;
-  border:1px solid #28314f;
-  border-radius:16px;
-  padding:16px;
-  line-height:1.7;
-}
-
-.input-modal{
-  width:100%;
-  margin-top:10px;
-  background:#0f172a;
-  border:1px solid #28314f;
-  border-radius:14px;
-  padding:14px;
-  color:white;
-}
-
-.btn-accion-modal{
-  width:100%;
-  margin-top:14px;
-  border:none;
-  border-radius:14px;
-  padding:15px;
-  font-weight:700;
-}
-
-.btn-wa-color{
-  background:#00e07b;
-  color:#08140d;
-}
-
-.btn-retirar-color{
-  background:#ff5d7d;
-  color:white;
-}
-
-.btn-cerrar-modal{
-  margin-top:15px;
-  background:none;
-  border:none;
-  color:#94a3b8;
-  cursor:pointer;
-  width:100%;
-}
-
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:radial-gradient(circle at top,#18243b 0%,#0b1020 60%);color:#f4f7fb;font-family:'Inter',sans-serif;min-height:100vh;display:flex;justify-content:center;padding:20px;}
+    .app-container{width:100%;max-width:460px;display:flex;flex-direction:column;gap:18px;}
+    
+    /* Contenedores de estado */
+    #authContainer{display:flex;flex-direction:column;gap:16px;background:rgba(19,26,46,.95);border:1px solid #28314f;border-radius:24px;padding:28px;backdrop-filter:blur(12px);box-shadow:0 15px 35px rgba(0,0,0,.45);}
+    #gameInterface{display:none;flex-direction:column;gap:18px;}
+    
+    .auth-input{width:100%;background:#0f172a;border:1px solid #28314f;border-radius:14px;padding:15px;color:white;font-size:.95rem;}
+    .auth-input:focus{outline:none;border-color:#00e07b;}
+    .btn-auth{flex:1;padding:14px;border-radius:14px;border:none;font-weight:700;cursor:pointer;}
+    .btn-login{background:linear-gradient(135deg,#00e07b,#00b86b);color:#08140d;}
+    .btn-register{background:#151d31;color:white;border:1px solid #2e395b;}
+    
+    /* Estilos de juego (resumidos para brevedad) */
+    .header{background:#131a2e;border:1px solid #28314f;border-radius:22px;padding:18px;display:flex;justify-content:space-between;align-items:center;}
+    .saldo-monto{font-size:1.7rem;font-weight:800;color:#00e07b;}
+    .carta{width:82px;height:118px;margin:auto;border-radius:18px;background:linear-gradient(145deg,#ffffff,#dce5f5);display:flex;justify-content:center;align-items:center;font-size:2rem;color:#08140d;box-shadow:0 10px 20px rgba(0,0,0,.35);}
+    .carta.waiting{background:#23314f;color:#506388;border:2px dashed #506388;}
+    .game-mat{background:radial-gradient(circle at top,#1f5c3d,#08140d 80%);border-radius:28px;padding:30px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+    .btn-play{width:100%;border:none;border-radius:20px;padding:20px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#00e07b,#00b86b);}
 </style>
 </head>
-
 <body>
 
 <div class="app-container">
+    <div id="authContainer">
+        <h2>Carta Royale Club</h2>
+        <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
+        <div class="password-wrapper" style="position:relative;">
+            <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
+        </div>
+        <div class="auth-buttons" style="display:flex; gap:10px;">
+            <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
+            <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
+        </div>
+    </div>
 
-<div id="authContainer" class="auth-container">
-
-<h2>Carta Royale Club</h2>
-
-<div class="auth-subtitle">
-Acceso privado · Partidas exclusivas en tiempo real
+    <div id="gameInterface">
+        <div class="header">
+            <div class="user-info-box">
+                <div id="nombreUsuarioActivo">Jugador</div>
+                <button id="btnSignOut" style="background:none;border:none;color:#ff5d7d;cursor:pointer;">Salir</button>
+            </div>
+            <div class="saldo-box" style="text-align:right;">
+                <div id="saldoDisplay" class="saldo-monto">$0</div>
+            </div>
+        </div>
+        <div class="game-mat">
+            <div class="slot-jugador"><div id="cartaLocal" class="carta waiting">?</div></div>
+            <div class="slot-jugador"><div id="cartaRival1" class="carta waiting">?</div></div>
+            <div class="slot-jugador"><div id="cartaRival2" class="carta waiting">?</div></div>
+        </div>
+        <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
+    </div>
 </div>
 
-<input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
-
-<div class="password-wrapper">
-<input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
-<button type="button" id="btnTogglePassword" class="btn-toggle-password">👁️</button>
-</div>
-
-<div class="auth-buttons">
-<button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
-<button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
-</div>
-
-</div>
-
-<div id="gameInterface" class="game-interface">
-
-<div class="header">
-
-<div class="user-info-box">
-<div id="nombreUsuarioActivo">Jugador</div>
-<button id="btnSignOut" class="btn-logout">Salir</button>
-</div>
-
-<div class="saldo-box">
-<div style="font-size:.75rem;color:#94a3b8;">Saldo disponible</div>
-<div id="saldoDisplay" class="saldo-monto">$0</div>
-
-<div class="caja-botones-transaccion">
-<button id="btnAbrirRecarga" class="btn-transaccion btn-recargar-estilo">+ RECARGAR</button>
-<button id="btnAbrirRetiro" class="btn-transaccion btn-retirar-estilo">- RETIRAR</button>
-</div>
-
-</div>
-</div>
-
-<div class="event-box">
-<div class="event-title">EVENTO PRIVADO ACTIVO</div>
-<div class="event-main">Carta Royale — Night Session</div>
-<div class="event-sub">
-Jugadores conectados: 38 · Acceso limitado · Evento en vivo
-</div>
-</div>
-
-<div class="progression-container">
-
-<button class="mesa-btn active" data-valor="2000">
-<div class="mesa-nivel">MESA N1</div>
-<div class="mesa-precio">$2K</div>
-<div class="mesa-premio">Premio aprox: $5.4K</div>
-</button>
-
-<button class="mesa-btn" data-valor="4000">
-<div class="mesa-nivel">MESA N2</div>
-<div class="mesa-precio">$4K</div>
-<div class="mesa-premio">Premio aprox: $10.8K</div>
-</button>
-
-<button class="mesa-btn" data-valor="8000">
-<div class="mesa-nivel">MESA N3</div>
-<div class="mesa-precio">$8K</div>
-<div class="mesa-premio">Premio aprox: $21.6K</div>
-</button>
-
-<button class="mesa-btn" data-valor="16000">
-<div class="mesa-nivel">MESA N4</div>
-<div class="mesa-precio">$16K</div>
-<div class="mesa-premio">Premio aprox: $43.2K</div>
-</button>
-
-</div>
-
-<div class="game-mat">
-<div class="slot-jugador">
-<div id="cartaLocal" class="carta waiting">?</div>
-<div id="labelLocal" class="nombre-jugador">Tú</div>
-</div>
-
-<div class="slot-jugador">
-<div id="cartaRival1" class="carta waiting">?</div>
-<div id="labelRival1" class="nombre-jugador">Rival 1</div>
-</div>
-
-<div class="slot-jugador">
-<div id="cartaRival2" class="carta waiting">?</div>
-<div id="labelRival2" class="nombre-jugador">Rival 2</div>
-</div>
-</div>
-
-<button id="botonJugar" class="btn-play">
-BUSCAR PARTIDA ($2K)
-</button>
-
-<div class="history">
-<h3>ÚLTIMAS PARTIDAS</h3>
-<div id="historyList" class="history-list"></div>
-</div>
-
-</div>
-</div>
-
-<!-- PEGA AQUÍ TU SCRIPT ORIGINAL DE FIREBASE -->
 <script type="module">
-// AQUÍ DEBES PEGAR TODO TU SCRIPT ORIGINAL
-// DESDE:
-// import { initializeApp }
-// HASTA:
-// onAuthStateChanged(...)
+    // 1. IMPORTA AQUÍ TUS FUNCIONES DE FIREBASE
+    // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js";
+    // import { getAuth, signInWithEmailAndPassword, ... } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-auth.js";
+
+    // 2. CONFIGURACIÓN (Pega aquí tu objeto firebaseConfig)
+    const firebaseConfig = { /* ... */ };
+    
+    // Inicialización (Descomenta esto al configurar)
+    // const app = initializeApp(firebaseConfig);
+    // const auth = getAuth();
+
+    // 3. SELECCIÓN DE ELEMENTOS
+    const authContainer = document.getElementById('authContainer');
+    const gameInterface = document.getElementById('gameInterface');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnSignOut = document.getElementById('btnSignOut');
+
+    // 4. LÓGICA DE CAMBIO DE PANTALLA
+    // Esta función maneja qué pantalla mostrar
+    function toggleInterface(isLoggedIn) {
+        authContainer.style.display = isLoggedIn ? 'none' : 'flex';
+        gameInterface.style.display = isLoggedIn ? 'flex' : 'none';
+    }
+
+    // 5. EVENTOS (Aquí es donde agregas la lógica real de Firebase)
+    btnLogin.addEventListener('click', () => {
+        console.log("Intentando ingresar...");
+        // Lógica de signInWithEmailAndPassword aquí
+        // Si tiene éxito: toggleInterface(true);
+    });
+
+    btnSignOut.addEventListener('click', () => {
+        // Lógica de signOut(auth) aquí
+        toggleInterface(false);
+    });
+
+    // 6. OBSERVAR ESTADO DE AUTENTICACIÓN
+    // onAuthStateChanged(auth, (user) => {
+    //    if (user) {
+    //        toggleInterface(true);
+    //    } else {
+    //        toggleInterface(false);
+    //    }
+    // });
 </script>
 
 </body>
