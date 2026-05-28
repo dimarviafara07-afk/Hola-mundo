@@ -38,6 +38,7 @@ display: flex;
 flex-direction: column;
 gap: 15px;
 border: 1px solid #d4af37; /* Borde dorado de bienvenida */
+box-sizing: border-box;
 }
 
 .auth-container h2 {
@@ -71,6 +72,7 @@ box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
 .password-wrapper {
 position: relative;
 width: 100%;
+box-sizing: border-box;
 }
 
 .password-wrapper .auth-input {
@@ -89,6 +91,7 @@ cursor: pointer;
 font-size: 1.2rem;
 padding: 0;
 line-height: 1;
+z-index: 10;
 }
 
 .btn-toggle-password:hover {
@@ -98,12 +101,13 @@ color: #d4af37;
 .auth-buttons {
 display: flex;
 gap: 10px;
-margin-top: 5px;
+margin-top: 10px;
+width: 100%;
 }
 
 .btn-auth {
 flex: 1;
-padding: 12px;
+padding: 14px;
 font-size: 0.95rem;
 font-weight: bold;
 border-radius: 8px;
@@ -271,6 +275,7 @@ border-radius: 12px;
 cursor: pointer;
 box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
 letter-spacing: 0.5px;
+width: 100%;
 }
 
 .btn-play:disabled {
@@ -282,7 +287,7 @@ box-shadow: none;
 
 /* Historial */
 .history { background: #0a0f24; padding: 15px; border-radius: 12px; border: 1px solid #232e52; }
-.history h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #a0aec0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
+.history h3 { margin: 0 0 10px 0; color: #a0aec0; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.5px; }
 .history-list { display: flex; flex-direction: column; gap: 5px; }
 
 .history-item {
@@ -316,24 +321,3 @@ text-align: center;
 }
 
 .modal-content h3 { margin-top: 0; color: #d4af37; }
-.info-caja { background: #050814; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 1.1rem; text-align: left; border: 1px solid #232e52; }
-.btn-accion-modal { color: white; border: none; padding: 12px; width: 100%; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
-.btn-wa-color { background: #25D366; }
-.btn-retirar-color { background: #dc3545; }
-.btn-cerrar-modal { background: transparent; color: #a0aec0; border: none; margin-top: 15px; cursor: pointer; text-decoration: underline; }
-.input-modal { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; background-color: #050814; border: 1px solid #232e52; border-radius: 6px; color: white; }
-
-@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-</style>
-</head>
-<body>
-
-<div class="app-container">
-
-<div id="authContainer" class="auth-container">
-<h2>SuerteFácil P2P</h2>
-<input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
-
-<div class="password-wrapper">
-<input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
-<button type="button" id="btnTogglePassword" class="btn-toggle-password" title="
