@@ -99,7 +99,7 @@
 
     /* INTERFAZ DEL JUEGO (Oculta al inicio hasta que se logueen) */
     .game-interface {
-      display: none; /* Se activa por JavaScript al iniciar sesión */
+      display: none;
       flex-direction: column;
       gap: 20px;
     }
@@ -326,7 +326,6 @@
   </div>
 
   <script>
-    // Manejo visual de las pestañas/mesas de la progresión
     const botonesMesa = document.querySelectorAll('.mesa-btn');
     const botonJugar = document.getElementById('botonJugar');
 
@@ -345,9 +344,9 @@
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // Configuración real y completa del proyecto
+    // Configuración con la API Key corregida terminando en E
     const firebaseConfig = {
-      apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0gubr0EJ77AyF8",
+      apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0gubr0EJ77AyE",
       authDomain: "carta-facil-a4e22.firebaseapp.com",
       databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
       projectId: "carta-facil-a4e22",
@@ -357,12 +356,10 @@
       measurementId: "G-NZNXS3DE3K"
     };
 
-    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const database = getDatabase(app);
     const auth = getAuth(app);
 
-    // Capturar elementos del DOM
     const authContainer = document.getElementById('authContainer');
     const gameInterface = document.getElementById('gameInterface');
     const emailInput = document.getElementById('emailInput');
@@ -372,7 +369,7 @@
     const nombreUsuarioActivo = document.getElementById('nombreUsuarioActivo');
     const saldoDisplay = document.getElementById('saldoDisplay');
 
-    // --- ACCIÓN: REGISTRAR USUARIO ---
+    // REGISTRAR
     btnRegister.addEventListener('click', () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
@@ -385,7 +382,6 @@
       createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          // Inicializar al nuevo jugador con un saldo de 50000 en la base de datos
           set(ref(database, 'usuarios/' + user.uid), {
             email: user.email,
             saldo: 50000,
@@ -399,7 +395,7 @@
         });
     });
 
-    // --- ACCIÓN: INICIAR SESIÓN ---
+    // LOGUEAR
     btnLogin.addEventListener('click', () => {
       const email = emailInput.value.trim();
       const password = passwordInput.value.trim();
@@ -418,22 +414,19 @@
         });
     });
 
-    // --- OBSERVADOR DE ESTADO EN TIEMPO REAL ---
+    // ESCUCHADOR EN TIEMPO REAL
     let saldoEscuchador = null;
 
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        // Interfaz visual activa
         authContainer.style.display = 'none';
         gameInterface.style.display = 'flex';
         nombreUsuarioActivo.innerText = user.email.split('@')[0];
 
-        // Escuchar el saldo real del usuario desde Realtime Database
         const saldoRef = ref(database, 'usuarios/' + user.uid + '/saldo');
         saldoEscuchador = onValue(saldoRef, (snapshot) => {
           const saldoVal = snapshot.val();
           if (saldoVal !== null) {
-            // Formatear el número a moneda
             saldoDisplay.innerText = "$" + Number(saldoVal).toLocaleString('es-CO');
           } else {
             saldoDisplay.innerText = "$0";
@@ -441,18 +434,14 @@
         });
 
       } else {
-        // Regresar a pantalla de autenticación
         authContainer.style.display = 'flex';
         gameInterface.style.display = 'none';
-        
-        // Apagar el escuchador si se desloguea
         if (saldoEscuchador) {
           saldoEscuchador();
           saldoEscuchador = null;
         }
       }
     });
-
   </script>
 
 </body>
