@@ -28,6 +28,82 @@
       gap: 20px;
     }
 
+    /* SECCIÓN DE AUTENTICACIÓN (Login y Registro) */
+    .auth-container {
+      background: linear-gradient(135deg, #1e2433, #151a26);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border: 1px solid #252e4d;
+    }
+
+    .auth-container h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      text-align: center;
+      color: #00ff88;
+    }
+
+    .auth-input {
+      width: 100%;
+      padding: 12px;
+      box-sizing: border-box;
+      background-color: #0f131a;
+      border: 1px solid #3b4875;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: #00ff88;
+      box-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .btn-auth {
+      flex: 1;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+
+    .btn-login {
+      background: #00ff88;
+      color: #121620;
+    }
+
+    .btn-register {
+      background: transparent;
+      color: #00ff88;
+      border: 2px solid #00ff88;
+    }
+
+    .btn-auth:active {
+      transform: scale(0.98);
+    }
+
+    /* INTERFAZ DEL JUEGO (Oculta al inicio hasta que se logueen) */
+    .game-interface {
+      display: none; /* Se activa por JavaScript al iniciar sesión */
+      flex-direction: column;
+      gap: 20px;
+    }
+
     /* Encabezado con el Saldo */
     .header {
       display: flex;
@@ -49,7 +125,7 @@
       color: #00ff88;
     }
 
-    /* Selector de Progresión (Mesas del juego) */
+    /* Selector de Progresión */
     .progression-container {
       background: #1c2237;
       padding: 15px;
@@ -83,7 +159,7 @@
       box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
     }
 
-    /* El Tapete de Juego (Las 3 cartas) */
+    /* El Tapete de Juego */
     .game-mat {
       background: radial-gradient(circle, #1a2f24, #0f1c15);
       border: 3px solid #1f5c3d;
@@ -150,12 +226,7 @@
       transition: 0.1s;
     }
 
-    .btn-play:active {
-      transform: scale(0.98);
-      box-shadow: 0 2px 5px rgba(0, 255, 136, 0.2);
-    }
-
-    /* Historial de partidas */
+    /* Historial */
     .history {
       background: #1c2237;
       padding: 15px;
@@ -176,10 +247,6 @@
       border-bottom: 1px solid #252e4d;
     }
 
-    .history-item:last-child {
-      border: none;
-    }
-
     .win { color: #00ff88; }
     .lose { color: #ff3366; }
 
@@ -194,52 +261,66 @@
 
   <div class="app-container">
 
-    <div class="header">
-      <div><strong>SuerteFácil P2P</strong></div>
-      <div class="saldo-box">
-        <div style="font-size: 0.75rem; color: #a0aec0;">Tu Saldo</div>
-        <div class="saldo-monto">$50.000</div>
+    <div id="authContainer" class="auth-container">
+      <h2>SuerteFácil P2P</h2>
+      <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
+      <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
+      <div class="auth-buttons">
+        <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
+        <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
       </div>
     </div>
 
-    <div class="progression-container">
-      <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu Mesa (Progresión)</span>
-      <div class="mesas-grid">
-        <button class="mesa-btn active">N1 ($2k)</button>
-        <button class="mesa-btn">N2 ($4k)</button>
-        <button class="mesa-btn">N3 ($8k)</button>
-        <button class="mesa-btn">N4 ($16k)</button>
-        <button class="mesa-btn">N5 ($32k)</button>
+    <div id="gameInterface" class="game-interface">
+      
+      <div class="header">
+        <div><strong>SuerteFácil P2P</strong></div>
+        <div class="saldo-box">
+          <div style="font-size: 0.75rem; color: #a0aec0;">Tu Saldo</div>
+          <div class="saldo-monto">$50.000</div>
+        </div>
       </div>
-    </div>
 
-    <div class="game-mat">
-      <div class="slot-jugador">
-        <div class="carta ready">?</div>
-        <div class="nombre-jugador">Tú</div>
+      <div class="progression-container">
+        <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu Mesa (Progresión)</span>
+        <div class="mesas-grid">
+          <button class="mesa-btn active">N1 ($2k)</button>
+          <button class="mesa-btn">N2 ($4k)</button>
+          <button class="mesa-btn">N3 ($8k)</button>
+          <button class="mesa-btn">N4 ($16k)</button>
+          <button class="mesa-btn">N5 ($32k)</button>
+        </div>
       </div>
-      <div class="slot-jugador">
-        <div class="carta waiting">...</div>
-        <div class="nombre-jugador">Esperando...</div>
-      </div>
-      <div class="slot-jugador">
-        <div class="carta waiting">...</div>
-        <div class="nombre-jugador">Esperando...</div>
-      </div>
-    </div>
 
-    <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
+      <div class="game-mat">
+        <div class="slot-jugador">
+          <div class="carta ready">?</div>
+          <div class="nombre-jugador" id="nombreUsuarioActivo">Tú</div>
+        </div>
+        <div class="slot-jugador">
+          <div class="carta waiting">...</div>
+          <div class="nombre-jugador">Esperando...</div>
+        </div>
+        <div class="slot-jugador">
+          <div class="carta waiting">...</div>
+          <div class="nombre-jugador">Esperando...</div>
+        </div>
+      </div>
 
-    <div class="history">
-      <h3>ÚLTIMAS PARTIDAS</h3>
-      <div class="history-item">
-        <span>Mesa N1 ($2k) - Ganaste</span>
-        <span class="win">+$5.400</span>
+      <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
+
+      <div class="history">
+        <h3>ÚLTIMAS PARTIDAS</h3>
+        <div class="history-item">
+          <span>Mesa N1 ($2k) - Ganaste</span>
+          <span class="win">+$5.400</span>
+        </div>
+        <div class="history-item">
+          <span>Mesa N1 ($2k) - Perdiste</span>
+          <span class="lose">-$2.000</span>
+        </div>
       </div>
-      <div class="history-item">
-        <span>Mesa N1 ($2k) - Perdiste</span>
-        <span class="lose">-$2.000</span>
-      </div>
+
     </div>
 
   </div>
@@ -259,31 +340,90 @@
   </script>
 
   <script type="module">
-    // 1. Importaciones unificadas a la versión estable 10.8.1 (Se solucionaron conflictos de versiones)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
     import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // 2. Credenciales completas extraídas de tus capturas
+    // Tus credenciales reales vinculadas
     const firebaseConfig = {
       apiKey: "AIzaSyDh8gOvyKbRfPPOZ1COMOguBrO...", 
       authDomain: "carta-facil-a4e22.firebaseapp.com",
       databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
       projectId: "carta-facil-a4e22",
-      storageBucket: "carta-facil-a4e22.firebaseapp.com", // Corregido: .firebaseapp.com según captura
+      storageBucket: "carta-facil-a4e22.firebaseapp.com",
       messagingSenderId: "530927580102",
       appId: "1:530927580102:web:865211e2b16e8...", 
       measurementId: "G-NZNXS3DE3K"
     };
 
-    // 3. Inicialización correcta y ordenada de todos los servicios
+    // Inicializar Firebase
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
     const database = getDatabase(app);
-    const auth = getAuth(app); // <--- La autenticación quedó vinculada de forma impecable aquí
+    const auth = getAuth(app);
 
-    console.log("¡Todo listo! Código restaurado, versiones unificadas y Auth conectado.");
+    // Capturar elementos del HTML para Autenticación
+    const authContainer = document.getElementById('authContainer');
+    const gameInterface = document.getElementById('gameInterface');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnRegister = document.getElementById('btnRegister');
+    const nombreUsuarioActivo = document.getElementById('nombreUsuarioActivo');
+
+    // --- ACCIÓN: REGISTRAR USUARIO ---
+    btnRegister.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if(email === "" || password === "") {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert("¡Usuario registrado con éxito!");
+        })
+        .catch((error) => {
+          alert("Error al registrarse: " + error.message);
+        });
+    });
+
+    // --- ACCIÓN: INICIAR SESIÓN ---
+    btnLogin.addEventListener('click', () => {
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      if(email === "" || password === "") {
+        alert("Por favor introduce tu correo y contraseña.");
+        return;
+      }
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          alert("¡Bienvenido al juego!");
+        })
+        .catch((error) => {
+          alert("Error de ingreso: " + error.message);
+        });
+    });
+
+    // --- OBSERVADOR: CONTROLAR PANTALLAS SEGÚN EL ESTADO DEL USUARIO ---
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Si hay usuario activo: Oculta login, muestra el juego y personaliza el nombre
+        authContainer.style.display = 'none';
+        gameInterface.style.display = 'flex';
+        nombreUsuarioActivo.innerText = user.email.split('@')[0]; // Usa la primera parte de su correo como nombre de jugador
+      } else {
+        // Si no hay usuario: Muestra el login y oculta el juego
+        authContainer.style.display = 'flex';
+        gameInterface.style.display = 'none';
+      }
+    });
+
   </script>
 
 </body>
