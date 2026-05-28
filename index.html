@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SuerteFácil P2P</title>
     <style>
-        /* Variables de color para fácil mantenimiento */
         :root {
             --bg-dark: #0f172a;
             --bg-card: #1e293b;
             --primary: #22c55e;
+            --secondary: #3b82f6;
             --danger: #ef4444;
             --text-main: #f8fafc;
             --border-color: #334155;
@@ -21,7 +21,7 @@
             font-family: system-ui, -apple-system, sans-serif; 
             display: flex; 
             justify-content: center; 
-            align-items: center; /* Centrado vertical real */
+            align-items: center; 
             min-height: 100vh;
             padding: 20px; 
             margin: 0; 
@@ -39,7 +39,6 @@
 
         .hidden { display: none !important; }
 
-        /* Formularios y Alertas */
         .form-group { margin-bottom: 15px; }
         
         input { 
@@ -65,12 +64,10 @@
             border: 1px solid var(--danger);
         }
 
-        /* Botones */
         button { 
             width: 100%; 
             padding: 12px; 
             cursor: pointer; 
-            background: var(--primary); 
             border: none; 
             color: white; 
             font-weight: bold; 
@@ -80,9 +77,11 @@
         }
         button:active { transform: scale(0.98); }
         button:disabled { opacity: 0.6; cursor: not-allowed; }
+        
+        .btn-primary { background: var(--primary); }
+        .btn-secondary { background: var(--secondary); margin-top: 15px; }
         .btn-danger { background: var(--danger); }
         
-        /* Estilos de Juego */
         .saldo-display {
             font-size: 1.5rem; 
             text-align: center; 
@@ -105,6 +104,13 @@
             font-size: 1.5rem; 
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
         }
+        
+        .divider {
+            text-align: center;
+            margin: 15px 0 5px 0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -122,7 +128,11 @@
             <div class="form-group">
                 <input type="password" id="pass" placeholder="Contraseña" required autocomplete="current-password">
             </div>
-            <button type="submit" id="btnAuth">INGRESAR</button>
+            <button type="submit" id="btnAuth" class="btn-primary">INGRESAR</button>
+            
+            <div class="divider">o si eres nuevo</div>
+            
+            <button type="button" id="btnRegister" class="btn-secondary">REGISTRARSE</button>
         </form>
     </div>
 
@@ -136,64 +146,147 @@
             <div class="carta" id="cartaRival2">?</div>
         </div>
 
-        <button id="btnPlay">BUSCAR PARTIDA ($2K)</button>
+        <button id="btnPlay" class="btn-primary">BUSCAR PARTIDA ($2K)</button>
         <button id="btnOut" class="btn-danger">CERRAR SESIÓN</button>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, off, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // Configuración de Firebase
+    // Tu configuración original de Firebase
     const firebaseConfig = {
-        /* REEMPLAZA CON TUS CREDENCIALES */
+        apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
+        authDomain: "carta-facil-a4e22.firebaseapp.com",
+        databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
+        projectId: "carta-facil-a4e22",
+        storageBucket: "carta-facil-a4e22.appspot.com",
+        messagingSenderId: "530927580102",
+        appId: "1:530927580102:web:865211e2b16e84869038c7"
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Referencias del DOM cacheadas
+    // Referencias del DOM
     const authView = document.getElementById('authView');
     const gameView = document.getElementById('gameView');
     const loginForm = document.getElementById('loginForm');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('pass');
     const btnAuth = document.getElementById('btnAuth');
+    const btnRegister = document.getElementById('btnRegister');
     const errorBox = document.getElementById('errorBox');
     const saldoDisplay = document.getElementById('saldoDisplay');
     const btnOut = document.getElementById('btnOut');
     const btnPlay = document.getElementById('btnPlay');
 
-    let saldoRef = null; // Para limpiar el listener al cerrar sesión
+    let saldoRef = null;
 
-    // Traductor de errores de Firebase
+    // Traductor de errores
     const getFirebaseErrorMsg = (errorCode) => {
         switch (errorCode) {
             case 'auth/invalid-credential': return 'Correo o contraseña incorrectos.';
             case 'auth/user-not-found': return 'El usuario no existe.';
             case 'auth/wrong-password': return 'Contraseña incorrecta.';
-            case 'auth/too-many-requests': return 'Demasiados intentos. Intenta más tarde.';
-            case 'auth/network-request-failed': return 'Error de conexión a internet.';
-            default: return 'Ocurrió un error al intentar acceder.';
+            case 'auth/email-already-in-use': return 'Este correo ya está registrado.';
+            case 'auth/weak-password': return 'La contraseña debe tener al menos 6 letras/números.';
+            case 'auth/invalid-email': return 'El formato del correo no es válido.';
+            default: return 'Ocurrió un error. Verifica tus datos (' + errorCode + ').';
         }
     };
 
-    // LÓGICA DE SESIÓN
+    // Control de Sesión
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            // Mostrar Juego
             authView.classList.add('hidden');
             gameView.classList.remove('hidden');
-            emailInput.value = '';
-            passInput.value = '';
             errorBox.classList.add('hidden');
             
-            // Cargar Saldo en Tiempo Real
             saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
             onValue(saldoRef, (snap) => {
                 const saldo = snap.val() || 0;
-                saldoDisplay.innerText = `Saldo: $${saldo.toLocaleString('es-CO')}`; // Formato de moneda local
+                saldoDisplay.innerText = `Saldo: $${saldo.toLocaleString('es-CO')}`;
             });
+        } else {
+            authView.classList.remove('hidden');
+            gameView.classList.add('hidden');
+            if (saldoRef) off(saldoRef);
+        }
+    });
+
+    // INICIAR SESIÓN
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = emailInput.value.trim();
+        const password = passInput.value;
+
+        btnAuth.disabled = true;
+        btnAuth.innerText = "CARGANDO...";
+        errorBox.classList.add('hidden');
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            btnAuth.innerText = "INGRESAR";
+            btnAuth.disabled = false;
+            loginForm.reset();
+        } catch (err) {
+            errorBox.innerText = getFirebaseErrorMsg(err.code);
+            errorBox.classList.remove('hidden');
+            btnAuth.disabled = false;
+            btnAuth.innerText = "INGRESAR";
+        }
+    });
+
+    // REGISTRARSE
+    btnRegister.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const password = passInput.value;
+
+        if (!email || !password) {
+            errorBox.innerText = "Escribe un correo y contraseña para registrarte.";
+            errorBox.classList.remove('hidden');
+            return;
+        }
+
+        btnRegister.disabled = true;
+        btnRegister.innerText = "CREANDO CUENTA...";
+        errorBox.classList.add('hidden');
+
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            
+            // Asignar un saldo inicial de $10,000 en la base de datos al nuevo usuario
+            await set(ref(db, `usuarios/${userCredential.user.uid}/saldo`), 10000);
+            
+            btnRegister.innerText = "REGISTRARSE";
+            btnRegister.disabled = false;
+            loginForm.reset();
+        } catch (err) {
+            errorBox.innerText = getFirebaseErrorMsg(err.code);
+            errorBox.classList.remove('hidden');
+            btnRegister.disabled = false;
+            btnRegister.innerText = "REGISTRARSE";
+        }
+    });
+
+    // CERRAR SESIÓN
+    btnOut.addEventListener('click', () => signOut(auth));
+    
+    // BOTÓN JUGAR
+    btnPlay.addEventListener('click', () => {
+        btnPlay.disabled = true;
+        btnPlay.innerText = "BUSCANDO RIVAL...";
+        setTimeout(() => {
+            alert("¡Esta función la programaremos pronto!");
+            btnPlay.disabled = false;
+            btnPlay.innerText = "BUSCAR PARTIDA ($2K)";
+        }, 1500);
+    });
+</script>
+
+</body>
+</html>
