@@ -97,14 +97,14 @@
       transform: scale(0.98);
     }
 
-    /* INTERFAZ DEL JUEGO (Oculta al inicio hasta que se logueen) */
+    /* INTERFAZ DE JUEGO */
     .game-interface {
       display: none;
       flex-direction: column;
       gap: 20px;
     }
 
-    /* Encabezado con el Saldo */
+    /* Encabezado con el Saldo y Botones Financieros */
     .header {
       display: flex;
       justify-content: space-between;
@@ -117,6 +117,10 @@
 
     .saldo-box {
       text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
     }
 
     .saldo-monto {
@@ -124,6 +128,28 @@
       font-weight: bold;
       color: #00ff88;
     }
+
+    .caja-botones-transaccion {
+      display: flex;
+      gap: 5px;
+    }
+
+    .btn-transaccion {
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .btn-recargar-estilo { background: #00b35f; }
+    .btn-recargar-estilo:hover { background: #00ff88; color: #121620; }
+
+    .btn-retirar-estilo { background: #ff3366; }
+    .btn-retirar-estilo:hover { background: #ff668f; }
 
     /* Selector de Progresión */
     .progression-container {
@@ -239,16 +265,90 @@
       color: #a0aec0;
     }
 
-    .history-item {
+    .history-list {
       display: flex;
-      justify-content: space-between;
-      font-size: 0.85rem;
-      padding: 5px 0;
-      border-bottom: 1px solid #252e4d;
+      flex-direction: column;
     }
 
-    .win { color: #00ff88; }
-    .lose { color: #ff3366; }
+    /* VENTANAS MODALES (Recargas y Retiros) */
+    .modal-financiero {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .modal-content {
+      background: #1e2433;
+      border: 1px solid #3b4875;
+      padding: 25px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+      color: #00ff88;
+    }
+
+    .modal-content h3.retirar-titulo {
+      color: #ff3366;
+    }
+
+    .info-caja {
+      background: #0f131a;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 1.1rem;
+      border: 1px solid #252e4d;
+      text-align: left;
+    }
+
+    .btn-accion-modal {
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-wa-color { background: #25D366; }
+    .btn-retirar-color { background: #ff3366; }
+
+    .btn-cerrar-modal {
+      background: transparent;
+      color: #a0aec0;
+      border: none;
+      margin-top: 15px;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+
+    .input-modal {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      box-sizing: border-box;
+      background-color: #0f131a;
+      border: 1px solid #3b4875;
+      border-radius: 6px;
+      color: white;
+      outline: none;
+    }
 
     @keyframes pulse {
       0% { opacity: 0.5; }
@@ -278,6 +378,10 @@
         <div class="saldo-box">
           <div style="font-size: 0.75rem; color: #a0aec0;">Tu Saldo</div>
           <div id="saldoDisplay" class="saldo-monto">$0</div>
+          <div class="caja-botones-transaccion">
+            <button id="btnAbrirRecarga" class="btn-transaccion btn-recargar-estilo">+ RECARGAR</button>
+            <button id="btnAbrirRetiro" class="btn-transaccion btn-retirar-estilo">- RETIRAR</button>
+          </div>
         </div>
       </div>
 
@@ -311,21 +415,48 @@
 
       <div class="history">
         <h3>ÚLTIMAS PARTIDAS</h3>
-        <div class="history-item">
-          <span>Mesa N1 ($2k) - Ganaste</span>
-          <span class="win">+$5.400</span>
-        </div>
-        <div class="history-item">
-          <span>Mesa N1 ($2k) - Perdiste</span>
-          <span class="lose">-$2.000</span>
-        </div>
+        <div id="historyList" class="history-list"></div>
       </div>
 
     </div>
 
   </div>
 
+  <div id="modalRecarga" class="modal-financiero">
+    <div class="modal-content">
+      <h3>Recargar Saldo</h3>
+      <p style="font-size: 0.9rem; color: #a0aec0;">Realiza tu transferencia al siguiente medio autorizado:</p>
+      
+      <div class="info-caja">
+        <center><strong>NEQUI</strong></center>
+        Celular: <span style="color: #00ff88; font-weight: bold;">300 123 4567</span><br>
+        Titular: <span style="color: white;">Tu Nombre Completo</span>
+      </div>
+
+      <p style="font-size: 0.85rem; color: #e2e8f0;">Una vez hecha la transferencia, presiona el botón de abajo para enviar el comprobante de pago.</p>
+      
+      <button id="btnEnviarWhatsapp" class="btn-accion-modal btn-wa-color">💬 Enviar Comprobante</button>
+      <br>
+      <button id="btnCerrarRecarga" class="btn-cerrar-modal">Volver al juego</button>
+    </div>
+  </div>
+
+  <div id="modalRetiro" class="modal-financiero">
+    <div class="modal-content">
+      <h3 class="retirar-titulo">Solicitar Retiro</h3>
+      <p style="font-size: 0.9rem; color: #a0aec0;">El valor solicitado se descontará de tu saldo de inmediato.</p>
+      
+      <input type="number" id="montoRetiroInput" class="input-modal" placeholder="Monto a retirar (Ej: 20000)">
+      <input type="text" id="detallesBancoInput" class="input-modal" placeholder="Datos de cuenta (Ej: Nequi 315XXXXXXX)">
+
+      <button id="btnProcesarRetiro" class="btn-accion-modal btn-retirar-color">Confirmar Retiro</button>
+      <br>
+      <button id="btnCerrarRetiro" class="btn-cerrar-modal">Cancelar</button>
+    </div>
+  </div>
+
   <script>
+    // Gestión visual de las mesas
     const botonesMesa = document.querySelectorAll('.mesa-btn');
     const botonJugar = document.getElementById('botonJugar');
 
@@ -337,6 +468,16 @@
         botonJugar.innerText = `BUSCAR PARTIDA (${valor})`;
       });
     });
+
+    // Control de Ventanas Modales
+    const modalRecarga = document.getElementById('modalRecarga');
+    const modalRetiro = document.getElementById('modalRetiro');
+    
+    document.getElementById('btnAbrirRecarga').addEventListener('click', () => { modalRecarga.style.display = 'flex'; });
+    document.getElementById('btnCerrarRecarga').addEventListener('click', () => { modalRecarga.style.display = 'none'; });
+
+    document.getElementById('btnAbrirRetiro').addEventListener('click', () => { modalRetiro.style.display = 'flex'; });
+    document.getElementById('btnCerrarRetiro').addEventListener('click', () => { modalRetiro.style.display = 'none'; });
   </script>
 
   <script type="module">
@@ -344,7 +485,6 @@
     import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // Configuración con la API Key completamente corregida y actualizada
     const firebaseConfig = {
       apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
       authDomain: "carta-facil-a4e22.firebaseapp.com",
@@ -360,6 +500,9 @@
     const database = getDatabase(app);
     const auth = getAuth(app);
 
+    // Tu número de WhatsApp real con código de país (Ej: 57 para Colombia)
+    const tuTelefonoWhatsApp = "573001234567"; 
+
     const authContainer = document.getElementById('authContainer');
     const gameInterface = document.getElementById('gameInterface');
     const emailInput = document.getElementById('emailInput');
@@ -368,6 +511,10 @@
     const btnRegister = document.getElementById('btnRegister');
     const nombreUsuarioActivo = document.getElementById('nombreUsuarioActivo');
     const saldoDisplay = document.getElementById('saldoDisplay');
+    
+    let usuarioActualEmail = "";
+    let usuarioActualUID = "";
+    let saldoActualNumerico = 0;
 
     // REGISTRAR
     btnRegister.addEventListener('click', () => {
@@ -384,10 +531,10 @@
           const user = userCredential.user;
           set(ref(database, 'usuarios/' + user.uid), {
             email: user.email,
-            saldo: 50000,
+            saldo: 0,
             creado: new Date().toISOString()
           }).then(() => {
-            alert("¡Usuario registrado con éxito con saldo inicial de $50.000!");
+            alert("¡Usuario registrado con éxito! Tu saldo es de $0.");
           });
         })
         .catch((error) => {
@@ -406,11 +553,52 @@
       }
 
       signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
+        .then(() => {
           alert("¡Bienvenido al juego!");
         })
         .catch((error) => {
           alert("Error de ingreso: " + error.message);
+        });
+    });
+
+    // WHATSAPP: RECARGA
+    document.getElementById('btnEnviarWhatsapp').addEventListener('click', () => {
+      const mensaje = encodeURIComponent(`Hola, acabo de realizar una transferencia para recargar saldo en SuerteFácil P2P.\nMi usuario es: ${usuarioActualEmail}\nAdjunto el comprobante de pago.`);
+      window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${mensaje}`, '_blank');
+    });
+
+    // EJECUTAR RETIRO EN BASE DE DATOS Y WHATSAPP
+    document.getElementById('btnProcesarRetiro').addEventListener('click', () => {
+      const montoRetirar = Number(document.getElementById('montoRetiroInput').value.trim());
+      const detallesBanco = document.getElementById('detallesBancoInput').value.trim();
+
+      if (!montoRetirar || montoRetirar <= 0 || detallesBanco === "") {
+        alert("Por favor introduce un monto válido y los datos para tu transferencia.");
+        return;
+      }
+
+      if (montoRetirar > saldoActualNumerico) {
+        alert(`Saldo insuficiente. Tu saldo disponible es de $${saldoActualNumerico.toLocaleString('es-CO')}`);
+        return;
+      }
+
+      // Descontar inmediatamente el saldo en Firebase
+      const nuevoSaldo = saldoActualNumerico - montoRetirar;
+      set(ref(database, 'usuarios/' + usuarioActualUID + '/saldo'), nuevoSaldo)
+        .then(() => {
+          alert("¡Solicitud procesada! Tu saldo ha sido retenido para el pago. Abriendo tu WhatsApp para notificar al administrador.");
+          
+          // Ocultar modal y limpiar campos
+          document.getElementById('modalRetiro').style.display = 'none';
+          document.getElementById('montoRetiroInput').value = "";
+          document.getElementById('detallesBancoInput').value = "";
+
+          // Enviar confirmación al WhatsApp del administrador con los datos bancarios del usuario
+          const mensajeRetiro = encodeURIComponent(`🚨 *NUEVA SOLICITUD DE RETIRO*\n\n👤 *Usuario:* ${usuarioActualEmail}\n💰 *Monto solicitado:* $${montoRetirar.toLocaleString('es-CO')}\n🏦 *Datos de Pago:* ${detallesBanco}\n\nQuedo atento a la transferencia de mi saldo.`);
+          window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${mensajeRetiro}`, '_blank');
+        })
+        .catch((error) => {
+          alert("Hubo un problema al procesar tu retiro: " + error.message);
         });
     });
 
@@ -421,14 +609,18 @@
       if (user) {
         authContainer.style.display = 'none';
         gameInterface.style.display = 'flex';
+        usuarioActualEmail = user.email;
+        usuarioActualUID = user.uid;
         nombreUsuarioActivo.innerText = user.email.split('@')[0];
 
         const saldoRef = ref(database, 'usuarios/' + user.uid + '/saldo');
         saldoEscuchador = onValue(saldoRef, (snapshot) => {
           const saldoVal = snapshot.val();
           if (saldoVal !== null) {
-            saldoDisplay.innerText = "$" + Number(saldoVal).toLocaleString('es-CO');
+            saldoActualNumerico = Number(saldoVal);
+            saldoDisplay.innerText = "$" + saldoActualNumerico.toLocaleString('es-CO');
           } else {
+            saldoActualNumerico = 0;
             saldoDisplay.innerText = "$0";
           }
         });
@@ -436,6 +628,9 @@
       } else {
         authContainer.style.display = 'flex';
         gameInterface.style.display = 'none';
+        usuarioActualEmail = "";
+        usuarioActualUID = "";
+        saldoActualNumerico = 0;
         if (saldoEscuchador) {
           saldoEscuchador();
           saldoEscuchador = null;
