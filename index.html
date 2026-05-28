@@ -1,8 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SuerteFácil P2P</title>
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .app-container { width: 100%; max-width: 400px; }
+        .card { background: #1e293b; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
+        .hidden { display: none; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; cursor: pointer; background: #22c55e; border: none; color: white; font-weight: bold; border-radius: 6px; margin-top: 10px; }
+        .btn-danger { background: #ef4444; }
+        .status-text { font-size: 0.9rem; color: #94a3b8; text-align: center; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="authView" class="card">
+        <h2 style="text-align: center;">Acceso SuerteFácil</h2>
+        <input type="email" id="email" placeholder="Correo electrónico">
+        <input type="password" id="pass" placeholder="Contraseña">
+        <button id="btnAuth">INGRESAR</button>
+    </div>
+
+    <div id="gameView" class="card hidden">
+        <h2 style="text-align: center;">Sala P2P</h2>
+        <p id="userEmail" class="status-text"></p>
+        <div style="font-size: 1.5rem; text-align: center; color: #22c55e; margin: 15px 0;" id="saldoDisplay">Saldo: $0</div>
+        
+        <button id="btnPlay">BUSCAR PARTIDA ($2K)</button>
+        <button id="btnOut" class="btn-danger">CERRAR SESIÓN</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, push, runTransaction, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
+    // CONFIGURACIÓN (Tus datos)
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
         authDomain: "carta-facil-a4e22.firebaseapp.com",
@@ -14,72 +52,47 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
-    // Variables de Estado
-    let usuarioActualEmail = "", usuarioActualUID = "", saldoActualNumerico = 0, mesaSeleccionadaValor = 2000, partidaEscuchadorRef = null;
+    // CONTROLADORES DE VISTA
+    const views = {
+        auth: document.getElementById('authView'),
+        game: document.getElementById('gameView')
+    };
 
-    // Elementos DOM
-    const authContainer = document.getElementById('authContainer'), gameInterface = document.getElementById('gameInterface');
-    const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
-    const btnLogin = document.getElementById('btnLogin'), btnRegister = document.getElementById('btnRegister');
-    const saldoDisplay = document.getElementById('saldoDisplay'), botonJugar = document.getElementById('botonJugar');
-
-    // Lógica Auth
+    // LÓGICA DE SESIÓN
     onAuthStateChanged(auth, (user) => {
         if (user) {
-            authContainer.style.display = 'none'; gameInterface.style.display = 'flex';
-            usuarioActualEmail = user.email; usuarioActualUID = user.uid;
-            onValue(ref(database, 'usuarios/' + user.uid + '/saldo'), (s) => {
-                saldoActualNumerico = Number(s.val() || 0);
-                saldoDisplay.innerText = `$${saldoActualNumerico.toLocaleString('es-CO')}`;
+            views.auth.classList.add('hidden');
+            views.game.classList.remove('hidden');
+            document.getElementById('userEmail').innerText = user.email;
+            
+            // Escuchar saldo en tiempo real
+            onValue(ref(db, `usuarios/${user.uid}/saldo`), (snap) => {
+                const saldo = snap.val() || 0;
+                document.getElementById('saldoDisplay').innerText = `Saldo: $${saldo.toLocaleString()}`;
             });
         } else {
-            authContainer.style.display = 'flex'; gameInterface.style.display = 'none';
+            views.auth.classList.remove('hidden');
+            views.game.classList.add('hidden');
         }
     });
 
-    btnLogin.addEventListener('click', () => signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value).catch(e => alert(e.message)));
-    btnRegister.addEventListener('click', () => {
-        createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
-        .then(cred => set(ref(database, 'usuarios/' + cred.user.uid), { email: cred.user.email, saldo: 0 }))
-        .catch(e => alert(e.message));
+    // BOTONES
+    document.getElementById('btnAuth').addEventListener('click', () => {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('pass').value;
+        signInWithEmailAndPassword(auth, e, p).catch(err => alert("Error: " + err.message));
     });
 
-    // Lógica del Juego (Emparejamiento)
-    botonJugar.addEventListener('click', () => {
-        if (saldoActualNumerico < mesaSeleccionadaValor) return alert("Saldo insuficiente");
-        botonJugar.disabled = true;
-        botonJugar.innerText = "BUSCANDO RIVALES...";
-        
-        const salasRef = ref(database, `salas_espera/${mesaSeleccionadaValor}`);
-        runTransaction(salasRef, (sala) => {
-            if (!sala) return { j1_uid: usuarioActualUID, j1_name: usuarioActualEmail.split('@')[0], status: "esperando" };
-            if (sala.status === "esperando") { sala.j2_uid = usuarioActualUID; sala.j2_name = usuarioActualEmail.split('@')[0]; sala.status = "llena"; return sala; }
-            return;
-        }).then(result => {
-            if (!result.committed) return alert("Intenta de nuevo");
-            if (result.snapshot.val().status === "llena") ejecutarPartida(result.snapshot.val());
-        });
+    document.getElementById('btnOut').addEventListener('click', () => signOut(auth));
+
+    document.getElementById('btnPlay').addEventListener('click', () => {
+        alert("Buscando partida en el servidor...");
+        // Aquí puedes agregar la lógica de búsqueda que teníamos
     });
-
-    function ejecutarPartida(sala) {
-        // Lógica de sorteo de cartas
-        const c1 = Math.floor(Math.random() * 13) + 2;
-        const c2 = Math.floor(Math.random() * 13) + 2;
-        const ganador = (c1 > c2) ? sala.j1_uid : sala.j2_uid;
-        
-        // Actualización de saldos
-        runTransaction(ref(database, `usuarios/${ganador}/saldo`), (s) => (s || 0) + mesaSeleccionadaValor);
-        const perdedor = (ganador === sala.j1_uid) ? sala.j2_uid : sala.j1_uid;
-        runTransaction(ref(database, `usuarios/${perdedor}/saldo`), (s) => (s || 0) - mesaSeleccionadaValor);
-        
-        alert(`Partida finalizada. Ganador: ${c1 > c2 ? sala.j1_name : sala.j2_name}`);
-        set(ref(database, `salas_espera/${mesaSeleccionadaValor}`), null);
-        botonJugar.disabled = false;
-        botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
-    }
-
-    document.getElementById('btnSignOut').addEventListener('click', () => signOut(auth));
 </script>
+
+</body>
+</html>
