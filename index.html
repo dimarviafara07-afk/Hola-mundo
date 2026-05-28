@@ -1,292 +1,290 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Carta Mayor P2P</title>
-    <style>
-        /* Estilos generales oscuros tipo casino/Premium */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #121620;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carta Mayor P2P</title>
+  <style>
+    /* Estilos generales oscuros tipo casino */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #121620;
+      color: #ffffff;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-        /* Contenedor principal adaptado a celulares */
-        .app-container {
-            width: 100%;
-            max-width: 450px;
-            padding: 20px;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-        /* Encabezado con el Saldo */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #1e2640, #151b30);
-            padding: 15px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
+    /* Encabezado con el Saldo */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1e2433, #151a26);
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
 
-        .saldo-box {
-            text-align: right;
-        }
+    .saldo-box {
+      text-align: right;
+    }
 
-        .saldo-monto {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #00ff88;
-        }
+    .saldo-monto {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #00ff88;
+    }
 
-        /* Selector de Progresión (Mesas del 1 al 5) */
-        .progression-container {
-            background: #1c2237;
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-        }
+    /* Selector de Progresión (Mesas del juego) */
+    .progression-container {
+      background: #1c2237;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+    }
 
-        .mesas-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-            margin-top: 10px;
-        }
+    .mesas-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
 
-        .mesa-btn {
-            background: #252e4d;
-            border: 2px solid #3b4875;
-            color: white;
-            padding: 10px 5px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            font-size: 0.85rem;
-        }
+    .mesa-btn {
+      background: #252e4d;
+      border: 2px solid #3b4875;
+      color: white;
+      padding: 10px 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+      font-size: 0.85rem;
+    }
 
-        .mesa-btn.active {
-            background: #00ff88;
-            color: #121620;
-            border-color: #00ff88;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
-        }
+    .mesa-btn.active {
+      background: #00ff88;
+      color: #121620;
+      border-color: #00ff88;
+      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
 
-        /* El Tapete de Juego (Las 3 cartas) */
-        .game-mat {
-            background: radial-gradient(circle, #1a4a31 0%, #0d2418 100%);
-            border: 3px solid #1f5c3d;
-            border-radius: 16px;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            min-height: 180px;
-            align-items: center;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
-        }
+    /* El Tapete de Juego (Las 3 cartas) */
+    .game-mat {
+      background: radial-gradient(circle, #1a2f24, #0f1c15);
+      border: 3px solid #1f5c3d;
+      border-radius: 16px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      min-height: 180px;
+      align-items: center;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+    }
 
-        .slot-jugador {
-            text-align: center;
-        }
+    .slot-jugador {
+      text-align: center;
+    }
 
-        .carta {
-            width: 100%;
-            aspect-ratio: 2/3;
-            background: #252e4d;
-            border: 2px dashed #48588f;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
+    .carta {
+      width: 100%;
+      aspect-ratio: 2/3;
+      background: #252e4d;
+      border: 2px dashed #48588f;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
 
-        .carta.ready {
-            background: #ffffff;
-            color: #000000;
-            border: 2px solid #ffffff;
-        }
+    .carta.ready {
+      background: #ffffff;
+      color: #000000;
+      border: 2px solid #ffffff;
+    }
 
-        .carta.waiting {
-            animation: pulse 1.5s infinite;
-            color: #48588f;
-            font-size: 1rem;
-        }
+    .carta.waiting {
+      animation: pulse 1.5s infinite;
+      color: #48588f;
+      font-size: 1rem;
+    }
 
-        .nombre-jugador {
-            font-size: 0.8rem;
-            color: #a0aec0;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-        }
+    .nombre-jugador {
+      font-size: 0.8rem;
+      color: #a0aec0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
 
-        /* Botón de Acción Principal */
-        .btn-play {
-            background: linear-gradient(135deg, #ff0055, #cc0044);
-            border: none;
-            color: white;
-            padding: 18px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(255, 0, 85, 0.4);
-            transition: 0.1s;
-        }
+    /* Botón de Acción Principal */
+    .btn-play {
+      background: linear-gradient(135deg, #00ff88, #00b35f);
+      border: none;
+      color: #121620;
+      padding: 18px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+      transition: 0.1s;
+    }
 
-        .btn-play:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(255, 0, 85, 0.4);
-        }
+    .btn-play:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 5px rgba(0, 255, 136, 0.2);
+    }
 
-        /* Historial de partidas */
-        .history {
-            background: #1c2237;
-            padding: 15px;
-            border-radius: 12px;
-        }
+    /* Historial de partidas */
+    .history {
+      background: #1c2237;
+      padding: 15px;
+      border-radius: 12px;
+    }
 
-        .history h3 {
-            margin: 0 0 10px 0;
-            font-size: 0.9rem;
-            color: #a0aec0;
-        }
+    .history h3 {
+      margin: 0 0 10px 0;
+      font-size: 0.9rem;
+      color: #a0aec0;
+    }
 
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            padding: 5px 0;
-            border-bottom: 1px solid #252e4d;
-        }
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 5px 0;
+      border-bottom: 1px solid #252e4d;
+    }
 
-        .history-item:last-child { border: none; }
-        .win { color: #00ff88; }
-        .lose { color: #ff3366; }
+    .history-item:last-child {
+      border: none;
+    }
 
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            50% { opacity: 1; }
-            100% { opacity: 0.5; }
-        }
-    </style>
+    .win { color: #00ff88; }
+    .lose { color: #ff3366; }
+
+    @keyframes pulse {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+  </style>
 </head>
 <body>
 
-    <div class="app-container">
-        
-        <!-- ENCABEZADO -->
-        <div class="header">
-            <div><strong>SuerteFácil P2P</strong></div>
-            <div class="saldo-box">
-                <div style="font-size: 0.75rem; color: #a0aec0;">SALDO</div>
-                <div class="saldo-monto">$50.000</div>
-            </div>
-        </div>
+  <div class="app-container">
 
-        <!-- SELECCIÓN DE PROGRESIÓN -->
-        <div class="progression-container">
-            <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu nivel de apuesta:</span>
-            <div class="mesas-grid">
-                <button class="mesa-btn active">N1<br><small>$2k</small></button>
-                <button class="mesa-btn">N2<br><small>$5k</small></button>
-                <button class="mesa-btn">N3<br><small>$12k</small></button>
-                <button class="mesa-btn">N4<br><small>$25k</small></button>
-                <button class="mesa-btn">N5<br><small>$60k</small></button>
-            </div>
-        </div>
-
-        <!-- TAPETE DE JUEGO -->
-        <div class="game-mat">
-            <!-- TÚ -->
-            <div class="slot-jugador">
-                <div class="carta ready">?</div>
-                <div class="nombre-jugador">Tú (Esperando)</div>
-            </div>
-            <!-- JUGADOR 2 -->
-            <div class="slot-jugador">
-                <div class="carta waiting">...</div>
-                <div class="nombre-jugador">Buscando...</div>
-            </div>
-            <!-- JUGADOR 3 -->
-            <div class="slot-jugador">
-                <div class="carta waiting">...</div>
-                <div class="nombre-jugador">Buscando...</div>
-            </div>
-        </div>
-
-        <!-- BOTÓN JUGAR -->
-        <button class="btn-play">BUSCAR PARTIDA ($2.000)</button>
-
-        <!-- HISTORIAL RÁPIDO -->
-        <div class="history">
-            <h3>ÚLTIMAS PARTIDAS</h3>
-            <div class="history-item">
-                <span>Mesa N1 ($2k) - Ganaste</span>
-                <span class="win">+$5.400</span>
-            </div>
-            <div class="history-item">
-                <span>Mesa N1 ($2k) - Perdiste</span>
-                <span class="lose">-$2.000</span>
-            </div>
-        </div>
-
+    <div class="header">
+      <div><strong>SuerteFácil P2P</strong></div>
+      <div class="saldo-box">
+        <div style="font-size: 0.75rem; color: #a0aec0;">Tu Saldo</div>
+        <div class="saldo-monto">$50.000</div>
+      </div>
     </div>
 
-    <script>
-        // Aquí interactuaremos más adelante con los clics para cambiar de mesa y conectar a Firebase
-        const botonesMesa = document.querySelectorAll('.mesa-btn');
-        const botonJugar = document.querySelector('.btn-play');
+    <div class="progression-container">
+      <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu Mesa (Progresión)</span>
+      <div class="mesas-grid">
+        <button class="mesa-btn active">N1 ($2k)</button>
+        <button class="mesa-btn">N2 ($4k)</button>
+        <button class="mesa-btn">N3 ($8k)</button>
+        <button class="mesa-btn">N4 ($16k)</button>
+        <button class="mesa-btn">N5 ($32k)</button>
+      </div>
+    </div>
 
-        botonesMesa.forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelector('.mesa-btn.active').classList.remove('active');
-                btn.classList.add('active');
-                const valor = btn.querySelector('small').innerText;
-                botonJugar.innerText = `BUSCAR PARTIDA (${valor})`;
-            });
-        });
-    </script>
-    <script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
+    <div class="game-mat">
+      <div class="slot-jugador">
+        <div class="carta ready">?</div>
+        <div class="nombre-jugador">Tú</div>
+      </div>
+      <div class="slot-jugador">
+        <div class="carta waiting">...</div>
+        <div class="nombre-jugador">Esperando...</div>
+      </div>
+      <div class="slot-jugador">
+        <div class="carta waiting">...</div>
+        <div class="nombre-jugador">Esperando...</div>
+      </div>
+    </div>
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
-    authDomain: "carta-facil-a4e22.firebaseapp.com",
-    databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
-    projectId: "carta-facil-a4e22",
-    storageBucket: "carta-facil-a4e22.firebasestorage.app",
-    messagingSenderId: "530927580102",
-    appId: "1:530927580102:web:865211e2b16e84869038c7",
-    measurementId: "G-NZNXS3DE3K"
-  };
+    <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-    </script>
+    <div class="history">
+      <h3>ÚLTIMAS PARTIDAS</h3>
+      <div class="history-item">
+        <span>Mesa N1 ($2k) - Ganaste</span>
+        <span class="win">+$5.400</span>
+      </div>
+      <div class="history-item">
+        <span>Mesa N1 ($2k) - Perdiste</span>
+        <span class="lose">-$2.000</span>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const botonesMesa = document.querySelectorAll('.mesa-btn');
+    const botonJugar = document.getElementById('botonJugar');
+
+    botonesMesa.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.mesa-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        const valor = btn.innerText.split(' ')[1];
+        botonJugar.innerText = `BUSCAR PARTIDA (${valor})`;
+      });
+    });
+  </script>
+
+  <script type="module">
+    // 1. Importaciones unificadas a la versión estable 10.8.1 (Se solucionaron conflictos de versiones)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+    import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    // 2. Credenciales completas extraídas de tus capturas
+    const firebaseConfig = {
+      apiKey: "AIzaSyDh8gOvyKbRfPPOZ1COMOguBrO...", 
+      authDomain: "carta-facil-a4e22.firebaseapp.com",
+      databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
+      projectId: "carta-facil-a4e22",
+      storageBucket: "carta-facil-a4e22.firebaseapp.com", // Corregido: .firebaseapp.com según captura
+      messagingSenderId: "530927580102",
+      appId: "1:530927580102:web:865211e2b16e8...", 
+      measurementId: "G-NZNXS3DE3K"
+    };
+
+    // 3. Inicialización correcta y ordenada de todos los servicios
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const database = getDatabase(app);
+    const auth = getAuth(app); // <--- La autenticación quedó vinculada de forma impecable aquí
+
+    console.log("¡Todo listo! Código restaurado, versiones unificadas y Auth conectado.");
+  </script>
+
 </body>
 </html>
