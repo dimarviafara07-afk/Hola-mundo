@@ -5,32 +5,130 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SuerteFácil P2P</title>
     <style>
-        body { background: #0f172a; color: white; font-family: sans-serif; display: flex; justify-content: center; padding: 20px; margin: 0; }
+        /* Variables de color para fácil mantenimiento */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --primary: #22c55e;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --border-color: #334155;
+        }
+
+        body { 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: system-ui, -apple-system, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; /* Centrado vertical real */
+            min-height: 100vh;
+            padding: 20px; 
+            margin: 0; 
+            box-sizing: border-box;
+        }
+
         .app-container { width: 100%; max-width: 400px; }
-        .card { background: #1e293b; padding: 2rem; border-radius: 1rem; box-shadow: 0 10px 15px rgba(0,0,0,0.3); }
-        .hidden { display: none; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; cursor: pointer; background: #22c55e; border: none; color: white; font-weight: bold; border-radius: 6px; margin-top: 10px; }
-        .btn-danger { background: #ef4444; }
+        
+        .card { 
+            background: var(--bg-card); 
+            padding: 2.5rem 2rem; 
+            border-radius: 1rem; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4); 
+        }
+
+        .hidden { display: none !important; }
+
+        /* Formularios y Alertas */
+        .form-group { margin-bottom: 15px; }
+        
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border-radius: 6px; 
+            border: 1px solid var(--border-color); 
+            background: var(--bg-dark); 
+            color: var(--text-main); 
+            box-sizing: border-box; 
+            transition: border-color 0.2s;
+        }
+        input:focus { outline: none; border-color: var(--primary); }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            color: #fca5a5;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-bottom: 15px;
+            text-align: center;
+            border: 1px solid var(--danger);
+        }
+
+        /* Botones */
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            cursor: pointer; 
+            background: var(--primary); 
+            border: none; 
+            color: white; 
+            font-weight: bold; 
+            border-radius: 6px; 
+            margin-top: 10px; 
+            transition: all 0.2s; 
+        }
+        button:active { transform: scale(0.98); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-danger { background: var(--danger); }
         
         /* Estilos de Juego */
-        .game-mat { display: flex; justify-content: space-around; margin: 20px 0; }
-        .carta { width: 60px; height: 90px; background: #252e4d; border: 2px dashed #48588f; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .saldo-display {
+            font-size: 1.5rem; 
+            text-align: center; 
+            color: var(--primary); 
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .game-mat { display: flex; justify-content: space-between; margin: 30px 0; }
+        
+        .carta { 
+            width: 70px; 
+            height: 100px; 
+            background: #252e4d; 
+            border: 2px dashed #48588f; 
+            border-radius: 8px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.5rem; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
     <div id="authView" class="card">
-        <h2 style="text-align: center;">Acceso SuerteFácil</h2>
-        <input type="email" id="email" placeholder="Correo electrónico">
-        <input type="password" id="pass" placeholder="Contraseña">
-        <button id="btnAuth">INGRESAR</button>
+        <h2 style="text-align: center; margin-top: 0;">Acceso SuerteFácil</h2>
+        
+        <div id="errorBox" class="error-message hidden"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <input type="email" id="email" placeholder="Correo electrónico" required autocomplete="email">
+            </div>
+            <div class="form-group">
+                <input type="password" id="pass" placeholder="Contraseña" required autocomplete="current-password">
+            </div>
+            <button type="submit" id="btnAuth">INGRESAR</button>
+        </form>
     </div>
 
     <div id="gameView" class="card hidden">
-        <h2 style="text-align: center;">SuerteFácil P2P</h2>
-        <div id="saldoDisplay" style="font-size: 1.3rem; text-align: center; color: #22c55e; margin-bottom: 10px;">Saldo: $0</div>
+        <h2 style="text-align: center; margin-top: 0;">SuerteFácil P2P</h2>
+        <div id="saldoDisplay" class="saldo-display">Saldo: $0</div>
         
         <div class="game-mat">
             <div class="carta" id="cartaLocal">?</div>
@@ -46,54 +144,56 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
+    // Configuración de Firebase
     const firebaseConfig = {
-        apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
-        authDomain: "carta-facil-a4e22.firebaseapp.com",
-        databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
-        projectId: "carta-facil-a4e22",
-        storageBucket: "carta-facil-a4e22.appspot.com",
-        messagingSenderId: "530927580102",
-        appId: "1:530927580102:web:865211e2b16e84869038c7"
+        /* REEMPLAZA CON TUS CREDENCIALES */
     };
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    // Referencias del DOM cacheadas
+    const authView = document.getElementById('authView');
+    const gameView = document.getElementById('gameView');
+    const loginForm = document.getElementById('loginForm');
+    const emailInput = document.getElementById('email');
+    const passInput = document.getElementById('pass');
+    const btnAuth = document.getElementById('btnAuth');
+    const errorBox = document.getElementById('errorBox');
+    const saldoDisplay = document.getElementById('saldoDisplay');
+    const btnOut = document.getElementById('btnOut');
+    const btnPlay = document.getElementById('btnPlay');
+
+    let saldoRef = null; // Para limpiar el listener al cerrar sesión
+
+    // Traductor de errores de Firebase
+    const getFirebaseErrorMsg = (errorCode) => {
+        switch (errorCode) {
+            case 'auth/invalid-credential': return 'Correo o contraseña incorrectos.';
+            case 'auth/user-not-found': return 'El usuario no existe.';
+            case 'auth/wrong-password': return 'Contraseña incorrecta.';
+            case 'auth/too-many-requests': return 'Demasiados intentos. Intenta más tarde.';
+            case 'auth/network-request-failed': return 'Error de conexión a internet.';
+            default: return 'Ocurrió un error al intentar acceder.';
+        }
+    };
+
     // LÓGICA DE SESIÓN
     onAuthStateChanged(auth, (user) => {
-        const authView = document.getElementById('authView');
-        const gameView = document.getElementById('gameView');
-        
         if (user) {
+            // Mostrar Juego
             authView.classList.add('hidden');
             gameView.classList.remove('hidden');
+            emailInput.value = '';
+            passInput.value = '';
+            errorBox.classList.add('hidden');
             
             // Cargar Saldo en Tiempo Real
-            onValue(ref(db, `usuarios/${user.uid}/saldo`), (snap) => {
+            saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
+            onValue(saldoRef, (snap) => {
                 const saldo = snap.val() || 0;
-                document.getElementById('saldoDisplay').innerText = `Saldo: $${saldo.toLocaleString()}`;
+                saldoDisplay.innerText = `Saldo: $${saldo.toLocaleString('es-CO')}`; // Formato de moneda local
             });
-        } else {
-            authView.classList.remove('hidden');
-            gameView.classList.add('hidden');
-        }
-    });
-
-    // BOTONES
-    document.getElementById('btnAuth').addEventListener('click', () => {
-        signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value)
-        .catch(err => alert("Error: " + err.message));
-    });
-
-    document.getElementById('btnOut').addEventListener('click', () => signOut(auth));
-    
-    document.getElementById('btnPlay').addEventListener('click', () => {
-        alert("Buscando partida...");
-    });
-</script>
-
-</body>
-</html>
