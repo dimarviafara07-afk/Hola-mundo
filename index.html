@@ -67,7 +67,6 @@
             border: 1px solid var(--pink-jubilado);
         }
 
-        /* DISEÑO DE LA CAPTURA DE PANTALLA */
         /* Header Usuario */
         .user-header { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
         .user-info h3 { margin: 0 0 5px 0; font-size: 1.3rem; letter-spacing: 0.5px; }
@@ -128,12 +127,12 @@
             font-weight: bold;
             color: #43587d;
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
         }
         .carta.revelada { background: #ffffff; color: #090d16; transform: rotateY(360deg); }
         .carta-label { font-size: 0.8rem; margin-top: 10px; color: var(--text-muted); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Botón de Acción Principal */
+        /* Botón Buscar Partida */
         .btn-buscar {
             background: var(--primary-gold);
             color: #000000;
@@ -152,7 +151,6 @@
         .btn-buscar:active { transform: scale(0.98); }
         .btn-buscar:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* Historial Footer */
         .footer-historial {
             background: #131c2e;
             padding: 14px;
@@ -162,11 +160,9 @@
             font-weight: bold;
             color: var(--text-muted);
             margin-top: 15px;
-            cursor: pointer;
         }
         .historial-lista { max-height: 110px; overflow-y: auto; margin-top: 10px; font-weight: normal; }
         .historial-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1d2942; font-size: 0.8rem; color: #cbd5e1; }
-
         .divider { text-align: center; margin: 15px 0 5px 0; color: #475569; font-size: 0.9rem; }
     </style>
 </head>
@@ -179,14 +175,13 @@
         <form id="loginForm">
             <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico" required></div>
             <div class="form-group"><input type="password" id="pass" placeholder="Contraseña" required></div>
-            <button type="submit" class="btn-buscar" style="margin-top:0;">INGRESAR</button>
+            <button type="submit" id="btnAuth" class="btn-buscar" style="margin-top:0;">INGRESAR</button>
             <div class="divider">o si eres nuevo</div>
             <button type="button" id="btnRegister" class="btn-buscar" style="background:#1d2942; color:white; font-size:1rem; padding:12px;">REGISTRARSE</button>
         </form>
     </div>
 
     <div id="gameView" class="card hidden" style="background:transparent; padding:0; box-shadow:none;">
-        
         <div class="card">
             <div class="user-header">
                 <div class="user-info">
@@ -238,7 +233,6 @@
             <span>ÚLTIMAS PARTIDAS (GANADORES)</span>
             <div id="historialLista" class="historial-lista"></div>
         </div>
-
     </div>
 </div>
 
@@ -261,11 +255,10 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Elementos DOM
     const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
     const loginForm = document.getElementById('loginForm'), emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
     const errorBox = document.getElementById('errorBox'), txtUsername = document.getElementById('txtUsername'), saldoDisplay = document.getElementById('saldoDisplay');
-    const btnOut = document.getElementById('btnOut'), btnRecargar = document.getElementById('btnRecargar'), btnPlay = document.getElementById('btnPlay'), btnRegister = document.getElementById('btnRegister');
+    const btnAuth = document.getElementById('btnAuth'), btnOut = document.getElementById('btnOut'), btnRecargar = document.getElementById('btnRecargar'), btnPlay = document.getElementById('btnPlay'), btnRegister = document.getElementById('btnRegister');
     const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
     const lblLocal = document.getElementById('lblLocal'), lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
     const mesaBotones = document.querySelectorAll('.mesa-btn');
@@ -273,7 +266,6 @@
     let saldoRef = null, historialRef = null;
     let saldoActual = 0, apuestaActual = 2000, textoApuesta = "$2k", mesaSeleccionada = "N1";
 
-    // Manejo de clicks en selectores de mesa de tu imagen
     mesaBotones.forEach(btn => {
         btn.addEventListener('click', () => {
             mesaBotones.forEach(b => b.classList.remove('active'));
@@ -281,99 +273,16 @@
             apuestaActual = parseInt(btn.getAttribute('data-apuesta'));
             textoApuesta = btn.getAttribute('data-label');
             mesaSeleccionada = btn.getAttribute('data-mesa');
-            if(!btnPlay.disabled) {
-                btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
-            }
+            if(!btnPlay.disabled) btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
         });
     });
 
-    // Control del Estado de Sesión
+    // CAMBIO DE PESTAÑA SEGURO E INMEDIATO
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            authView.classList.add('hidden'); gameView.classList.remove('hidden');
-            const username = user.email.split('@')[0];
-            txtUsername.innerText = username;
-            lblLocal.innerText = username;
-
-            saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
-            onValue(saldoRef, (snapshot) => {
-                saldoActual = snapshot.val() || 0;
-                saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
-            });
-
-            historialRef = ref(db, `usuarios/${user.uid}/historial`);
-            onValue(historialRef, (snapshot) => {
-                historialLista.innerHTML = "";
-                const data = snapshot.val();
-                if(data) {
-                    Object.values(data).reverse().slice(0, 4).forEach(item => {
-                        const div = document.createElement('div');
-                        div.className = "historial-item";
-                        div.innerHTML = `<span>Mesa ${item.mesa} - ${item.resultado}</span><strong>${item.resultado==='GANÓ'?'+':'-'}$${item.monto.toLocaleString()}</strong>`;
-                        historialLista.appendChild(div);
-                    });
-                } else {
-                    historialLista.innerHTML = "<div style='font-size:0.8rem; color:#475569;'>No hay partidas registradas</div>";
-                }
-            });
-        } else {
-            authView.classList.remove('hidden'); gameView.classList.add('hidden');
-            if (saldoRef) off(saldoRef);
-            if (historialRef) off(historialRef);
-        }
-    });
-
-    // Botón Recargar de tu interfaz
-    btnRecargar.addEventListener('click', async () => {
-        const user = auth.currentUser;
-        if(user) {
-            await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual + 50000);
-        }
-    });
-
-    // Autenticación básica
-    loginForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        try { await signInWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value); } 
-        catch (err) { errorBox.innerText = "Error de credenciales."; errorBox.classList.remove('hidden'); }
-    });
-
-    btnRegister.addEventListener('click', async () => {
-        if(!emailInput.value || !passInput.value) return;
-        try {
-            const res = await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passInput.value);
-            await set(ref(db, `usuarios/${res.user.uid}/saldo`), 10000);
-        } catch (err) { errorBox.innerText = "Error al registrar."; errorBox.classList.remove('hidden'); }
-    });
-
-    btnOut.addEventListener('click', () => signOut(auth));
-
-    // LÓGICA DE BÚSQUEDA MULTIJUGADOR REAL CON TUS DICTÁMENES VISUALES
-    btnPlay.addEventListener('click', async () => {
-        if (saldoActual < apuestaActual) {
-            alert(`No tienes saldo suficiente para la mesa ${mesaSeleccionada} (Requiere $${apuestaActual.toLocaleString()})`);
-            return;
-        }
-
-        btnPlay.disabled = true;
-        btnPlay.style.background = "#475569";
-        btnPlay.innerText = "BUSCANDO RIVALES...";
-        resetMesa();
-
-        const user = auth.currentUser;
-        const lobbyRef = ref(db, `salas_espera/${mesaSeleccionada}`);
-        const miCupoRef = push(lobbyRef);
-
-        await set(miCupoRef, { uid: user.uid, name: user.email.split('@')[0] });
-
-        onValue(lobbyRef, async (snapshot) => {
-            const lista = snapshot.val();
-            if (lista && Object.keys(lista).length >= 3) {
-                off(lobbyRef);
-                const keys = Object.keys(lista).slice(0, 3);
-                const jugadores = keys.map(k => lista[k]);
-
-                if (jugadores.some(j => j.uid === user.uid)) {
-                    keys.forEach(async k => await set(ref(db, `salas_espera/${mesaSeleccionada}/${k}`), null));
-                    iniciarRondaP2P(jugadores, user);
-                }
+            // Fuerza el cambio visual inmediatamente para pasar de pestaña sin trabas
+            authView.classList.add('hidden');
+            gameView.classList.remove('hidden');
+            errorBox.classList.add('hidden');
+            
+            const username = user.email.split('@')
