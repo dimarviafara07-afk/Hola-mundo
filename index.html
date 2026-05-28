@@ -1,114 +1,85 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carta Royale Club</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:radial-gradient(circle at top,#18243b 0%,#0b1020 60%);color:#f4f7fb;font-family:'Inter',sans-serif;min-height:100vh;display:flex;justify-content:center;padding:20px;}
-    .app-container{width:100%;max-width:460px;display:flex;flex-direction:column;gap:18px;}
-    
-    /* Contenedores de estado */
-    #authContainer{display:flex;flex-direction:column;gap:16px;background:rgba(19,26,46,.95);border:1px solid #28314f;border-radius:24px;padding:28px;backdrop-filter:blur(12px);box-shadow:0 15px 35px rgba(0,0,0,.45);}
-    #gameInterface{display:none;flex-direction:column;gap:18px;}
-    
-    .auth-input{width:100%;background:#0f172a;border:1px solid #28314f;border-radius:14px;padding:15px;color:white;font-size:.95rem;}
-    .auth-input:focus{outline:none;border-color:#00e07b;}
-    .btn-auth{flex:1;padding:14px;border-radius:14px;border:none;font-weight:700;cursor:pointer;}
-    .btn-login{background:linear-gradient(135deg,#00e07b,#00b86b);color:#08140d;}
-    .btn-register{background:#151d31;color:white;border:1px solid #2e395b;}
-    
-    /* Estilos de juego (resumidos para brevedad) */
-    .header{background:#131a2e;border:1px solid #28314f;border-radius:22px;padding:18px;display:flex;justify-content:space-between;align-items:center;}
-    .saldo-monto{font-size:1.7rem;font-weight:800;color:#00e07b;}
-    .carta{width:82px;height:118px;margin:auto;border-radius:18px;background:linear-gradient(145deg,#ffffff,#dce5f5);display:flex;justify-content:center;align-items:center;font-size:2rem;color:#08140d;box-shadow:0 10px 20px rgba(0,0,0,.35);}
-    .carta.waiting{background:#23314f;color:#506388;border:2px dashed #506388;}
-    .game-mat{background:radial-gradient(circle at top,#1f5c3d,#08140d 80%);border-radius:28px;padding:30px 20px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
-    .btn-play{width:100%;border:none;border-radius:20px;padding:20px;font-weight:800;cursor:pointer;background:linear-gradient(135deg,#00e07b,#00b86b);}
-</style>
-</head>
-<body>
-
-<div class="app-container">
-    <div id="authContainer">
-        <h2>Carta Royale Club</h2>
-        <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
-        <div class="password-wrapper" style="position:relative;">
-            <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
-        </div>
-        <div class="auth-buttons" style="display:flex; gap:10px;">
-            <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
-            <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
-        </div>
-    </div>
-
-    <div id="gameInterface">
-        <div class="header">
-            <div class="user-info-box">
-                <div id="nombreUsuarioActivo">Jugador</div>
-                <button id="btnSignOut" style="background:none;border:none;color:#ff5d7d;cursor:pointer;">Salir</button>
-            </div>
-            <div class="saldo-box" style="text-align:right;">
-                <div id="saldoDisplay" class="saldo-monto">$0</div>
-            </div>
-        </div>
-        <div class="game-mat">
-            <div class="slot-jugador"><div id="cartaLocal" class="carta waiting">?</div></div>
-            <div class="slot-jugador"><div id="cartaRival1" class="carta waiting">?</div></div>
-            <div class="slot-jugador"><div id="cartaRival2" class="carta waiting">?</div></div>
-        </div>
-        <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
-    </div>
-</div>
-
 <script type="module">
-    // 1. IMPORTA AQUÍ TUS FUNCIONES DE FIREBASE
-    // import { initializeApp } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-app.js";
-    // import { getAuth, signInWithEmailAndPassword, ... } from "https://www.gstatic.com/firebasejs/9.x.x/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue, push, runTransaction, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
-    // 2. CONFIGURACIÓN (Pega aquí tu objeto firebaseConfig)
-    const firebaseConfig = { /* ... */ };
-    
-    // Inicialización (Descomenta esto al configurar)
-    // const app = initializeApp(firebaseConfig);
-    // const auth = getAuth();
+    const firebaseConfig = {
+        apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
+        authDomain: "carta-facil-a4e22.firebaseapp.com",
+        databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
+        projectId: "carta-facil-a4e22",
+        storageBucket: "carta-facil-a4e22.appspot.com",
+        messagingSenderId: "530927580102",
+        appId: "1:530927580102:web:865211e2b16e84869038c7"
+    };
 
-    // 3. SELECCIÓN DE ELEMENTOS
-    const authContainer = document.getElementById('authContainer');
-    const gameInterface = document.getElementById('gameInterface');
-    const btnLogin = document.getElementById('btnLogin');
-    const btnSignOut = document.getElementById('btnSignOut');
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
 
-    // 4. LÓGICA DE CAMBIO DE PANTALLA
-    // Esta función maneja qué pantalla mostrar
-    function toggleInterface(isLoggedIn) {
-        authContainer.style.display = isLoggedIn ? 'none' : 'flex';
-        gameInterface.style.display = isLoggedIn ? 'flex' : 'none';
+    // Variables de Estado
+    let usuarioActualEmail = "", usuarioActualUID = "", saldoActualNumerico = 0, mesaSeleccionadaValor = 2000, partidaEscuchadorRef = null;
+
+    // Elementos DOM
+    const authContainer = document.getElementById('authContainer'), gameInterface = document.getElementById('gameInterface');
+    const emailInput = document.getElementById('emailInput'), passwordInput = document.getElementById('passwordInput');
+    const btnLogin = document.getElementById('btnLogin'), btnRegister = document.getElementById('btnRegister');
+    const saldoDisplay = document.getElementById('saldoDisplay'), botonJugar = document.getElementById('botonJugar');
+
+    // Lógica Auth
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            authContainer.style.display = 'none'; gameInterface.style.display = 'flex';
+            usuarioActualEmail = user.email; usuarioActualUID = user.uid;
+            onValue(ref(database, 'usuarios/' + user.uid + '/saldo'), (s) => {
+                saldoActualNumerico = Number(s.val() || 0);
+                saldoDisplay.innerText = `$${saldoActualNumerico.toLocaleString('es-CO')}`;
+            });
+        } else {
+            authContainer.style.display = 'flex'; gameInterface.style.display = 'none';
+        }
+    });
+
+    btnLogin.addEventListener('click', () => signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value).catch(e => alert(e.message)));
+    btnRegister.addEventListener('click', () => {
+        createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
+        .then(cred => set(ref(database, 'usuarios/' + cred.user.uid), { email: cred.user.email, saldo: 0 }))
+        .catch(e => alert(e.message));
+    });
+
+    // Lógica del Juego (Emparejamiento)
+    botonJugar.addEventListener('click', () => {
+        if (saldoActualNumerico < mesaSeleccionadaValor) return alert("Saldo insuficiente");
+        botonJugar.disabled = true;
+        botonJugar.innerText = "BUSCANDO RIVALES...";
+        
+        const salasRef = ref(database, `salas_espera/${mesaSeleccionadaValor}`);
+        runTransaction(salasRef, (sala) => {
+            if (!sala) return { j1_uid: usuarioActualUID, j1_name: usuarioActualEmail.split('@')[0], status: "esperando" };
+            if (sala.status === "esperando") { sala.j2_uid = usuarioActualUID; sala.j2_name = usuarioActualEmail.split('@')[0]; sala.status = "llena"; return sala; }
+            return;
+        }).then(result => {
+            if (!result.committed) return alert("Intenta de nuevo");
+            if (result.snapshot.val().status === "llena") ejecutarPartida(result.snapshot.val());
+        });
+    });
+
+    function ejecutarPartida(sala) {
+        // Lógica de sorteo de cartas
+        const c1 = Math.floor(Math.random() * 13) + 2;
+        const c2 = Math.floor(Math.random() * 13) + 2;
+        const ganador = (c1 > c2) ? sala.j1_uid : sala.j2_uid;
+        
+        // Actualización de saldos
+        runTransaction(ref(database, `usuarios/${ganador}/saldo`), (s) => (s || 0) + mesaSeleccionadaValor);
+        const perdedor = (ganador === sala.j1_uid) ? sala.j2_uid : sala.j1_uid;
+        runTransaction(ref(database, `usuarios/${perdedor}/saldo`), (s) => (s || 0) - mesaSeleccionadaValor);
+        
+        alert(`Partida finalizada. Ganador: ${c1 > c2 ? sala.j1_name : sala.j2_name}`);
+        set(ref(database, `salas_espera/${mesaSeleccionadaValor}`), null);
+        botonJugar.disabled = false;
+        botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
     }
 
-    // 5. EVENTOS (Aquí es donde agregas la lógica real de Firebase)
-    btnLogin.addEventListener('click', () => {
-        console.log("Intentando ingresar...");
-        // Lógica de signInWithEmailAndPassword aquí
-        // Si tiene éxito: toggleInterface(true);
-    });
-
-    btnSignOut.addEventListener('click', () => {
-        // Lógica de signOut(auth) aquí
-        toggleInterface(false);
-    });
-
-    // 6. OBSERVAR ESTADO DE AUTENTICACIÓN
-    // onAuthStateChanged(auth, (user) => {
-    //    if (user) {
-    //        toggleInterface(true);
-    //    } else {
-    //        toggleInterface(false);
-    //    }
-    // });
+    document.getElementById('btnSignOut').addEventListener('click', () => signOut(auth));
 </script>
-
-</body>
-</html>
