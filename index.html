@@ -12,7 +12,10 @@
         input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 6px; border: 1px solid #334155; background: #0f172a; color: white; box-sizing: border-box; }
         button { width: 100%; padding: 12px; cursor: pointer; background: #22c55e; border: none; color: white; font-weight: bold; border-radius: 6px; margin-top: 10px; }
         .btn-danger { background: #ef4444; }
-        .status-text { font-size: 0.9rem; color: #94a3b8; text-align: center; margin-bottom: 10px; }
+        
+        /* Estilos de Juego */
+        .game-mat { display: flex; justify-content: space-around; margin: 20px 0; }
+        .carta { width: 60px; height: 90px; background: #252e4d; border: 2px dashed #48588f; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     </style>
 </head>
 <body>
@@ -26,10 +29,15 @@
     </div>
 
     <div id="gameView" class="card hidden">
-        <h2 style="text-align: center;">Sala P2P</h2>
-        <p id="userEmail" class="status-text"></p>
-        <div style="font-size: 1.5rem; text-align: center; color: #22c55e; margin: 15px 0;" id="saldoDisplay">Saldo: $0</div>
+        <h2 style="text-align: center;">SuerteFácil P2P</h2>
+        <div id="saldoDisplay" style="font-size: 1.3rem; text-align: center; color: #22c55e; margin-bottom: 10px;">Saldo: $0</div>
         
+        <div class="game-mat">
+            <div class="carta" id="cartaLocal">?</div>
+            <div class="carta" id="cartaRival1">?</div>
+            <div class="carta" id="cartaRival2">?</div>
+        </div>
+
         <button id="btnPlay">BUSCAR PARTIDA ($2K)</button>
         <button id="btnOut" class="btn-danger">CERRAR SESIÓN</button>
     </div>
@@ -40,7 +48,6 @@
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    // CONFIGURACIÓN (Tus datos)
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
         authDomain: "carta-facil-a4e22.firebaseapp.com",
@@ -55,42 +62,36 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // CONTROLADORES DE VISTA
-    const views = {
-        auth: document.getElementById('authView'),
-        game: document.getElementById('gameView')
-    };
-
     // LÓGICA DE SESIÓN
     onAuthStateChanged(auth, (user) => {
+        const authView = document.getElementById('authView');
+        const gameView = document.getElementById('gameView');
+        
         if (user) {
-            views.auth.classList.add('hidden');
-            views.game.classList.remove('hidden');
-            document.getElementById('userEmail').innerText = user.email;
+            authView.classList.add('hidden');
+            gameView.classList.remove('hidden');
             
-            // Escuchar saldo en tiempo real
+            // Cargar Saldo en Tiempo Real
             onValue(ref(db, `usuarios/${user.uid}/saldo`), (snap) => {
                 const saldo = snap.val() || 0;
                 document.getElementById('saldoDisplay').innerText = `Saldo: $${saldo.toLocaleString()}`;
             });
         } else {
-            views.auth.classList.remove('hidden');
-            views.game.classList.add('hidden');
+            authView.classList.remove('hidden');
+            gameView.classList.add('hidden');
         }
     });
 
     // BOTONES
     document.getElementById('btnAuth').addEventListener('click', () => {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('pass').value;
-        signInWithEmailAndPassword(auth, e, p).catch(err => alert("Error: " + err.message));
+        signInWithEmailAndPassword(auth, document.getElementById('email').value, document.getElementById('pass').value)
+        .catch(err => alert("Error: " + err.message));
     });
 
     document.getElementById('btnOut').addEventListener('click', () => signOut(auth));
-
+    
     document.getElementById('btnPlay').addEventListener('click', () => {
-        alert("Buscando partida en el servidor...");
-        // Aquí puedes agregar la lógica de búsqueda que teníamos
+        alert("Buscando partida...");
     });
 </script>
 
