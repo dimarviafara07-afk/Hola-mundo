@@ -172,13 +172,13 @@
     <div id="authView" class="card">
         <h2 style="text-align: center; margin-top: 0; color: var(--primary-gold)">Acceso SuerteFácil</h2>
         <div id="errorBox" class="error-message hidden"></div>
-        <form id="loginForm">
-            <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico" required></div>
-            <div class="form-group"><input type="password" id="pass" placeholder="Contraseña" required></div>
-            <button type="submit" id="btnAuth" class="btn-buscar" style="margin-top:0;">INGRESAR</button>
-            <div class="divider">o si eres nuevo</div>
-            <button type="button" id="btnRegister" class="btn-buscar" style="background:#1d2942; color:white; font-size:1rem; padding:12px;">REGISTRARSE</button>
-        </form>
+        
+        <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico"></div>
+        <div class="form-group"><input type="password" id="pass" placeholder="Contraseña"></div>
+        
+        <button type="button" id="btnAuth" class="btn-buscar" style="margin-top:0;">INGRESAR</button>
+        <div class="divider">o si eres nuevo</div>
+        <button type="button" id="btnRegister" class="btn-buscar" style="background:#1d2942; color:white; font-size:1rem; padding:12px;">REGISTRARSE</button>
     </div>
 
     <div id="gameView" class="card hidden" style="background:transparent; padding:0; box-shadow:none;">
@@ -256,7 +256,7 @@
     const db = getDatabase(app);
 
     const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
-    const loginForm = document.getElementById('loginForm'), emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
+    const emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
     const errorBox = document.getElementById('errorBox'), txtUsername = document.getElementById('txtUsername'), saldoDisplay = document.getElementById('saldoDisplay');
     const btnAuth = document.getElementById('btnAuth'), btnOut = document.getElementById('btnOut'), btnRecargar = document.getElementById('btnRecargar'), btnPlay = document.getElementById('btnPlay'), btnRegister = document.getElementById('btnRegister');
     const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
@@ -277,12 +277,139 @@
         });
     });
 
-    // CAMBIO DE PESTAÑA SEGURO E INMEDIATO
+    // OBSERVADOR DE SESIÓN COMPLETAMENTE REDISEÑADO
     onAuthStateChanged(auth, async (user) => {
         if (user) {
-            // Fuerza el cambio visual inmediatamente para pasar de pestaña sin trabas
             authView.classList.add('hidden');
             gameView.classList.remove('hidden');
             errorBox.classList.add('hidden');
+            btnAuth.innerText = "INGRESAR";
             
-            const username = user.email.split('@')
+            const username = user.email.split('@')[0];
+            txtUsername.innerText = username;
+            lblLocal.innerText = username;
+
+            saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
+            onValue(saldoRef, (snapshot) => {
+                saldoActual = snapshot.val() !== null ? snapshot.val() : 15000;
+                saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
+            }, (error) => {
+                saldoActual = 15000;
+                saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
+            });
+
+            historialRef = ref(db, `usuarios/${user.uid}/historial`);
+            onValue(historialRef, (snapshot) => {
+                historialLista.innerHTML = "";
+                const data = snapshot.val();
+                if(data) {
+                    Object.values(data).reverse().slice(0, 3).forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = "historial-item";
+                        div.innerHTML = `<span>Mesa ${item.mesa} - ${item.resultado}</span><strong>${item.resultado==='GANÓ'?'+':'-'}$${item.monto.toLocaleString()}</strong>`;
+                        historialLista.appendChild(div);
+                    });
+                }
+            });
+        } else {
+            authView.classList.remove('hidden');
+            gameView.classList.add('hidden');
+            if (saldoRef) off(saldoRef);
+            if (historialRef) off(historialRef);
+        }
+    });
+
+    // MANEJADORES DE CLICK DIRECTOS (EVITAN RESETEO POR SUBMIT)
+    btnAuth.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const pass = passInput.value;
+
+        if(!email || !pass) {
+            alert("Por favor rellena ambos campos.");
+            return;
+        }
+
+        btnAuth.innerText = "VERIFICANDO...";
+        try { 
+            await signInWithEmailAndPassword(auth, email, pass); 
+        } catch (err) { 
+            btnAuth.innerText = "INGRESAR";
+            alert("Error de ingreso: " + err.message);
+            errorBox.innerText = "Credenciales incorrectas o problema de red."; 
+            errorBox.classList.remove('hidden'); 
+        }
+    });
+
+    btnRegister.addEventListener('click', async () => {
+        const email = emailInput.value.trim();
+        const pass = passInput.value;
+
+        if(!email || !pass) {
+            alert("Rellena los campos para registrarte.");
+            return;
+        }
+
+        btnRegister.innerText = "CREANDO...";
+        try {
+            const res = await createUserWithEmailAndPassword(auth, email, pass);
+            try { await set(ref(db, `usuarios/${res.user.uid}/saldo`), 15000); } catch(e){}
+            alert("¡Cuenta creada con éxito!");
+            btnRegister.innerText = "REGISTRARSE";
+        } catch (err) { 
+            btnRegister.innerText = "REGISTRARSE";
+            alert("Error de registro: " + err.message);
+            errorBox.innerText = "La contraseña debe tener mínimo 6 letras/números."; 
+            errorBox.classList.remove('hidden'); 
+        }
+    });
+
+    btnOut.addEventListener('click', () => signOut(auth));
+
+    btnRecargar.addEventListener('click', async () => {
+        const user = auth.currentUser;
+        if(user) {
+            saldoActual += 50000;
+            saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
+            try { await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual); } catch(e){}
+        }
+    });
+
+    btnPlay.addEventListener('click', async () => {
+        if (saldoActual < apuestaActual) {
+            alert(`Saldo insuficiente para ingresar a la mesa ${mesaSeleccionada}`);
+            return;
+        }
+        btnPlay.disabled = true; btnPlay.innerText = "BUSCANDO RIVALES..."; resetMesa();
+        
+        setTimeout(() => {
+            btnPlay.innerText = "¡EN PARTIDA!";
+            setTimeout(async () => {
+                const miC = Math.floor(Math.random() * 10) + 1;
+                const r1C = Math.floor(Math.random() * 10) + 1;
+                const r2C = Math.floor(Math.random() * 10) + 1;
+
+                cartaLocal.innerText = miC; cartaLocal.classList.add('revelada');
+                cartaRival1.innerText = r1C; cartaRival1.classList.add('revelada');
+                cartaRival2.innerText = r2C; cartaRival2.classList.add('revelada');
+
+                const maxRival = Math.max(r1C, r2C);
+                let gano = miC > maxRival;
+
+                saldoActual = gano ? (saldoActual + (apuestaActual * 2)) : (saldoActual - apuestaActual);
+                saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
+
+                const user = auth.currentUser;
+                if(user) { try { await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual); } catch(e){} }
+
+                btnPlay.disabled = false; btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            }, 1000);
+        }, 1200);
+    });
+
+    function resetMesa() {
+        cartaLocal.innerText = "¿"; cartaRival1.innerText = "¿"; cartaRival2.innerText = "¿";
+        cartaLocal.classList.remove('revelada'); cartaRival1.classList.remove('revelada'); cartaRival2.classList.remove('revelada');
+    }
+</script>
+</body>
+</html>
