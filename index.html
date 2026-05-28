@@ -28,7 +28,7 @@
       gap: 20px;
     }
 
-    /* SECCIÓN DE AUTENTICACIÓN (Login y Registro) */
+    /* SECCIÓN DE AUTENTICACIÓN */
     .auth-container {
       background: linear-gradient(135deg, #1e2433, #151a26);
       padding: 25px;
@@ -82,20 +82,8 @@
       transition: 0.2s;
     }
 
-    .btn-login {
-      background: #00ff88;
-      color: #121620;
-    }
-
-    .btn-register {
-      background: transparent;
-      color: #00ff88;
-      border: 2px solid #00ff88;
-    }
-
-    .btn-auth:active {
-      transform: scale(0.98);
-    }
+    .btn-login { background: #00ff88; color: #121620; }
+    .btn-register { background: transparent; color: #00ff88; border: 2px solid #00ff88; }
 
     /* INTERFAZ DE JUEGO */
     .game-interface {
@@ -104,7 +92,6 @@
       gap: 20px;
     }
 
-    /* Encabezado con el Saldo y Botones Financieros */
     .header {
       display: flex;
       justify-content: space-between;
@@ -133,11 +120,6 @@
       width: fit-content;
     }
 
-    .btn-logout:hover {
-      background: #ff3366;
-      color: white;
-    }
-
     .saldo-box {
       text-align: right;
       display: flex;
@@ -152,10 +134,7 @@
       color: #00ff88;
     }
 
-    .caja-botones-transaccion {
-      display: flex;
-      gap: 5px;
-    }
+    .caja-botones-transaccion { display: flex; gap: 5px; }
 
     .btn-transaccion {
       color: white;
@@ -165,14 +144,10 @@
       font-weight: bold;
       border-radius: 4px;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     .btn-recargar-estilo { background: #00b35f; }
-    .btn-recargar-estilo:hover { background: #00ff88; color: #121620; }
-
     .btn-retirar-estilo { background: #ff3366; }
-    .btn-retirar-estilo:hover { background: #ff668f; }
 
     /* Selector de Progresión */
     .progression-container {
@@ -197,7 +172,6 @@
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
-      transition: 0.2s;
       font-size: 0.85rem;
     }
 
@@ -205,56 +179,45 @@
       background: #00ff88;
       color: #121620;
       border-color: #00ff88;
-      box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
     }
 
-    /* El Tapete de Juego */
+    /* El Tapete de Juego (3 Columnas para 3 Jugadores) */
     .game-mat {
       background: radial-gradient(circle, #1a2f24, #0f1c15);
       border: 3px solid #1f5c3d;
       border-radius: 16px;
-      padding: 20px;
+      padding: 15px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
-      min-height: 180px;
+      min-height: 160px;
       align-items: center;
       box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
     }
 
-    .slot-jugador {
-      text-align: center;
-    }
+    .slot-jugador { text-align: center; }
 
     .carta {
-      width: 100%;
-      aspect-ratio: 2/3;
+      width: 60px;
+      height: 90px;
       background: #252e4d;
       border: 2px dashed #48588f;
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       font-weight: bold;
-      margin-bottom: 5px;
+      margin: 0 auto 5px auto;
       box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    .carta.ready {
-      background: #ffffff;
-      color: #000000;
-      border: 2px solid #ffffff;
-    }
-
-    .carta.waiting {
-      animation: pulse 1.5s infinite;
       color: #48588f;
-      font-size: 1rem;
     }
+
+    .carta.ready { background: #ffffff; color: #000000; border: 2px solid #ffffff; }
+    .carta.waiting { animation: pulse 1.5s infinite; }
 
     .nombre-jugador {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       color: #a0aec0;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -272,28 +235,29 @@
       border-radius: 12px;
       cursor: pointer;
       box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
-      transition: 0.1s;
+    }
+
+    .btn-play:disabled {
+      background: #3b4875;
+      color: #a0aec0;
+      cursor: not-allowed;
+      box-shadow: none;
     }
 
     /* Historial */
-    .history {
-      background: #1c2237;
-      padding: 15px;
-      border-radius: 12px;
-    }
-
-    .history h3 {
-      margin: 0 0 10px 0;
-      font-size: 0.9rem;
-      color: #a0aec0;
-    }
-
-    .history-list {
+    .history { background: #1c2237; padding: 15px; border-radius: 12px; }
+    .history h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #a0aec0; }
+    .history-list { display: flex; flex-direction: column; gap: 5px; }
+    
+    .history-item {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 5px;
+      border-bottom: 1px solid #252e4d;
     }
 
-    /* VENTANAS MODALES (Recargas y Retiros) */
+    /* MODALES */
     .modal-financiero {
       display: none;
       position: fixed;
@@ -303,7 +267,6 @@
       align-items: center;
       z-index: 1000;
       padding: 20px;
-      box-sizing: border-box;
     }
 
     .modal-content {
@@ -314,70 +277,17 @@
       max-width: 400px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
-    .modal-content h3 {
-      margin-top: 0;
-      color: #00ff88;
-    }
-
-    .modal-content h3.retirar-titulo {
-      color: #ff3366;
-    }
-
-    .info-caja {
-      background: #0f131a;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-      font-size: 1.1rem;
-      border: 1px solid #252e4d;
-      text-align: left;
-    }
-
-    .btn-accion-modal {
-      color: white;
-      border: none;
-      padding: 12px;
-      width: 100%;
-      font-size: 1rem;
-      font-weight: bold;
-      border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
+    .modal-content h3 { margin-top: 0; color: #00ff88; }
+    .info-caja { background: #0f131a; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 1.1rem; text-align: left; }
+    .btn-accion-modal { color: white; border: none; padding: 12px; width: 100%; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
     .btn-wa-color { background: #25D366; }
     .btn-retirar-color { background: #ff3366; }
+    .btn-cerrar-modal { background: transparent; color: #a0aec0; border: none; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+    .input-modal { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; background-color: #0f131a; border: 1px solid #3b4875; border-radius: 6px; color: white; }
 
-    .btn-cerrar-modal {
-      background: transparent;
-      color: #a0aec0;
-      border: none;
-      margin-top: 15px;
-      cursor: pointer;
-      text-decoration: underline;
-      font-size: 0.9rem;
-    }
-
-    .input-modal {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      box-sizing: border-box;
-      background-color: #0f131a;
-      border: 1px solid #3b4875;
-      border-radius: 6px;
-      color: white;
-      outline: none;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.5; }
-      50% { opacity: 1; }
-      100% { opacity: 0.5; }
-    }
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
   </style>
 </head>
 <body>
@@ -412,35 +322,35 @@
       </div>
 
       <div class="progression-container">
-        <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu Mesa (Progresión)</span>
+        <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu Mesa</span>
         <div class="mesas-grid">
-          <button class="mesa-btn active">N1 ($2k)</button>
-          <button class="mesa-btn">N2 ($4k)</button>
-          <button class="mesa-btn">N3 ($8k)</button>
-          <button class="mesa-btn">N4 ($16k)</button>
-          <button class="mesa-btn">N5 ($32k)</button>
+          <button class="mesa-btn active" data-valor="2000">N1 ($2k)</button>
+          <button class="mesa-btn" data-valor="4000">N2 ($4k)</button>
+          <button class="mesa-btn" data-valor="8000">N3 ($8k)</button>
+          <button class="mesa-btn" data-valor="16000">N4 ($16k)</button>
+          <button class="mesa-btn" data-valor="32000">N5 ($32k)</button>
         </div>
       </div>
 
       <div class="game-mat">
         <div class="slot-jugador">
-          <div class="carta ready">?</div>
-          <div class="nombre-jugador" id="labelJugadorMesa">Tú</div>
+          <div id="cartaLocal" class="carta">?</div>
+          <div id="labelLocal" class="nombre-jugador">Tú</div>
         </div>
         <div class="slot-jugador">
-          <div class="carta waiting">...</div>
-          <div class="nombre-jugador">Esperando...</div>
+          <div id="cartaRival1" class="carta">?</div>
+          <div id="labelRival1" class="nombre-jugador">Rival 1...</div>
         </div>
         <div class="slot-jugador">
-          <div class="carta waiting">...</div>
-          <div class="nombre-jugador">Esperando...</div>
+          <div id="cartaRival2" class="carta">?</div>
+          <div id="labelRival2" class="nombre-jugador">Rival 2...</div>
         </div>
       </div>
 
       <button id="botonJugar" class="btn-play">BUSCAR PARTIDA ($2k)</button>
 
       <div class="history">
-        <h3>ÚLTIMAS PARTIDAS</h3>
+        <h3>ÚLTIMAS PARTIDAS (GANADORES)</h3>
         <div id="historyList" class="history-list"></div>
       </div>
 
@@ -451,64 +361,29 @@
   <div id="modalRecarga" class="modal-financiero">
     <div class="modal-content">
       <h3>Recargar Saldo</h3>
-      <p style="font-size: 0.9rem; color: #a0aec0;">Realiza tu transferencia al siguiente medio autorizado:</p>
-      
       <div class="info-caja">
         <center><strong>NEQUI</strong></center>
         Celular: <span style="color: #00ff88; font-weight: bold;">300 123 4567</span><br>
         Titular: <span style="color: white;">Tu Nombre Completo</span>
       </div>
-
-      <p style="font-size: 0.85rem; color: #e2e8f0;">Una vez hecha la transferencia, presiona el botón de abajo para enviar el comprobante de pago.</p>
-      
-      <button id="btnEnviarWhatsapp" class="btn-accion-modal btn-wa-color">💬 Enviar Comprobante</button>
-      <br>
+      <button id="btnEnviarWhatsapp" class="btn-accion-modal btn-wa-color">💬 Enviar Comprobante</button><br>
       <button id="btnCerrarRecarga" class="btn-cerrar-modal">Volver al juego</button>
     </div>
   </div>
 
   <div id="modalRetiro" class="modal-financiero">
     <div class="modal-content">
-      <h3 class="retirar-titulo">Solicitar Retiro</h3>
-      <p style="font-size: 0.9rem; color: #a0aec0;">El valor solicitado se descontará de tu saldo de inmediato.</p>
-      
-      <input type="number" id="montoRetiroInput" class="input-modal" placeholder="Monto a retirar (Ej: 20000)">
-      <input type="text" id="detallesBancoInput" class="input-modal" placeholder="Datos de cuenta (Ej: Nequi 315XXXXXXX)">
-
-      <button id="btnProcesarRetiro" class="btn-accion-modal btn-retirar-color">Confirmar Retiro</button>
-      <br>
+      <h3 style="color:#ff3366;">Solicitar Retiro</h3>
+      <input type="number" id="montoRetiroInput" class="input-modal" placeholder="Monto a retirar">
+      <input type="text" id="detallesBancoInput" class="input-modal" placeholder="Datos de cuenta">
+      <button id="btnProcesarRetiro" class="btn-accion-modal btn-retirar-color">Confirmar Retiro</button><br>
       <button id="btnCerrarRetiro" class="btn-cerrar-modal">Cancelar</button>
     </div>
   </div>
 
-  <script>
-    // Gestión visual de las mesas
-    const botonesMesa = document.querySelectorAll('.mesa-btn');
-    const botonJugar = document.getElementById('botonJugar');
-
-    botonesMesa.forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelector('.mesa-btn.active').classList.remove('active');
-        btn.classList.add('active');
-        const valor = btn.innerText.split(' ')[1];
-        botonJugar.innerText = `BUSCAR PARTIDA (${valor})`;
-      });
-    });
-
-    // Control de Ventanas Modales
-    const modalRecarga = document.getElementById('modalRecarga');
-    const modalRetiro = document.getElementById('modalRetiro');
-    
-    document.getElementById('btnAbrirRecarga').addEventListener('click', () => { modalRecarga.style.display = 'flex'; });
-    document.getElementById('btnCerrarRecarga').addEventListener('click', () => { modalRecarga.style.display = 'none'; });
-
-    document.getElementById('btnAbrirRetiro').addEventListener('click', () => { modalRetiro.style.display = 'flex'; });
-    document.getElementById('btnCerrarRetiro').addEventListener('click', () => { modalRetiro.style.display = 'none'; });
-  </script>
-
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, set, onValue, push, runTransaction, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -526,9 +401,9 @@
     const database = getDatabase(app);
     const auth = getAuth(app);
 
-    // Tu número de WhatsApp real con código de país (Ej: 57 para Colombia)
     const tuTelefonoWhatsApp = "573001234567"; 
 
+    // Elementos DOM
     const authContainer = document.getElementById('authContainer');
     const gameInterface = document.getElementById('gameInterface');
     const emailInput = document.getElementById('emailInput');
@@ -536,148 +411,284 @@
     const btnLogin = document.getElementById('btnLogin');
     const btnRegister = document.getElementById('btnRegister');
     const nombreUsuarioActivo = document.getElementById('nombreUsuarioActivo');
-    const labelJugadorMesa = document.getElementById('labelJugadorMesa');
     const saldoDisplay = document.getElementById('saldoDisplay');
-    const btnSignOut = document.getElementById('btnSignOut');
-    
+    const botonJugar = document.getElementById('botonJugar');
+    const cartaLocal = document.getElementById('cartaLocal');
+    const cartaRival1 = document.getElementById('cartaRival1');
+    const cartaRival2 = document.getElementById('cartaRival2');
+    const labelLocal = document.getElementById('labelLocal');
+    const labelRival1 = document.getElementById('labelRival1');
+    const labelRival2 = document.getElementById('labelRival2');
+    const historyList = document.getElementById('historyList');
+
     let usuarioActualEmail = "";
     let usuarioActualUID = "";
     let saldoActualNumerico = 0;
+    let mesaSeleccionadaValor = 2000;
+    let partidaEscuchadorRef = null;
 
-    // REGISTRAR
-    btnRegister.addEventListener('click', () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if(email === "" || password === "") {
-        alert("Por favor completa todos los campos.");
-        return;
-      }
-
-      createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          const user = userCredential.user;
-          set(ref(database, 'usuarios/' + user.uid), {
-            email: user.email,
-            saldo: 0,
-            creado: new Date().toISOString()
-          }).then(() => {
-            alert("¡Usuario registrado con éxito! Tu saldo es de $0.");
-          });
-        })
-        .catch((error) => {
-          alert("Error al registrarse: " + error.message);
-        });
-    });
-
-    // LOGUEAR
-    btnLogin.addEventListener('click', () => {
-      const email = emailInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if(email === "" || password === "") {
-        alert("Por favor introduce tu correo y contraseña.");
-        return;
-      }
-
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          alert("¡Bienvenido al juego!");
-          emailInput.value = "";
-          passwordInput.value = "";
-        })
-        .catch((error) => {
-          alert("Error de ingreso: " + error.message);
-        });
-    });
-
-    // BOTÓN CERRAR SESIÓN (LOGOUT)
-    btnSignOut.addEventListener('click', () => {
-      signOut(auth).then(() => {
-        alert("Sesión cerrada correctamente.");
-      }).catch((error) => {
-        alert("Error al cerrar sesión: " + error.message);
+    // Seleccionar Mesa
+    const botonesMesa = document.querySelectorAll('.mesa-btn');
+    botonesMesa.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.mesa-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        mesaSeleccionadaValor = Number(btn.getAttribute('data-valor'));
+        botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
       });
     });
 
-    // WHATSAPP: RECARGA
-    document.getElementById('btnEnviarWhatsapp').addEventListener('click', () => {
-      const mensaje = encodeURIComponent(`Hola, acabo de realizar una transferencia para recargar saldo en SuerteFácil P2P.\nMi usuario es: ${usuarioActualEmail}\nAdjunto el comprobante de pago.`);
-      window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${mensaje}`, '_blank');
+    // Modales Control
+    document.getElementById('btnAbrirRecarga').addEventListener('click', () => { document.getElementById('modalRecarga').style.display = 'flex'; });
+    document.getElementById('btnCerrarRecarga').addEventListener('click', () => { document.getElementById('modalRecarga').style.display = 'none'; });
+    document.getElementById('btnAbrirRetiro').addEventListener('click', () => { document.getElementById('modalRetiro').style.display = 'flex'; });
+    document.getElementById('btnCerrarRetiro').addEventListener('click', () => { document.getElementById('modalRetiro').style.display = 'none'; });
+
+    // Autenticación
+    btnRegister.addEventListener('click', () => {
+      const email = emailInput.value.trim(); const password = passwordInput.value.trim();
+      if(!email || !password) return alert("Completa los campos.");
+      createUserWithEmailAndPassword(auth, email, password).then((cred) => {
+        set(ref(database, 'usuarios/' + cred.user.uid), { email: cred.user.email, saldo: 0, creado: new Date().toISOString() });
+      }).catch(e => alert(e.message));
     });
 
-    // EJECUTAR RETIRO EN BASE DE DATOS Y WHATSAPP
+    btnLogin.addEventListener('click', () => {
+      const email = emailInput.value.trim(); const password = passwordInput.value.trim();
+      if(!email || !password) return alert("Introduce datos.");
+      signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message));
+    });
+
+    document.getElementById('btnSignOut').addEventListener('click', () => { signOut(auth); });
+
+    document.getElementById('btnEnviarWhatsApp').addEventListener('click', () => {
+      const msg = encodeURIComponent(`Hola, reporto recarga en SuerteFácil P2P para el usuario: ${usuarioActualEmail}`);
+      window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${msg}`, '_blank');
+    });
+
+    // Procesar Retiro
     document.getElementById('btnProcesarRetiro').addEventListener('click', () => {
-      const montoRetirar = Number(document.getElementById('montoRetiroInput').value.trim());
-      const detallesBanco = document.getElementById('detallesBancoInput').value.trim();
+      const monto = Number(document.getElementById('montoRetiroInput').value.trim());
+      const datos = document.getElementById('detallesBancoInput').value.trim();
+      if(!monto || monto <= 0 || !datos) return alert("Datos inválidos.");
+      if(monto > saldoActualNumerico) return alert("Saldo insuficiente.");
 
-      if (!montoRetirar || montoRetirar <= 0 || detallesBanco === "") {
-        alert("Por favor introduce un monto válido y los datos para tu transferencia.");
-        return;
-      }
-
-      if (montoRetirar > saldoActualNumerico) {
-        alert(`Saldo insuficiente. Tu saldo disponible es de $${saldoActualNumerico.toLocaleString('es-CO')}`);
-        return;
-      }
-
-      // Descontar inmediatamente el saldo en Firebase
-      const nuevoSaldo = saldoActualNumerico - montoRetirar;
-      set(ref(database, 'usuarios/' + usuarioActualUID + '/saldo'), nuevoSaldo)
-        .then(() => {
-          alert("¡Solicitud procesada! Tu saldo ha sido retenido para el pago. Abriendo tu WhatsApp para notificar al administrador.");
-          
-          document.getElementById('modalRetiro').style.display = 'none';
-          document.getElementById('montoRetiroInput').value = "";
-          document.getElementById('detallesBancoInput').value = "";
-
-          const mensajeRetiro = encodeURIComponent(`🚨 *NUEVA SOLICITUD DE RETIRO*\n\n👤 *Usuario:* ${usuarioActualEmail}\n💰 *Monto solicitado:* $${montoRetirar.toLocaleString('es-CO')}\n🏦 *Datos de Pago:* ${detallesBanco}\n\nQuedo atento a la transferencia de mi saldo.`);
-          window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${mensajeRetiro}`, '_blank');
-        })
-        .catch((error) => {
-          alert("Hubo un problema al procesar tu retiro: " + error.message);
-        });
+      set(ref(database, 'usuarios/' + usuarioActualUID + '/saldo'), saldoActualNumerico - monto).then(() => {
+        document.getElementById('modalRetiro').style.display = 'none';
+        const msg = encodeURIComponent(`🚨 *SOLICITUD DE RETIRO*\nUser: ${usuarioActualEmail}\nMonto: $${monto}\nDatos: ${datos}`);
+        window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${msg}`, '_blank');
+      });
     });
 
-    // ESCUCHADOR EN TIEMPO REAL
-    let saldoEscuchador = null;
+    // LÓGICA DE EMPAREJAMIENTO PARA 3 JUGADORES (1 VS 2)
+    botonJugar.addEventListener('click', () => {
+      if (saldoActualNumerico < mesaSeleccionadaValor) {
+        alert("No tienes saldo suficiente para esta mesa.");
+        return;
+      }
 
+      botonJugar.disabled = true;
+      botonJugar.innerText = "BUSCANDO RIVALES...";
+      cartaLocal.innerText = "..."; cartaLocal.className = "carta waiting";
+      cartaRival1.innerText = "..."; cartaRival1.className = "carta waiting";
+      cartaRival2.innerText = "..."; cartaRival2.className = "carta waiting";
+      labelRival1.innerText = "Buscando..."; labelRival2.innerText = "Buscando...";
+
+      const salasRef = ref(database, `salas_espera/${mesaSeleccionadaValor}`);
+      
+      runTransaction(salasRef, (salaActual) => {
+        const usernameClean = usuarioActualEmail.split('@')[0];
+
+        if (salaActual === null) {
+          // Primer Jugador en llegar
+          return {
+            j1_uid: usuarioActualUID, j1_name: usernameClean,
+            status: "esperando_j2"
+          };
+        } else if (salaActual.status === "esperando_j2" && salaActual.j1_uid !== usuarioActualUID) {
+          // Segundo Jugador en llegar
+          salaActual.j2_uid = usuarioActualUID;
+          salaActual.j2_name = usernameClean;
+          salaActual.status = "esperando_j3";
+          return salaActual;
+        } else if (salaActual.status === "esperando_j3" && salaActual.j1_uid !== usuarioActualUID && salaActual.j2_uid !== usuarioActualUID) {
+          // Tercer Jugador en llegar (Se llena la mesa)
+          salaActual.j3_uid = usuarioActualUID;
+          salaActual.j3_name = usernameClean;
+          salaActual.status = "llena";
+          return salaActual;
+        }
+        return; 
+      }).then((result) => {
+        if (!result.committed) {
+          setTimeout(() => { botonJugar.click(); }, 1000);
+          return;
+        }
+
+        const datosSala = result.snapshot.val();
+        
+        if (datosSala.status === "esperando_j2" || datosSala.status === "esperando_j3") {
+          // Nos quedamos esperando a que se termine de llenar la sala triple
+          escucharPartida(mesaSeleccionadaValor);
+        } else if (datosSala.status === "llena") {
+          // Salió la opción de disparar la partida completa
+          generarResultadoPartida(mesaSeleccionadaValor, datosSala);
+        }
+      });
+    });
+
+    function escucharPartida(valorMesa) {
+      const salaRef = ref(database, `salas_espera/${valorMesa}`);
+      if (partidaEscuchadorRef) off(salaRef);
+
+      partidaEscuchadorRef = onValue(salaRef, (snapshot) => {
+        const sala = snapshot.val();
+        if (sala) {
+          if (sala.j2_name) labelRival1.innerText = sala.j2_name;
+          if (sala.j3_name) labelRival2.innerText = sala.j3_name;
+
+          if (sala.status === "jugado") {
+            mostrarResultadosPantalla(sala);
+            off(salaRef);
+            set(ref(database, `salas_espera/${valorMesa}`), null);
+            botonJugar.disabled = false;
+            botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
+          }
+        }
+      });
+    }
+
+    function generarResultadoPartida(valorMesa, datosSala) {
+      // Repartir 3 cartas únicas del 2 al 14 (Evitando empates perfectos)
+      let c1 = Math.floor(Math.random() * 13) + 2;
+      let c2 = Math.floor(Math.random() * 13) + 2;
+      let c3 = Math.floor(Math.random() * 13) + 2;
+      while(c2 === c1) { c2 = Math.floor(Math.random() * 13) + 2; }
+      while(c3 === c1 || c3 === c2) { c3 = Math.floor(Math.random() * 13) + 2; }
+
+      datosSala.j1_carta = c1;
+      datosSala.j2_carta = c2;
+      datosSala.j3_carta = c3;
+      datosSala.status = "jugado";
+
+      // Determinar Ganador matemático
+      let ganadorUID = datosSala.j1_uid;
+      let ganadorName = datosSala.j1_name;
+      let maxCarta = c1;
+
+      if (c2 > maxCarta) { ganadorUID = datosSala.j2_uid; ganadorName = datosSala.j2_name; maxCarta = c2; }
+      if (c3 > maxCarta) { ganadorUID = datosSala.j3_uid; ganadorName = datosSala.j3_name; maxCarta = c3; }
+
+      // CÁLCULO FINANCIERO CON 3 JUGADORES (Rake del 10% del bote completo)
+      const boteTotal = valorMesa * 3;
+      const comisionCasa = boteTotal * 0.10; // 10% retenido
+      const premioNetoGanador = boteTotal - comisionCasa - valorMesa; // Se calcula la suma neta adicional
+
+      // Descontar a los perdedores e ingresar dinero al ganador
+      if(ganadorUID === datosSala.j1_uid) {
+        runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
+        runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) - valorMesa);
+      } else if(ganadorUID === datosSala.j2_uid) {
+        runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
+        runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) - valorMesa);
+      } else {
+        runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
+      }
+
+      // Guardar Comisión acumulada en la cuenta de la casa
+      runTransaction(ref(database, `comisiones_casa/acumulado`), (acum) => (acum || 0) + comisionCasa);
+
+      // Historial Global
+      push(ref(database, `historial_partidas`), {
+        mesa: valorMesa,
+        ganador: ganadorName,
+        comision_casa: comisionCasa,
+        fecha: new Date().toISOString()
+      });
+
+      // Subir resultados para congelar el estado
+      set(ref(database, `salas_espera/${valorMesa}`), datosSala).then(() => {
+        mostrarResultadosPantalla(datosSala);
+        botonJugar.disabled = false;
+        botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
+      });
+    }
+
+    function mapearCartaVisual(numero) {
+      if (numero === 11) return "J"; if (numero === 12) return "Q";
+      if (numero === 13) return "K"; if (numero === 14) return "A";
+      return numero.toString();
+    }
+
+    function mostrarResultadosPantalla(sala) {
+      let miCartaNum, r1CartaNum, r2CartaNum, r1Name, r2Name;
+
+      if (usuarioActualUID === sala.j1_uid) {
+        miCartaNum = sala.j1_carta;
+        r1CartaNum = sala.j2_carta; r1Name = sala.j2_name;
+        r2CartaNum = sala.j3_carta; r2Name = sala.j3_name;
+      } else if (usuarioActualUID === sala.j2_uid) {
+        miCartaNum = sala.j2_carta;
+        r1CartaNum = sala.j1_carta; r1Name = sala.j1_name;
+        r2CartaNum = sala.j3_carta; r2Name = sala.j3_name;
+      } else {
+        miCartaNum = sala.j3_carta;
+        r1CartaNum = sala.j1_carta; r1Name = sala.j1_name;
+        r2CartaNum = sala.j2_carta; r2Name = sala.j2_name;
+      }
+
+      labelRival1.innerText = r1Name;
+      labelRival2.innerText = r2Name;
+
+      cartaLocal.innerText = mapearCartaVisual(miCartaNum); cartaLocal.className = "carta ready";
+      cartaRival1.innerText = mapearCartaVisual(r1CartaNum); cartaRival1.className = "carta ready";
+      cartaRival2.innerText = mapearCartaVisual(r2CartaNum); cartaRival2.className = "carta ready";
+
+      setTimeout(() => {
+        if (miCartaNum > r1CartaNum && miCartaNum > r2CartaNum) {
+          alert("¡ESPECTACULAR! Ganaste el bote triple de la mesa.");
+        } else {
+          alert("Perdiste la partida. ¡La progresión te dará la revancha!");
+        }
+      }, 600);
+    }
+
+    // Historial dinámico de ganadores en tiempo real
+    onValue(ref(database, 'historial_partidas'), (snapshot) => {
+      historyList.innerHTML = "";
+      const data = snapshot.val();
+      if(data) {
+        Object.values(data).reverse().slice(0, 5).forEach(partida => {
+          const item = document.createElement('div');
+          item.className = "history-item";
+          item.innerHTML = `<span>Mesa $${partida.mesa.toLocaleString('es-CO')}</span> <span style="color:#00ff88;">Ganador: ${partida.ganador}</span>`;
+          historyList.appendChild(item);
+        });
+      }
+    });
+
+    // Escuchador del Estado de Autenticación
+    let saldoEscuchador = null;
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        authContainer.style.display = 'none';
-        gameInterface.style.display = 'flex';
-        usuarioActualEmail = user.email;
-        usuarioActualUID = user.uid;
-        
-        const usernameClean = user.email.split('@')[0];
-        nombreUsuarioActivo.innerText = usernameClean;
-        labelJugadorMesa.innerText = usernameClean;
+        authContainer.style.display = 'none'; gameInterface.style.display = 'flex';
+        usuarioActualEmail = user.email; usuarioActualUID = user.uid;
+        labelLocal.innerText = user.email.split('@')[0];
+        nombreUsuarioActivo.innerText = user.email.split('@')[0];
 
-        const saldoRef = ref(database, 'usuarios/' + user.uid + '/saldo');
-        saldoEscuchador = onValue(saldoRef, (snapshot) => {
-          const saldoVal = snapshot.val();
-          if (snapshot.exists() && saldoVal !== null) {
-            saldoActualNumerico = Number(saldoVal);
-            saldoDisplay.innerText = "$" + saldoActualNumerico.toLocaleString('es-CO');
-          } else {
-            saldoActualNumerico = 0;
-            saldoDisplay.innerText = "$0";
-          }
+        saldoEscuchador = onValue(ref(database, 'usuarios/' + user.uid + '/saldo'), (snapshot) => {
+          saldoActualNumerico = snapshot.val() !== null ? Number(snapshot.val()) : 0;
+          saldoDisplay.innerText = "$" + saldoActualNumerico.toLocaleString('es-CO');
         });
-
       } else {
-        authContainer.style.display = 'flex';
-        gameInterface.style.display = 'none';
-        usuarioActualEmail = "";
-        usuarioActualUID = "";
-        saldoActualNumerico = 0;
-        if (saldoEscuchador) {
-          saldoEscuchador();
-          saldoEscuchador = null;
-        }
+        authContainer.style.display = 'flex'; gameInterface.style.display = 'none';
+        if (saldoEscuchador) { saldoEscuchador(); }
       }
     });
   </script>
-
 </body>
 </html>
