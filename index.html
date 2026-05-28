@@ -65,6 +65,34 @@
       box-shadow: 0 0 8px rgba(0, 255, 136, 0.2);
     }
 
+    /* Contenedor especial para la contraseña y el ojito */
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-wrapper .auth-input {
+      padding-right: 45px; /* Espacio para que el texto no se monte en el ojo */
+    }
+
+    .btn-toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #a0aec0;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .btn-toggle-password:hover {
+      color: #00ff88;
+    }
+
     .auth-buttons {
       display: flex;
       gap: 10px;
@@ -297,7 +325,12 @@
     <div id="authContainer" class="auth-container">
       <h2>SuerteFácil P2P</h2>
       <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
-      <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
+      
+      <div class="password-wrapper">
+        <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
+        <button type="button" id="btnTogglePassword" class="btn-toggle-password" title="Mostrar/Ocultar contraseña">👁️</button>
+      </div>
+
       <div class="auth-buttons">
         <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
         <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
@@ -366,7 +399,7 @@
         Celular: <span style="color: #00ff88; font-weight: bold;">300 123 4567</span><br>
         Titular: <span style="color: white;">Tu Nombre Completo</span>
       </div>
-      <button id="btnEnviarWhatsapp" class="btn-accion-modal btn-wa-color">💬 Enviar Comprobante</button><br>
+      <button id="btnEnviarWhatsApp" class="btn-accion-modal btn-wa-color">💬 Enviar Comprobante</button><br>
       <button id="btnCerrarRecarga" class="btn-cerrar-modal">Volver al juego</button>
     </div>
   </div>
@@ -408,6 +441,7 @@
     const gameInterface = document.getElementById('gameInterface');
     const emailInput = document.getElementById('emailInput');
     const passwordInput = document.getElementById('passwordInput');
+    const btnTogglePassword = document.getElementById('btnTogglePassword');
     const btnLogin = document.getElementById('btnLogin');
     const btnRegister = document.getElementById('btnRegister');
     const nombreUsuarioActivo = document.getElementById('nombreUsuarioActivo');
@@ -426,6 +460,17 @@
     let saldoActualNumerico = 0;
     let mesaSeleccionadaValor = 2000;
     let partidaEscuchadorRef = null;
+
+    // Lógica interactiva para Ver / Ocultar Clave
+    btnTogglePassword.addEventListener('click', () => {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        btnTogglePassword.innerText = "🙈"; // Cambia el ícono a monito tapándose para indicar que se ocultará
+      } else {
+        passwordInput.type = "password";
+        btnTogglePassword.innerText = "👁️"; // Vuelve al ojo original
+      }
+    });
 
     // Seleccionar Mesa
     const botonesMesa = document.querySelectorAll('.mesa-btn');
@@ -500,19 +545,16 @@
         const usernameClean = usuarioActualEmail.split('@')[0];
 
         if (salaActual === null) {
-          // Primer Jugador en llegar
           return {
             j1_uid: usuarioActualUID, j1_name: usernameClean,
             status: "esperando_j2"
           };
         } else if (salaActual.status === "esperando_j2" && salaActual.j1_uid !== usuarioActualUID) {
-          // Segundo Jugador en llegar
           salaActual.j2_uid = usuarioActualUID;
           salaActual.j2_name = usernameClean;
           salaActual.status = "esperando_j3";
           return salaActual;
         } else if (salaActual.status === "esperando_j3" && salaActual.j1_uid !== usuarioActualUID && salaActual.j2_uid !== usuarioActualUID) {
-          // Tercer Jugador en llegar (Se llena la mesa)
           salaActual.j3_uid = usuarioActualUID;
           salaActual.j3_name = usernameClean;
           salaActual.status = "llena";
@@ -528,10 +570,8 @@
         const datosSala = result.snapshot.val();
         
         if (datosSala.status === "esperando_j2" || datosSala.status === "esperando_j3") {
-          // Nos quedamos esperando a que se termine de llenar la sala triple
           escucharPartida(mesaSeleccionadaValor);
         } else if (datosSala.status === "llena") {
-          // Salió la opción de disparar la partida completa
           generarResultadoPartida(mesaSeleccionadaValor, datosSala);
         }
       });
@@ -559,7 +599,6 @@
     }
 
     function generarResultadoPartida(valorMesa, datosSala) {
-      // Repartir 3 cartas únicas del 2 al 14 (Evitando empates perfectos)
       let c1 = Math.floor(Math.random() * 13) + 2;
       let c2 = Math.floor(Math.random() * 13) + 2;
       let c3 = Math.floor(Math.random() * 13) + 2;
@@ -571,7 +610,6 @@
       datosSala.j3_carta = c3;
       datosSala.status = "jugado";
 
-      // Determinar Ganador matemático
       let ganadorUID = datosSala.j1_uid;
       let ganadorName = datosSala.j1_name;
       let maxCarta = c1;
@@ -579,12 +617,10 @@
       if (c2 > maxCarta) { ganadorUID = datosSala.j2_uid; ganadorName = datosSala.j2_name; maxCarta = c2; }
       if (c3 > maxCarta) { ganadorUID = datosSala.j3_uid; ganadorName = datosSala.j3_name; maxCarta = c3; }
 
-      // CÁLCULO FINANCIERO CON 3 JUGADORES (Rake del 10% del bote completo)
       const boteTotal = valorMesa * 3;
-      const comisionCasa = boteTotal * 0.10; // 10% retenido
-      const premioNetoGanador = boteTotal - comisionCasa - valorMesa; // Se calcula la suma neta adicional
+      const comisionCasa = boteTotal * 0.10; 
+      const premioNetoGanador = boteTotal - comisionCasa - valorMesa; 
 
-      // Descontar a los perdedores e ingresar dinero al ganador
       if(ganadorUID === datosSala.j1_uid) {
         runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
         runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) - valorMesa);
@@ -599,10 +635,8 @@
         runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
       }
 
-      // Guardar Comisión acumulada en la cuenta de la casa
       runTransaction(ref(database, `comisiones_casa/acumulado`), (acum) => (acum || 0) + comisionCasa);
 
-      // Historial Global
       push(ref(database, `historial_partidas`), {
         mesa: valorMesa,
         ganador: ganadorName,
@@ -610,7 +644,6 @@
         fecha: new Date().toISOString()
       });
 
-      // Subir resultados para congelar el estado
       set(ref(database, `salas_espera/${valorMesa}`), datosSala).then(() => {
         mostrarResultadosPantalla(datosSala);
         botonJugar.disabled = false;
