@@ -1,29 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Carta Mayor P2P</title>
-<style>
-    body { margin: 0; padding: 0; background-color: #121620; color: #ffffff; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-    .app-container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
-    .auth-container { background: linear-gradient(135deg, #1e2433, #151a26); padding: 25px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); border: 1px solid #252e4d; }
-    .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; background: #0f131a; border: 1px solid #3b4875; border-radius: 8px; color: white; }
-    .password-wrapper { position: relative; width: 100%; }
-    .btn-toggle-password { position: absolute; right: 10px; top: 12px; background: none; border: none; color: #00ff88; cursor: pointer; }
-    .btn-auth { width: 48%; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; }
-    .btn-login { background: #00ff88; color: #121620; }
-    .btn-register { background: transparent; color: #00ff88; border: 2px solid #00ff88; }
-    .game-interface { display: none; flex-direction: column; gap: 20px; }
-    .header { display: flex; justify-content: space-between; align-items: center; background: #1e2433; padding: 15px; border-radius: 12px; }
-    .saldo-monto { font-size: 1.5rem; font-weight: bold; color: #00ff88; }
-    .mesas-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
-    .mesa-btn { background: #252e4d; border: 1px solid #3b4875; color: white; padding: 8px 2px; border-radius: 5px; cursor: pointer; font-size: 0.75rem; }
-    .mesa-btn.active { background: #00ff88; color: #121620; }
-    .btn-play { background: #00ff88; color: #121620; border: none; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; }
-    .modal-financiero { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { background: #1e2433; padding: 25px; border-radius: 16px; width: 80%; text-align: center; border: 1px solid #00ff88; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carta Mayor P2P</title>
+    <style>
+        body { margin: 0; padding: 0; background-color: #121620; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .app-container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
+        .auth-container { background: linear-gradient(135deg, #1e2433, #151a26); padding: 25px; border-radius: 16px; border: 1px solid #252e4d; }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 10px; background-color: #0f131a; border: 1px solid #3b4875; border-radius: 8px; color: white; }
+        .password-wrapper { position: relative; width: 100%; }
+        .btn-toggle-password { position: absolute; right: 12px; top: 12px; background: transparent; border: none; color: #a0aec0; cursor: pointer; }
+        .game-interface { display: none; flex-direction: column; gap: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e2433, #151a26); padding: 15px; border-radius: 12px; }
+        .saldo-monto { font-size: 1.2rem; font-weight: bold; color: #00ff88; }
+        .mesas-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
+        .mesa-btn { background: #252e4d; border: 2px solid #3b4875; color: white; padding: 10px 5px; border-radius: 8px; cursor: pointer; }
+        .mesa-btn.active { background: #00ff88; color: #121620; }
+        .btn-play { background: linear-gradient(135deg, #00ff88, #00b35f); border: none; color: #121620; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; }
+        .carta { width: 60px; height: 90px; background: #252e4d; border: 2px dashed #48588f; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #48588f; }
+        .carta.ready { background: #ffffff; color: #000000; }
+        .modal-financiero { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #1e2433; padding: 25px; border-radius: 16px; width: 80%; text-align: center; }
+    </style>
 </head>
 <body>
 
@@ -35,25 +34,16 @@
             <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
             <button type="button" id="btnTogglePassword" class="btn-toggle-password">👁️</button>
         </div>
-        <div style="display:flex; justify-content:space-between;">
-            <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
-            <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
-        </div>
+        <button id="btnLogin" class="btn-play" style="width:100%; padding:10px; margin-bottom:10px;">INGRESAR</button>
+        <button id="btnRegister" class="btn-auth" style="width:100%; background:transparent; color:#00ff88; border:1px solid #00ff88;">Registrarse</button>
     </div>
 
     <div id="gameInterface" class="game-interface">
         <div class="header">
-            <div>
-                <div id="nombreUsuarioActivo" style="font-weight: bold; color: #00ff88;">Usuario</div>
-                <button id="btnSignOut" style="background:none; border:none; color:red; cursor:pointer;">Salir</button>
-            </div>
-            <div style="text-align: right;">
-                <div id="saldoDisplay" class="saldo-monto">$0</div>
-                <button id="btnAbrirRecarga" style="background:#00b35f; border:none; color:white; padding:5px; border-radius:4px;">Recargar</button>
-                <button id="btnAbrirRetiro" style="background:#ff3366; border:none; color:white; padding:5px; border-radius:4px;">Retirar</button>
-            </div>
+            <div id="nombreUsuarioActivo">Usuario</div>
+            <button id="btnSignOut">Salir</button>
         </div>
-
+        <div id="saldoDisplay" class="saldo-monto">$0</div>
         <div class="mesas-grid">
             <button class="mesa-btn active" data-valor="2000">N1</button>
             <button class="mesa-btn" data-valor="4000">N2</button>
@@ -61,18 +51,15 @@
             <button class="mesa-btn" data-valor="16000">N4</button>
             <button class="mesa-btn" data-valor="32000">N5</button>
         </div>
-
         <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
+        <div id="historyList"></div>
     </div>
 </div>
-
-<div id="modalRecarga" class="modal-financiero"><div class="modal-content"><h3>Recargar</h3><button id="btnCerrarRecarga">Cerrar</button></div></div>
-<div id="modalRetiro" class="modal-financiero"><div class="modal-content"><h3>Retirar</h3><button id="btnCerrarRetiro">Cerrar</button></div></div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -88,19 +75,12 @@
     const db = getDatabase(app);
     const auth = getAuth(app);
 
-    // Lógica Ojo
-    document.getElementById('btnTogglePassword').onclick = () => {
+    // Lógica para el botón de mostrar contraseña
+    document.getElementById('btnTogglePassword').addEventListener('click', () => {
         const p = document.getElementById('passwordInput');
         p.type = p.type === 'password' ? 'text' : 'password';
-    };
+    });
 
-    // Modales
-    document.getElementById('btnAbrirRecarga').onclick = () => document.getElementById('modalRecarga').style.display = 'flex';
-    document.getElementById('btnCerrarRecarga').onclick = () => document.getElementById('modalRecarga').style.display = 'none';
-    document.getElementById('btnAbrirRetiro').onclick = () => document.getElementById('modalRetiro').style.display = 'flex';
-    document.getElementById('btnCerrarRetiro').onclick = () => document.getElementById('modalRetiro').style.display = 'none';
-
-    // Auth
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('authContainer').style.display = 'none';
