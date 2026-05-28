@@ -2,70 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carta Mayor P2P</title>
     <style>
-        /* CSS INTEGRADO - Mismos estilos premium */
-        body { margin: 0; padding: 0; background-color: #121620; color: #ffffff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .app-container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
-        .auth-container { background: linear-gradient(135deg, #1e2433, #151a26); padding: 25px; border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 15px; border: 1px solid #252e4d; }
-        .auth-container h2 { margin: 0; font-size: 1.4rem; text-align: center; color: #00ff88; }
-        .auth-input { width: 100%; padding: 12px; box-sizing: border-box; background-color: #0f131a; border: 1px solid #3b4875; border-radius: 8px; color: white; }
-        .password-wrapper { position: relative; width: 100%; }
-        .btn-toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #a0aec0; cursor: pointer; }
-        .btn-auth { flex: 1; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; }
-        .btn-login { background: #00ff88; color: #121620; }
-        .btn-register { background: transparent; color: #00ff88; border: 2px solid #00ff88; }
-        .game-interface { display: none; flex-direction: column; gap: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #1e2433, #151a26); padding: 15px; border-radius: 12px; }
-        .saldo-monto { font-size: 1.2rem; font-weight: bold; color: #00ff88; }
-        .mesa-btn { background: #252e4d; border: 2px solid #3b4875; color: white; padding: 10px; border-radius: 8px; cursor: pointer; }
-        .mesa-btn.active { background: #00ff88; color: #121620; }
-        .btn-play { background: linear-gradient(135deg, #00ff88, #00b35f); border: none; color: #121620; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; }
-        .carta { width: 60px; height: 90px; background: #252e4d; border: 2px dashed #48588f; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: bold; color: #48588f; }
-        .carta.ready { background: #ffffff; color: #000000; border: 2px solid #ffffff; }
-        .modal-financiero { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1e2433; padding: 25px; border-radius: 16px; width: 80%; max-width: 400px; text-align: center; }
+        body { background-color: #060a1f; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; margin: 0; }
+        .app-container { width: 100%; max-width: 450px; padding: 20px; }
+        #authContainer { display: block; }
+        #gameInterface { display: none; }
+        .btn-play { width: 100%; padding: 20px; background: #d4af37; border: none; font-weight: bold; cursor: pointer; border-radius: 10px; }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div id="authContainer" class="auth-container">
-        <h2>SuerteFácil P2P</h2>
-        <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
-        <div class="password-wrapper">
-            <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
-            <button type="button" id="btnTogglePassword" class="btn-toggle-password">👁️</button>
-        </div>
-        <div class="auth-buttons" style="display:flex; gap:10px;">
-            <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
-            <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
-        </div>
+    <div id="authContainer">
+        <h2>Ingreso</h2>
+        <input type="email" id="emailInput" placeholder="Correo">
+        <input type="password" id="passwordInput" placeholder="Contraseña">
+        <button id="btnLogin">ENTRAR</button>
     </div>
 
-    <div id="gameInterface" class="game-interface">
-        <div class="header">
-            <div id="nombreUsuarioActivo" style="font-weight: bold; color: #e2e8f0; cursor: pointer;">Usuario</div>
-            <button id="btnSignOut" class="btn-logout" style="background:transparent; color:#ff3366; border:1px solid #ff3366; padding:3px; cursor:pointer;">Salir</button>
-        </div>
-        <div class="saldo-box" style="text-align:right;">
-            <div id="saldoDisplay" class="saldo-monto">$0</div>
-            <button id="btnAbrirRecarga" class="btn-transaccion" style="background:#00b35f; color:white; border:none; padding:5px; cursor:pointer;">+ RECARGAR</button>
-        </div>
-        <div class="game-mat" style="background:radial-gradient(circle, #1a2f24, #0f1c15); padding:15px; border-radius:16px; display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;">
-            <div class="slot-jugador"><div id="cartaLocal" class="carta">?</div><div>Tú</div></div>
-            <div class="slot-jugador"><div id="cartaRival1" class="carta">?</div><div>Rival</div></div>
-            <div class="slot-jugador"><div id="cartaRival2" class="carta">?</div><div>Rival</div></div>
-        </div>
-        <button id="botonJugar" class="btn-play">BUSCAR PARTIDA ($2k)</button>
+    <div id="gameInterface">
+        <div id="saldoDisplay">$0</div>
+        <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
+        <div id="historyList"></div>
     </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue, off, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -78,44 +44,29 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
     const auth = getAuth(app);
+    const db = getDatabase(app);
 
-    // Lógica del Ojo
-    document.getElementById('btnTogglePassword').onclick = () => {
-        const p = document.getElementById('passwordInput');
-        p.type = p.type === 'password' ? 'text' : 'password';
-    };
-
-    // Lógica Admin (3 segundos)
-    let timer;
-    const nombreUsuario = document.getElementById('nombreUsuarioActivo');
-    nombreUsuario.addEventListener('mousedown', () => {
-        timer = setTimeout(() => {
-            const nuevo = prompt("Modo Admin: Nuevo Saldo");
-            if(nuevo && auth.currentUser) set(ref(db, 'usuarios/' + auth.currentUser.uid + '/saldo'), Number(nuevo));
-        }, 3000);
-    });
-    nombreUsuario.addEventListener('mouseup', () => clearTimeout(timer));
-
-    // Estado de Autenticación
+    // ESCUCHA SI EL USUARIO ESTÁ LOGUEADO
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('gameInterface').style.display = 'flex';
-            document.getElementById('nombreUsuarioActivo').innerText = user.email.split('@')[0];
+            document.getElementById('gameInterface').style.display = 'block';
+            
+            // Cargar saldo
             onValue(ref(db, 'usuarios/' + user.uid + '/saldo'), (s) => {
-                document.getElementById('saldoDisplay').innerText = "$" + (s.val() || 0).toLocaleString();
+                document.getElementById('saldoDisplay').innerText = "$" + (s.val() || 0);
             });
         } else {
-            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('authContainer').style.display = 'block';
             document.getElementById('gameInterface').style.display = 'none';
         }
     });
 
-    document.getElementById('btnLogin').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value);
-    document.getElementById('btnRegister').onclick = () => createUserWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value);
-    document.getElementById('btnSignOut').onclick = () => signOut(auth);
+    document.getElementById('btnLogin').onclick = () => {
+        signInWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value)
+        .catch(e => alert("Error: " + e.message));
+    };
 </script>
 </body>
 </html>
