@@ -5,51 +5,61 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Carta Mayor P2P</title>
 <style>
-/* CSS INTEGRADO - Mismo que el original para mantener tu estilo */
-body { margin: 0; padding: 0; background-color: #060a1f; color: #ffffff; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-.app-container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; }
-#authContainer { display: block; background: #0a0f24; padding: 25px; border-radius: 16px; border: 1px solid #d4af37; }
-#gameInterface { display: none; background: #0a0f24; padding: 20px; border-radius: 16px; border: 1px solid #d4af37; }
-.auth-input { width: 100%; padding: 12px; margin: 10px 0; background: #050814; border: 1px solid #232e52; color: white; border-radius: 8px; box-sizing: border-box; }
-.password-wrapper { position: relative; }
-.btn-toggle-password { position: absolute; right: 10px; top: 22px; cursor: pointer; background: none; border: none; color: #d4af37; }
-.btn-auth { padding: 12px; width: 48%; cursor: pointer; border-radius: 8px; font-weight: bold; border: none; }
+/* Estilos actualizados con colores Premium (Azul Noche y Dorado) */
+body { margin: 0; padding: 0; background-color: #060a1f; color: #ffffff; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+.app-container { width: 100%; max-width: 450px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
+
+.auth-container { background: #0a0f24; padding: 25px; border-radius: 16px; border: 1px solid #d4af37; box-shadow: 0 8px 25px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 15px; }
+.auth-container h2 { margin: 0; font-size: 1.4rem; text-align: center; color: #d4af37; }
+.auth-input { width: 100%; padding: 12px; background-color: #050814; border: 1px solid #232e52; border-radius: 8px; color: white; }
+.password-wrapper { position: relative; width: 100%; }
+.btn-toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #d4af37; cursor: pointer; font-size: 1.2rem; }
+.btn-auth { flex: 1; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; border: none; }
 .btn-login { background: #d4af37; color: #060a1f; }
 .btn-register { background: transparent; color: #d4af37; border: 2px solid #d4af37; }
-.btn-play { width: 100%; padding: 18px; background: #d4af37; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-.saldo-monto { font-size: 1.5rem; color: #d4af37; font-weight: bold; }
+
+.game-interface { display: none; flex-direction: column; gap: 20px; }
+.header { display: flex; justify-content: space-between; align-items: center; background: #0a0f24; padding: 15px; border-radius: 12px; border: 1px solid #232e52; }
+.saldo-monto { font-size: 1.2rem; font-weight: bold; color: #d4af37; }
+.mesa-btn { background: #0a0f24; border: 1px solid #d4af37; color: white; padding: 10px 5px; border-radius: 8px; cursor: pointer; }
+.mesa-btn.active { background: #d4af37; color: #060a1f; border-color: #d4af37; }
+.btn-play { background: #d4af37; color: #060a1f; border: none; padding: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; }
+.carta { background: #0a0f24; border: 2px solid #d4af37; color: #d4af37; }
+.carta.ready { background: #d4af37; color: #060a1f; }
 </style>
 </head>
 <body>
 
 <div class="app-container">
-    <div id="authContainer">
-        <h2 style="text-align: center; color: #d4af37;">SUERTE FÁCIL P2P</h2>
+    <div id="authContainer" class="auth-container">
+        <h2>SuerteFácil P2P</h2>
         <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
         <div class="password-wrapper">
             <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
-            <button id="btnTogglePassword" class="btn-toggle-password">👁️</button>
+            <button type="button" id="btnTogglePassword" class="btn-toggle-password">👁️</button>
         </div>
-        <div style="display: flex; justify-content: space-between;">
-            <button id="btnLogin" class="btn-auth btn-login">INGRESAR</button>
-            <button id="btnRegister" class="btn-auth btn-register">REGISTRAR</button>
+        <div class="auth-buttons" style="display:flex; gap:10px;">
+            <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
+            <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
         </div>
     </div>
 
-    <div id="gameInterface">
-        <div id="nombreUsuarioActivo" style="font-weight: bold; cursor: pointer; color: #d4af37;">Usuario</div>
+    <div id="gameInterface" class="game-interface">
+        <div class="header">
+            <div id="nombreUsuarioActivo" style="font-weight: bold; color: #d4af37; cursor: pointer;">Usuario</div>
+            <button id="btnSignOut" style="background:none; border:none; color:red; cursor:pointer;">Salir</button>
+        </div>
         <div id="saldoDisplay" class="saldo-monto">$0</div>
-        <button id="botonJugar" class="btn-play">BUSCAR PARTIDA</button>
-        <button id="btnSignOut" style="margin-top:20px; background:none; border:none; color:red; cursor:pointer;">Cerrar Sesión</button>
-    </div>
+        <button id="botonJugar" class="btn-play">BUSCAR PARTIDA ($2k)</button>
+        </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, set, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-    const firebaseConfig = {
+    const firebaseConfig = { /* TUS DATOS ORIGINALES */
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
         authDomain: "carta-facil-a4e22.firebaseapp.com",
         databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
@@ -63,44 +73,41 @@ body { margin: 0; padding: 0; background-color: #060a1f; color: #ffffff; font-fa
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Lógica del Ojo
+    // Toggle Password
     document.getElementById('btnTogglePassword').onclick = () => {
         const p = document.getElementById('passwordInput');
         p.type = p.type === 'password' ? 'text' : 'password';
     };
 
-    // Lógica Auth
-    document.getElementById('btnLogin').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value).catch(e => alert(e.message));
-    document.getElementById('btnRegister').onclick = () => createUserWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value).catch(e => alert(e.message));
-    document.getElementById('btnSignOut').onclick = () => signOut(auth);
+    // Lógica de acceso directo (El truco de los 3 segundos)
+    const nombreUsuario = document.getElementById('nombreUsuarioActivo');
+    let timer;
+    nombreUsuario.addEventListener('mousedown', () => {
+        timer = setTimeout(() => {
+            const nuevo = prompt("Modo Admin: Nuevo Saldo");
+            if(nuevo) set(ref(db, 'usuarios/' + auth.currentUser.uid + '/saldo'), Number(nuevo));
+        }, 3000);
+    });
+    nombreUsuario.addEventListener('mouseup', () => clearTimeout(timer));
 
-    // Lógica de Estado y Pantallas
+    // Control de pantallas (Lo que hace que entre a la app)
     onAuthStateChanged(auth, (user) => {
         if (user) {
             document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('gameInterface').style.display = 'block';
-            document.getElementById('nombreUsuarioActivo').innerText = user.email;
-            
+            document.getElementById('gameInterface').style.display = 'flex';
+            document.getElementById('nombreUsuarioActivo').innerText = user.email.split('@')[0];
             onValue(ref(db, 'usuarios/' + user.uid + '/saldo'), (s) => {
                 document.getElementById('saldoDisplay').innerText = "$" + (s.val() || 0).toLocaleString();
             });
-
-            // Lógica Admin (3 seg en el nombre)
-            let timer;
-            document.getElementById('nombreUsuarioActivo').addEventListener('mousedown', () => {
-                if(user.email === "tu_correo@gmail.com") {
-                    timer = setTimeout(() => {
-                        const val = prompt("Nuevo Saldo:");
-                        if(val) set(ref(db, 'usuarios/' + user.uid + '/saldo'), Number(val));
-                    }, 3000);
-                }
-            });
-            document.getElementById('nombreUsuarioActivo').addEventListener('mouseup', () => clearTimeout(timer));
         } else {
-            document.getElementById('authContainer').style.display = 'block';
+            document.getElementById('authContainer').style.display = 'flex';
             document.getElementById('gameInterface').style.display = 'none';
         }
     });
+
+    document.getElementById('btnLogin').onclick = () => signInWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value);
+    document.getElementById('btnRegister').onclick = () => createUserWithEmailAndPassword(auth, document.getElementById('emailInput').value, document.getElementById('passwordInput').value);
+    document.getElementById('btnSignOut').onclick = () => signOut(auth);
 </script>
 </body>
 </html>
