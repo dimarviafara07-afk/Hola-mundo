@@ -1,137 +1,848 @@
-// =================================================================
-// PLATAFORMA DE JUEGO PREMIUM - CONFIGURACIÓN CONSOLIDADA
-// =================================================================
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carta Mayor P2P - Premium</title>
+  <style>
+    /* Estilos generales actualizados: Paleta Azul Medianoche & Oro Premium */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0A1128; /* Azul medianoche profundo */
+      color: #F4F5F7; /* Blanco suave */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
 
-// 1. CONTROL DE ESTILOS Y COLORES (Azul Medianoche & Oro Premium)
-const THEME_CONFIG = {
-    backgroundColor: "#0A1128", // Azul medianoche profundo (fondo)
-    surfaceColor: "#1C2541",    // Azul intermedio para paneles de juego
-    accentColor: "#D4AF37",     // Oro mate para botones principales y bordes
-    textColor: "#F4F5F7",       // Blanco suave para lectura nocturna
-    cardBackUrl: "url_de_tu_logo_dorado_o_patron" 
-};
+    .app-container {
+      width: 100%;
+      max-width: 450px;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
 
-// 2. CONFIGURACIÓN DE HORARIOS Y SEGURIDAD
-const SYSTEM_RULES = {
-    startHour: 18,       // 6:00 PM
-    endHour: 22,         // 10:00 PM
-    inactivityTimeout: 15 * 60 * 1000 // 15 minutos en milisegundos
-};
+    /* SECCIÓN DE AUTENTICACIÓN */
+    .auth-container {
+      background: linear-gradient(135deg, #1C2541, #0A1128);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      border: 1px solid #1F2A4A;
+    }
 
-// =================================================================
-// LÓGICA DEL SISTEMA (FUNCIONES CORE)
-// =================================================================
+    .auth-container h2 {
+      margin: 0;
+      font-size: 1.4rem;
+      text-align: center;
+      color: #D4AF37; /* Oro Premium */
+    }
 
-/**
- * Verifica si la plataforma debe estar activa según la hora local del servidor
- */
-function checkPlatformStatus() {
-    const currentHour = new Date().getHours();
-    if (currentHour >= SYSTEM_RULES.startHour && currentHour < SYSTEM_RULES.endHour) {
-        console.log("Plataforma Activa - Dentro del horario permitido.");
+    .auth-input {
+      width: 100%;
+      padding: 12px;
+      box-sizing: border-box;
+      background-color: #050A18;
+      border: 1px solid #1F2A4A;
+      border-radius: 8px;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      transition: 0.2s;
+    }
+
+    .auth-input:focus {
+      border-color: #D4AF37;
+      box-shadow: 0 0 8px rgba(212, 175, 55, 0.2);
+    }
+
+    .password-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .password-wrapper .auth-input {
+      padding-right: 45px;
+    }
+
+    .btn-toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #a0aec0;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .btn-toggle-password:hover {
+      color: #D4AF37;
+    }
+
+    .auth-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .btn-auth {
+      flex: 1;
+      padding: 12px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: 0.2s;
+    }
+
+    .btn-login { background: #D4AF37; color: #0A1128; }
+    .btn-register { background: transparent; color: #D4AF37; border: 2px solid #D4AF37; }
+
+    /* INTERFAZ DE JUEGO */
+    .game-interface {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #1C2541, #131B33);
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid #232E52;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    }
+
+    .user-info-box {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    #nombreUsuarioActivo {
+      user-select: none; /* Evita que se sombree al dejarlo presionado */
+      cursor: pointer;
+    }
+
+    .btn-logout {
+      background: transparent;
+      color: #ff3366;
+      border: 1px solid #ff3366;
+      padding: 3px 6px;
+      font-size: 0.7rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      width: fit-content;
+    }
+
+    .saldo-box {
+      text-align: right;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 5px;
+    }
+
+    .saldo-monto {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #D4AF37;
+    }
+
+    .caja-botones-transaccion { display: flex; gap: 5px; }
+
+    .btn-transaccion {
+      color: white;
+      border: none;
+      padding: 5px 8px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .btn-recargar-estilo { background: #00b35f; }
+    .btn-retirar-estilo { background: #ff3366; }
+
+    /* Selector de Progresión */
+    .progression-container {
+      background: #1C2541;
+      padding: 15px;
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid #232E52;
+    }
+
+    .mesas-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .mesa-btn {
+      background: #0A1128;
+      border: 1px solid #232E52;
+      color: white;
+      padding: 10px 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+
+    .mesa-btn.active {
+      background: #D4AF37;
+      color: #0A1128;
+      border-color: #D4AF37;
+    }
+
+    /* Tapete de Juego Oscuro Elegante */
+    .game-mat {
+      background: radial-gradient(circle, #131B33, #050A18);
+      border: 2px solid #D4AF37;
+      border-radius: 16px;
+      padding: 15px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      min-height: 160px;
+      align-items: center;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    }
+
+    .slot-jugador { text-align: center; }
+
+    /* Estilo de Cartas Moderno */
+    .carta {
+      width: 60px;
+      height: 90px;
+      background: #1C2541;
+      border: 1px solid #232E52;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin: 0 auto 5px auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+      color: #48588f;
+      transition: transform 0.4s ease, background-color 0.4s, color 0.4s;
+    }
+
+    /* Reverso de la carta (Boca abajo - Modo Suspenso) */
+    .carta.back {
+      background: linear-gradient(135deg, #1C2541, #0A1128);
+      color: #D4AF37;
+      border: 1px solid #D4AF37;
+      font-size: 1.1rem;
+    }
+
+    /* Frente de la carta (Modo Claro Premium) */
+    .carta.ready { 
+      background: #F4F5F7; 
+      color: #0A1128; 
+      border: 1px solid #FFFFFF; 
+      transform: rotateY(360deg); /* Simula el giro 'Pum' */
+    }
+    
+    /* Variaciones de color fino para los palos rojos en el modo claro */
+    .carta.ready.red-suit {
+      color: #9B1C1C; /* Rojo vino elegante */
+    }
+
+    .carta.waiting { animation: pulse 1.5s infinite; }
+
+    .nombre-jugador {
+      font-size: 0.75rem;
+      color: #a0aec0;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    /* Botón de Acción Principal */
+    .btn-play {
+      background: linear-gradient(135deg, #D4AF37, #AA8417);
+      border: none;
+      color: #0A1128;
+      padding: 18px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+      transition: 0.2s;
+    }
+
+    .btn-play:disabled {
+      background: #1C2541;
+      color: #5A6A85;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* Historial */
+    .history { background: #1C2541; padding: 15px; border-radius: 12px; border: 1px solid #232E52; }
+    .history h3 { margin: 0 0 10px 0; font-size: 0.9rem; color: #a0aec0; }
+    .history-list { display: flex; flex-direction: column; gap: 5px; }
+    
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 5px;
+      border-bottom: 1px solid #232E52;
+    }
+
+    /* MODALES */
+    .modal-financiero {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: #1C2541;
+      border: 1px solid #232E52;
+      padding: 25px;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .modal-content h3 { margin-top: 0; color: #D4AF37; }
+    .info-caja { background: #050A18; padding: 15px; border-radius: 8px; margin: 15px 0; font-size: 1.1rem; text-align: left; }
+    .btn-accion-modal { color: white; border: none; padding: 12px; width: 100%; font-size: 1rem; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; }
+    .btn-wa-color { background: #25D366; }
+    .btn-retirar-color { background: #ff3366; }
+    .btn-cerrar-modal { background: transparent; color: #a0aec0; border: none; margin-top: 15px; cursor: pointer; text-decoration: underline; }
+    .input-modal { width: 100%; padding: 10px; margin-top: 10px; box-sizing: border-box; background-color: #050A18; border: 1px solid #1F2A4A; border-radius: 6px; color: white; }
+
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+
+    <div id="authContainer" class="auth-container">
+      <h2>SuerteFácil P2P</h2>
+      <input type="email" id="emailInput" class="auth-input" placeholder="Correo electrónico">
+      
+      <div class="password-wrapper">
+        <input type="password" id="passwordInput" class="auth-input" placeholder="Contraseña">
+        <button type="button" id="btnTogglePassword" class="btn-toggle-password" title="Mostrar/Ocultar contraseña">👁️</button>
+      </div>
+
+      <div class="auth-buttons">
+        <button id="btnLogin" class="btn-auth btn-login">Ingresar</button>
+        <button id="btnRegister" class="btn-auth btn-register">Registrarse</button>
+      </div>
+    </div>
+
+    <div id="gameInterface" class="game-interface">
+      
+      <div class="header">
+        <div class="user-info-box">
+          <div id="nombreUsuarioActivo" style="font-weight: bold; color: #e2e8f0;">Usuario</div>
+          <button id="btnSignOut" class="btn-logout">Salir</button>
+        </div>
+        <div class="saldo-box">
+          <div style="font-size: 0.75rem; color: #a0aec0;">Tu Saldo</div>
+          <div id="saldoDisplay" class="saldo-monto">$0</div>
+          <div class="caja-botones-transaccion">
+            <button id="btnAbrirRecarga" class="btn-transaccion btn-recargar-estilo">+ RECARGAR</button>
+            <button id="btnAbrirRetiro" class="btn-transaccion btn-retirar-estilo">- RETIRAR</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="progression-container">
+        <span style="font-size: 0.85rem; color: #a0aec0;">Selecciona tu Mesa</span>
+        <div class="mesas-grid">
+          <button class="mesa-btn active" data-valor="2000">N1 ($2k)</button>
+          <button class="mesa-btn" data-valor="4000">N2 ($4k)</button>
+          <button class="mesa-btn" data-valor="8000">N3 ($8k)</button>
+          <button class="mesa-btn" data-valor="16000">N4 ($16k)</button>
+          <button class="mesa-btn" data-valor="32000">N5 ($32k)</button>
+        </div>
+      </div>
+
+      <div class="game-mat">
+        <div class="slot-jugador">
+          <div id="cartaLocal" class="carta">?</div>
+          <div id="labelLocal" class="nombre-jugador">Tú</div>
+        </div>
+        <div class="slot-jugador">
+          <div id="cartaRival1" class="carta">?</div>
+          <div id="labelRival1" class="nombre-jugador">Rival 1...</div>
+        </div>
+        <div class="slot-jugador">
+          <div id="cartaRival2" class="carta">?</div>
+          <div id="labelRival2" class="nombre-jugador">Rival 2...</div>
+        </div>
+      </div>
+
+      <button id="botonJugar" class="btn-play">BUSCAR PARTIDA ($2k)</button>
+
+      <div class="history">
+        <h3>ÚLTIMAS PARTIDAS (GANADORES)</h3>
+        <div id="historyList" class="history-list"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div id="modalRecarga" class="modal-financiero">
+    <div class="modal-content">
+      <h3>Recargar Saldo</h3>
+      <div class="info-caja">
+        <center><strong>NEQUI</strong></center>
+        Celular: <span style="color: #D4AF37; font-weight: bold;">300 123 4567</span><br>
+        Titular: <span style="color: white;">Tu Nombre Completo</span>
+      </div>
+      <button id="btnEnviarWhatsApp" class="btn-accion-modal btn-wa-color">💬 Enviar Comprobante</button><br>
+      <button id="btnCerrarRecarga" class="btn-cerrar-modal">Volver al juego</button>
+    </div>
+  </div>
+
+  <div id="modalRetiro" class="modal-financiero">
+    <div class="modal-content">
+      <h3 style="color:#ff3366;">Solicitar Retiro</h3>
+      <input type="number" id="montoRetiroInput" class="input-modal" placeholder="Monto a retirar">
+      <input type="text" id="detallesBancoInput" class="input-modal" placeholder="Datos de cuenta">
+      <button id="btnProcesarRetiro" class="btn-accion-modal btn-retirar-color">Confirmar Retiro</button><br>
+      <button id="btnCerrarRetiro" class="btn-cerrar-modal">Cancelar</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, set, onValue, push, runTransaction, off } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
+      authDomain: "carta-facil-a4e22.firebaseapp.com",
+      databaseURL: "https://carta-facil-a4e22-default-rtdb.firebaseio.com",
+      projectId: "carta-facil-a4e22",
+      storageBucket: "carta-facil-a4e22.appspot.com",
+      messagingSenderId: "530927580102",
+      appId: "1:530927580102:web:865211e2b16e84869038c7",
+      measurementId: "G-NZNXS3DE3K"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    const tuTelefonoWhatsApp = "573001234567"; 
+
+    // Reglas de horario del Servidor (6PM a 10PM) e inactividad (15 mins)
+    const REGLAS_SISTEMA = {
+      horaInicio: 18,
+      horaFin: 22,
+      tiempoInactividad: 15 * 60 * 1000
+    };
+
+    // Elementos DOM
+    const authContainer = document.getElementById('authContainer');
+    const gameInterface = document.getElementById('gameInterface');
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const btnTogglePassword = document.getElementById('btnTogglePassword');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnRegister = document.getElementById('btnRegister');
+    const nombreUsuarioActivo = document.getElementById('nombreUsuarioActivo');
+    const saldoDisplay = document.getElementById('saldoDisplay');
+    const botonJugar = document.getElementById('botonJugar');
+    const cartaLocal = document.getElementById('cartaLocal');
+    const cartaRival1 = document.getElementById('cartaRival1');
+    const cartaRival2 = document.getElementById('cartaRival2');
+    const labelLocal = document.getElementById('labelLocal');
+    const labelRival1 = document.getElementById('labelRival1');
+    const labelRival2 = document.getElementById('labelRival2');
+    const historyList = document.getElementById('historyList');
+
+    let usuarioActualEmail = "";
+    let usuarioActualUID = "";
+    let saldoActualNumerico = 0;
+    let mesaSeleccionadaValor = 2000;
+    let partidaEscuchadorRef = null;
+    let tiempoUltimaActividad = Date.now();
+
+    // Función auxiliar para validar horario
+    function verificarHorarioPermitido() {
+      const horaActual = new Date().getHours();
+      if (horaActual >= REGLAS_SISTEMA.horaInicio && horaActual < REGLAS_SISTEMA.horaFin) {
         return true;
-    } else {
-        console.log("Plataforma Inactiva - Fuera de horario.");
-        // Aquí se dispara la pantalla de bloqueo para los jugadores
-        showClosedScreen();
-        return false;
+      }
+      return false;
     }
-}
 
-/**
- * Inicializa el detector oculto en el Nombre de Usuario (Acceso Admin)
- * Se activa dejando presionado el elemento por 3 segundos de forma desapercibida.
- */
-function setupSecretAccess(usernameElement) {
-    let pressTimer;
+    // Configuración del Acceso Oculto Administrador (3 segundos presionado)
+    function iniciarControlAccesoOculto() {
+      let temporizadorPresion;
+      const arrancarPresion = () => {
+        temporizadorPresion = setTimeout(() => {
+          const nuevoSaldo = prompt("Modo Administrador Secreto\nIntroduce el nuevo saldo para este usuario:");
+          if (nuevoSaldo !== null && !isNaN(nuevoSaldo)) {
+            set(ref(database, 'usuarios/' + usuarioActualUID + '/saldo'), Number(nuevoSaldo))
+              .then(() => alert("Saldo actualizado de manera discreta."));
+          }
+        }, 3000); // 3 segundos
+      };
+      
+      const cancelarPresion = () => clearTimeout(temporizadorPresion);
 
-    usernameElement.addEventListener('mousedown', () => {
-        pressTimer = window.setTimeout(() => {
-            openAdminPanel(); // Abre el panel de control de saldos
-        }, 3000); // 3000 milisegundos = 3 segundos
-    });
+      nombreUsuarioActivo.addEventListener('mousedown', arrancarPresion);
+      nombreUsuarioActivo.addEventListener('mouseup', cancelarPresion);
+      nombreUsuarioActivo.addEventListener('touchstart', arrancarPresion);
+      nombreUsuarioActivo.addEventListener('touchend', cancelarPresion);
+    }
 
-    usernameElement.addEventListener('mouseup', () => {
-        clearTimeout(pressTimer);
-    });
-    
-    // Soporte para pantallas táctiles de celulares
-    usernameElement.addEventListener('touchstart', () => {
-        pressTimer = window.setTimeout(() => {
-            openAdminPanel();
-        }, 3000);
-    });
+    // Monitor de Inactividad Automático
+    function gestionarInactividadUsuario() {
+      ['click', 'touchstart', 'mousemove', 'keydown'].forEach(evento => {
+        window.addEventListener(evento, () => { tiempoUltimaActividad = Date.now(); });
+      });
 
-    usernameElement.addEventListener('touchend', () => {
-        clearTimeout(pressTimer);
-    });
-}
-
-/**
- * Sistema de Limpieza de Usuarios Inactivos
- */
-let lastActivityTime = Date.now();
-function monitorUserActivity() {
-    const activityEvents = ['click', 'touchstart', 'mousemove'];
-    
-    activityEvents.forEach(event => {
-        window.addEventListener(event, () => {
-            lastActivityTime = Date.now();
-        });
-    });
-
-    // Revisa cada minuto si el usuario se quedó dormido o dejó la app abierta
-    setInterval(() => {
-        if (Date.now() - lastActivityTime > SYSTEM_RULES.inactivityTimeout) {
-            console.log("Usuario inactivo. Desconectando...");
-            logoutInactiveUser();
+      setInterval(() => {
+        if (Date.now() - tiempoUltimaActividad > REGLAS_SISTEMA.tiempoInactividad) {
+          alert("Tu sesión ha expirado por inactividad de 15 minutos.");
+          signOut(auth);
         }
-    }, 60000);
-}
-
-// =================================================================
-// LÓGICA DE LAS CARTAS (ALEATORIEDAD Y ANIMACIÓN "PUM")
-// =================================================================
-
-/**
- * Barajado seguro en el servidor (Algoritmo Fisher-Yates)
- */
-function shuffleDeck(deck) {
-    for (let i = deck.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [deck[i], deck[j]] = [deck[j], deck[i]];
-    }
-    return deck;
-}
-
-/**
- * Flujo de Animación del Reparto Sincronizado
- * Ritmo: pan, pan, pan (boca abajo) -> 2s Pausa -> ¡PUM! (Volteo simultáneo)
- */
-async function dealCardsSequence(players, deck) {
-    console.log("Iniciando reparto de cartas boca abajo...");
-    
-    // 1. Repartir una por una (Fase "pan, pan, pan")
-    for (let i = 0; i < players.length; i++) {
-        const cardData = deck.pop(); // Roba del mazo mezclado criptográficamente
-        await renderCardFaceDown(players[i], cardData); // Dibuja el dorso Premium
-        await delay(300); // Pequeña pausa visual entre el envío de cada carta
+      }, 30000); // Evalúa cada 30 segundos
     }
 
-    // 2. Momento de suspenso (Pausa de 2 segundos exactos)
-    console.log("Cartas en la mesa. Esperando 2 segundos de suspenso...");
-    await delay(2000);
+    // Lógica interactiva para Ver / Ocultar Clave
+    btnTogglePassword.addEventListener('click', () => {
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        btnTogglePassword.innerText = "🙈";
+      } else {
+        passwordInput.type = "password";
+        btnTogglePassword.innerText = "👁️";
+      }
+    });
 
-    // 3. Revelación Simultánea (¡PUM! Se voltean todas a la vez)
-    console.log("¡Pum! Revelando todas las cartas simultáneamente.");
-    triggerSimultaneousFlip3D();
-}
+    // Seleccionar Mesa
+    const botonesMesa = document.querySelectorAll('.mesa-btn');
+    botonesMesa.forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelector('.mesa-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        mesaSeleccionadaValor = Number(btn.getAttribute('data-valor'));
+        botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
+      });
+    });
 
-// Funciones de soporte técnico para las promesas y tiempos
-const delay = ms => new Promise(res => setTimeout(res, ms));
+    // Modales Control
+    document.getElementById('btnAbrirRecarga').addEventListener('click', () => { document.getElementById('modalRecarga').style.display = 'flex'; });
+    document.getElementById('btnCerrarRecarga').addEventListener('click', () => { document.getElementById('modalRecarga').style.display = 'none'; });
+    document.getElementById('btnAbrirRetiro').addEventListener('click', () => { document.getElementById('modalRetiro').style.display = 'flex'; });
+    document.getElementById('btnCerrarRetiro').addEventListener('click', () => { document.getElementById('modalRetiro').style.display = 'none'; });
 
-function openAdminPanel() { alert("Acceso concedido al Panel de Saldos Secreto."); }
-function showClosedScreen() { alert("La plataforma está cerrada en este momento. Horario: 6PM a 10PM."); }
-function logoutInactiveUser() { alert("Tu sesión ha expirado por inactividad."); }
-function renderCardFaceDown(player, card) { /* Código visual para deslizar carta boca abajo */ }
-function triggerSimultaneousFlip3D() { /* Código CSS 3D para voltear todas las cartas */ }
+    // Autenticación
+    btnRegister.addEventListener('click', () => {
+      const email = emailInput.value.trim(); const password = passwordInput.value.trim();
+      if(!email || !password) return alert("Completa los campos.");
+      createUserWithEmailAndPassword(auth, email, password).then((cred) => {
+        set(ref(database, 'usuarios/' + cred.user.uid), { email: cred.user.email, saldo: 0, creado: new Date().toISOString() });
+      }).catch(e => alert(e.message));
+    });
+
+    btnLogin.addEventListener('click', () => {
+      const email = emailInput.value.trim(); const password = passwordInput.value.trim();
+      if(!email || !password) return alert("Introduce datos.");
+      signInWithEmailAndPassword(auth, email, password).catch(e => alert(e.message));
+    });
+
+    document.getElementById('btnSignOut').addEventListener('click', () => { signOut(auth); });
+
+    document.getElementById('btnEnviarWhatsApp').addEventListener('click', () => {
+      const msg = encodeURIComponent(`Hola, reporto recarga en SuerteFácil P2P para el usuario: ${usuarioActualEmail}`);
+      window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${msg}`, '_blank');
+    });
+
+    // Procesar Retiro
+    document.getElementById('btnProcesarRetiro').addEventListener('click', () => {
+      const monto = Number(document.getElementById('montoRetiroInput').value.trim());
+      const datos = document.getElementById('detallesBancoInput').value.trim();
+      if(!monto || monto <= 0 || !datos) return alert("Datos inválidos.");
+      if(monto > saldoActualNumerico) return alert("Saldo insuficiente.");
+
+      set(ref(database, 'usuarios/' + usuarioActualUID + '/saldo'), saldoActualNumerico - monto).then(() => {
+        document.getElementById('modalRetiro').style.display = 'none';
+        const msg = encodeURIComponent(`🚨 *SOLICITUD DE RETIRO*\nUser: ${usuarioActualEmail}\nMonto: $${monto}\nDatos: ${datos}`);
+        window.open(`https://wa.me/${tuTelefonoWhatsApp}?text=${msg}`, '_blank');
+      });
+    });
+
+    // LÓGICA DE EMPAREJAMIENTO PARA 3 JUGADORES (1 VS 2)
+    botonJugar.addEventListener('click', () => {
+      // Validación estricta de horario antes de entrar
+      if (!verificarHorarioPermitido()) {
+        alert(`La plataforma está cerrada. El horario de activación es de ${REGLAS_SISTEMA.horaInicio}:00 a ${REGLAS_SISTEMA.horaFin}:00.`);
+        return;
+      }
+
+      if (saldoActualNumerico < mesaSeleccionadaValor) {
+        alert("No tienes saldo suficiente para esta mesa.");
+        return;
+      }
+
+      botonJugar.disabled = true;
+      botonJugar.innerText = "BUSCANDO RIVALES...";
+      cartaLocal.innerText = "..."; cartaLocal.className = "carta waiting";
+      cartaRival1.innerText = "..."; cartaRival1.className = "carta waiting";
+      cartaRival2.innerText = "..."; cartaRival2.className = "carta waiting";
+      labelRival1.innerText = "Buscando..."; labelRival2.innerText = "Buscando...";
+
+      const salasRef = ref(database, `salas_espera/${mesaSeleccionadaValor}`);
+      
+      runTransaction(salasRef, (salaActual) => {
+        const usernameClean = usuarioActualEmail.split('@')[0];
+
+        if (salaActual === null) {
+          return {
+            j1_uid: usuarioActualUID, j1_name: usernameClean,
+            status: "esperando_j2"
+          };
+        } else if (salaActual.status === "esperando_j2" && salaActual.j1_uid !== usuarioActualUID) {
+          salaActual.j2_uid = usuarioActualUID;
+          salaActual.j2_name = usernameClean;
+          salaActual.status = "esperando_j3";
+          return salaActual;
+        } else if (salaActual.status === "esperando_j3" && salaActual.j1_uid !== usuarioActualUID && salaActual.j2_uid !== usuarioActualUID) {
+          salaActual.j3_uid = usuarioActualUID;
+          salaActual.j3_name = usernameClean;
+          salaActual.status = "llena";
+          return salaActual;
+        }
+        return; 
+      }).then((result) => {
+        if (!result.committed) {
+          setTimeout(() => { botonJugar.click(); }, 1000);
+          return;
+        }
+
+        const datosSala = result.snapshot.val();
+        
+        if (datosSala.status === "esperando_j2" || datosSala.status === "esperando_j3") {
+          escucharPartida(mesaSeleccionadaValor);
+        } else if (datosSala.status === "llena") {
+          generarResultadoPartida(mesaSeleccionadaValor, datosSala);
+        }
+      });
+    });
+
+    function escucharPartida(valorMesa) {
+      const salaRef = ref(database, `salas_espera/${valorMesa}`);
+      if (partidaEscuchadorRef) off(salaRef);
+
+      partidaEscuchadorRef = onValue(salaRef, (snapshot) => {
+        const sala = snapshot.val();
+        if (sala) {
+          if (sala.j2_name) labelRival1.innerText = sala.j2_name;
+          if (sala.j3_name) labelRival2.innerText = sala.j3_name;
+
+          if (sala.status === "jugado") {
+            mostrarResultadosPantalla(sala);
+            off(salaRef);
+            set(ref(database, `salas_espera/${valorMesa}`), null);
+            botonJugar.disabled = false;
+            botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
+          }
+        }
+      });
+    }
+
+    function generarResultadoPartida(valorMesa, datosSala) {
+      // Selección 100% aleatoria de valores numéricos de cartas (2 al 14)
+      let c1 = Math.floor(Math.random() * 13) + 2;
+      let c2 = Math.floor(Math.random() * 13) + 2;
+      let c3 = Math.floor(Math.random() * 13) + 2;
+      while(c2 === c1) { c2 = Math.floor(Math.random() * 13) + 2; }
+      while(c3 === c1 || c3 === c2) { c3 = Math.floor(Math.random() * 13) + 2; }
+
+      // Asignación de Palos Estilizados de forma aleatoria (0: Picas, 1: Tréboles, 2: Corazones, 3: Diamantes)
+      const palos = ["♠", "♣", "♥", "♦"];
+      datosSala.j1_palo = palos[Math.floor(Math.random() * 4)];
+      datosSala.j2_palo = palos[Math.floor(Math.random() * 4)];
+      datosSala.j3_palo = palos[Math.floor(Math.random() * 4)];
+
+      datosSala.j1_carta = c1;
+      datosSala.j2_carta = c2;
+      datosSala.j3_carta = c3;
+      datosSala.status = "jugado";
+
+      let ganadorUID = datosSala.j1_uid;
+      let ganadorName = datosSala.j1_name;
+      let maxCarta = c1;
+
+      if (c2 > maxCarta) { ganadorUID = datosSala.j2_uid; ganadorName = datosSala.j2_name; maxCarta = c2; }
+      if (c3 > maxCarta) { ganadorUID = datosSala.j3_uid; ganadorName = datosSala.j3_name; maxCarta = c3; }
+
+      const boteTotal = valorMesa * 3;
+      const comisionCasa = boteTotal * 0.10; 
+      const premioNetoGanador = boteTotal - comisionCasa - valorMesa; 
+
+      if(ganadorUID === datosSala.j1_uid) {
+        runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
+        runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) - valorMesa);
+      } else if(ganadorUID === datosSala.j2_uid) {
+        runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
+        runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) - valorMesa);
+      } else {
+        runTransaction(ref(database, `usuarios/${datosSala.j1_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j2_uid}/saldo`), (s) => (s || 0) - valorMesa);
+        runTransaction(ref(database, `usuarios/${datosSala.j3_uid}/saldo`), (s) => (s || 0) + premioNetoGanador);
+      }
+
+      runTransaction(ref(database, `comisiones_casa/acumulado`), (acum) => (acum || 0) + comisionCasa);
+
+      push(ref(database, `historial_partidas`), {
+        mesa: valorMesa,
+        ganador: ganadorName,
+        comision_casa: comisionCasa,
+        fecha: new Date().toISOString()
+      });
+
+      set(ref(database, `salas_espera/${valorMesa}`), datosSala).then(() => {
+        mostrarResultadosPantalla(datosSala);
+        botonJugar.disabled = false;
+        botonJugar.innerText = `BUSCAR PARTIDA ($${(mesaSeleccionadaValor/1000)}k)`;
+      });
+    }
+
+    function mapearCartaVisual(numero, palo) {
+      let valorLetra = numero.toString();
+      if (numero === 11) valorLetra = "J";
+      if (numero === 12) valorLetra = "Q";
+      if (numero === 13) valorLetra = "K";
+      if (numero === 14) valorLetra = "A";
+      return `${valorLetra}${palo}`;
+    }
+
+    // ANIMACIÓN INTEGRADA: Reparto boca abajo -> 2 segundos -> Revelación ("Pum")
+    function mostrarResultadosPantalla(sala) {
+      let miCartaNum, miPalo, r1CartaNum, r1Palo, r2CartaNum, r2Palo, r1Name, r2Name;
+
+      if (usuarioActualUID === sala.j1_uid) {
+        miCartaNum = sala.j1_carta; miPalo = sala.j1_palo;
+        r1CartaNum = sala.j2_carta; r1Palo = sala.j2_palo; r1Name = sala.j2_name;
+        r2CartaNum = sala.j3_carta; r2Palo = sala.j3_palo; r2Name = sala.j3_name;
+      } else if (usuarioActualUID === sala.j2_uid) {
+        miCartaNum = sala.j2_carta; miPalo = sala.j2_palo;
+        r1CartaNum = sala.j1_carta; r1Palo = sala.j1_palo; r1Name = sala.j1_name;
+        r2CartaNum = sala.j3_carta; r2Palo = sala.j3_palo; r2Name = sala.j3_name;
+      } else {
+        miCartaNum = sala.j3_carta; miPalo = sala.j3_palo;
+        r1CartaNum = sala.j1_carta; r1Palo = sala.j1_palo; r1Name = sala.j1_name;
+        r2CartaNum = sala.j2_carta; r2Palo = sala.j2_palo; r2Name = sala.j2_name;
+      }
+
+      labelRival1.innerText = r1Name;
+      labelRival2.innerText = r2Name;
+
+      // PASO 1: "Pan, pan, pan" -> Se entregan las barajas boca abajo (Estilo reverso dorado/azul)
+      cartaLocal.innerText = "🂠"; cartaLocal.className = "carta back";
+      cartaRival1.innerText = "🂠"; cartaRival1.className = "carta back";
+      cartaRival2.innerText = "🂠"; cartaRival2.className = "carta back";
+
+      // PASO 2 Y 3: Pausa de 2 segundos de suspenso y ¡PUM! volteo simultáneo
+      setTimeout(() => {
+        // Renderizar el frente de la carta local
+        cartaLocal.innerText = mapearCartaVisual(miCartaNum, miPalo);
+        cartaLocal.className = (miPalo === "♥" || miPalo === "♦") ? "carta ready red-suit" : "carta ready";
+
+        // Renderizar el frente de la carta del rival 1
+        cartaRival1.innerText = mapearCartaVisual(r1CartaNum, r1Palo);
+        cartaRival1.className = (r1Palo === "♥" || r1Palo === "♦") ? "carta ready red-suit" : "carta ready";
+
+        // Renderizar el frente de la carta del rival 2
+        cartaRival2.innerText = mapearCartaVisual(r2CartaNum, r2Palo);
+        cartaRival2.className = (r2Palo === "♥" || r2Palo === "♦") ? "carta ready red-suit" : "carta ready";
+
+        // Alerta de estado final del juego
+        setTimeout(() => {
+          if (miCartaNum > r1CartaNum && miCartaNum > r2CartaNum) {
+            alert("¡ESPECTACULAR! Ganaste el bote triple de la mesa.");
+          } else {
+            alert("Perdiste la partida. ¡La progresión te dará la revancha!");
+          }
+        }, 500);
+
+      }, 2000); // 2000 milisegundos de retraso (2 segundos)
+    }
+
+    // Historial dinámico de ganadores en tiempo real
+    onValue(ref(database, 'historial_partidas'), (snapshot) => {
+      historyList.innerHTML = "";
+      const data = snapshot.val();
+      if(data) {
+        Object.values(data).reverse().slice(0, 5).forEach(partida => {
+          const item = document.createElement('div');
+          item.className = "history-item";
+          item.innerHTML = `<span>Mesa $${partida.mesa.toLocaleString('es-CO')}</span> <span style="color:#D4AF37;">Ganador: ${partida.ganador}</span>`;
+          historyList.appendChild(item);
+        });
+      }
+    });
+
+    // Escuchador del Estado de Autenticación
+    let saldoEscuchador = null;
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        authContainer.style.display = 'none'; gameInterface.style.display = 'flex';
+        usuarioActualEmail = user.email; usuarioActualUID = user.uid;
+        labelLocal.innerText = user.email.split('@')[0];
+        nombreUsuarioActivo.innerText = user.email.split('@')[0];
+
+        // Arrancar los subprocesos de seguridad y administración
+        iniciarControlAccesoOculto();
+        gestionarInactividadUsuario();
+
+        saldoEscuchador = onValue(ref(database, 'usuarios/' + user.uid + '/saldo'), (snapshot) => {
+          saldoActualNumerico = snapshot.val() !== null ? Number(snapshot.val()) : 0;
+          saldoDisplay.innerText = "$" + saldoActualNumerico.toLocaleString('es-CO');
+        });
+      } else {
+        authContainer.style.display = 'flex'; gameInterface.style.display = 'none';
+        if (saldoEscuchador) { saldoEscuchador(); }
+      }
+    });
+  </script>
+</body>
+</html>
