@@ -6,40 +6,42 @@
     <title>SuerteFácil P2P</title>
     <style>
         :root {
-            /* Fondos - Tonos oscuros modernos (Navy/Slate) */
-            --bg-app: #0a0e17;
-            --bg-card: #131b2c;
-            --bg-card-hover: #1c263b;
-            --bg-input: #0b101a;
+            /* Fondos - Negro/Carbón elegante */
+            --bg-app: #050505;
+            --bg-card: #0d0d0d;
+            --bg-card-hover: #141414;
+            --bg-input: #0a0a0a;
             
-            /* Acento - Azul brillante */
-            --accent: #2563eb;
-            --accent-hover: #1d4ed8;
-            --accent-soft: rgba(37, 99, 235, 0.1);
-            --accent-border: rgba(37, 99, 235, 0.25);
+            /* Acento - Esmeralda vibrante */
+            --accent: #00d4aa;
+            --accent-hover: #00b894;
+            --accent-soft: rgba(0,212,170,0.08);
+            --accent-border: rgba(0,212,170,0.2);
+            --accent-glow: rgba(0,212,170,0.3);
             
-            /* Dorado brillante */
-            --gold: #f59e0b;
-            --gold-hover: #d97706;
-            --gold-soft: rgba(245, 158, 11, 0.1);
-            --gold-border: rgba(245, 158, 11, 0.25);
+            /* Dorado premium */
+            --gold: #c9a84c;
+            --gold-hover: #b8963a;
+            --gold-soft: rgba(201,168,76,0.08);
+            --gold-border: rgba(201,168,76,0.2);
             
             /* Estados */
-            --success: #10b981; /* Verde esmeralda neón */
-            --success-soft: rgba(16, 185, 129, 0.08);
-            --success-border: rgba(16, 185, 129, 0.2);
-            --danger: #ef4444; /* Rojo vibrante */
-            --danger-soft: rgba(239, 68, 68, 0.08);
-            --danger-border: rgba(239, 68, 68, 0.2);
+            --success: #00d4aa;
+            --success-soft: rgba(0,212,170,0.08);
+            --success-border: rgba(0,212,170,0.2);
+            --danger: #ff6b6b;
+            --danger-soft: rgba(255,107,107,0.08);
+            --danger-border: rgba(255,107,107,0.2);
+            --warning: #fbbf24;
             
             /* Texto */
-            --text-main: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --text-muted: #64748b;
+            --text-main: #fafafa;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
             
             /* Bordes */
-            --border-subtle: #1e293b;
-            --border-active: #f59e0b;
+            --border-subtle: #262626;
+            --border-active: #c9a84c;
             
             /* Radios */
             --radius-xs: 6px;
@@ -49,18 +51,15 @@
             --radius-xl: 22px;
             
             /* Cartas - dorso */
-            --card-back-bg: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-            --card-back-border: #f59e0b;
-            --card-back-pattern: rgba(245, 158, 11, 0.25);
+            --card-back-bg: linear-gradient(145deg, #0a0a0a 0%, #161616 50%, #0a0a0a 100%);
+            --card-back-border: #c9a84c;
+            --card-back-pattern: rgba(201,168,76,0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             background: var(--bg-app);
-            background-image: 
-                radial-gradient(ellipse at 30% 20%, rgba(37,99,235,0.05) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(245,158,11,0.04) 0%, transparent 50%);
             color: var(--text-main);
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
@@ -86,7 +85,7 @@
             text-align: center;
             margin-top: 30px;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
         }
         .auth-logo {
             font-size: 1.7rem;
@@ -96,9 +95,8 @@
             color: var(--text-main);
         }
         .auth-logo span { 
-            background: linear-gradient(135deg, var(--gold), #fcd34d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
         }
         .auth-tabs {
             display: flex;
@@ -121,8 +119,8 @@
             transition: all 0.25s;
         }
         .auth-tab.active { 
-            background: var(--gold); 
-            color: #000;
+            background: var(--accent); 
+            color: #050505;
             font-weight: 700;
         }
         .auth-input {
@@ -138,15 +136,16 @@
         }
         .auth-input:focus { 
             outline: none; 
-            border-color: var(--gold);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
         }
         .btn-primary {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: var(--radius-sm);
-            background: var(--gold);
-            color: #000;
+            background: var(--accent);
+            color: #050505;
             font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
@@ -155,8 +154,8 @@
             letter-spacing: 0.5px;
         }
         .btn-primary:hover { 
-            background: var(--gold-hover);
-            box-shadow: 0 4px 15px rgba(245,158,11,0.3);
+            background: var(--accent-hover);
+            box-shadow: 0 4px 20px var(--accent-glow);
         }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -171,20 +170,21 @@
             gap: 12px;
             flex-wrap: wrap;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
         .avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #60a5fa);
+            background: linear-gradient(135deg, var(--accent), #00f5c8);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 1rem;
-            color: #fff;
+            color: #050505;
             flex-shrink: 0;
+            box-shadow: 0 0 15px var(--accent-glow);
         }
         .user-info {
             flex: 1;
@@ -211,7 +211,7 @@
             border-radius: 50%;
             background: var(--success);
             animation: pulse-dot 2s infinite;
-            box-shadow: 0 0 6px rgba(16,185,129,0.5);
+            box-shadow: 0 0 6px var(--accent-glow);
         }
         @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
         .balance-mini {
@@ -252,13 +252,13 @@
             color: var(--success);
             border: 1px solid var(--success-border);
         }
-        .btn-dep:hover { background: rgba(16,185,129,0.18); }
+        .btn-dep:hover { background: rgba(0,212,170,0.15); }
         .btn-wit { 
             background: var(--danger-soft); 
             color: var(--danger);
             border: 1px solid var(--danger-border);
         }
-        .btn-wit:hover { background: rgba(239,68,68,0.18); }
+        .btn-wit:hover { background: rgba(255,107,107,0.15); }
         .btn-out { 
             background: transparent; 
             color: var(--text-muted); 
@@ -287,9 +287,9 @@
         }
         .comm-stat { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .comm-dot { width: 6px; height: 6px; border-radius: 50%; }
-        .comm-dot.green { background: var(--success); box-shadow: 0 0 5px rgba(16,185,129,0.5); }
-        .comm-dot.gold { background: var(--gold); box-shadow: 0 0 5px rgba(245,158,11,0.5); }
-        .comm-dot.rose { background: var(--accent); box-shadow: 0 0 5px rgba(37,99,235,0.5); }
+        .comm-dot.green { background: var(--success); box-shadow: 0 0 6px var(--accent-glow); }
+        .comm-dot.gold { background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.4); }
+        .comm-dot.amber { background: var(--warning); box-shadow: 0 0 6px rgba(251,191,36,0.4); }
         .membership-mini {
             margin-left: auto;
             font-size: 0.68rem;
@@ -313,18 +313,18 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
         }
         .game-table-main.active-game {
-            border-color: var(--gold);
-            box-shadow: 0 0 20px rgba(245,158,11,0.1);
+            border-color: var(--accent);
+            box-shadow: 0 0 25px rgba(0,212,170,0.08);
         }
         .table-felt {
-            background: linear-gradient(160deg, #022c22 0%, #064e3b 40%, #022c22 100%);
+            background: linear-gradient(160deg, #0a1a14 0%, #0d2218 40%, #091410 100%);
             border-radius: var(--radius-md);
             padding: 18px 10px;
             width: 100%;
-            border: 3px solid #1c1917;
+            border: 3px solid #3d2b1a;
             position: relative;
             box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
         }
@@ -332,7 +332,7 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.015) 0%, transparent 70%);
             border-radius: inherit;
             pointer-events: none;
         }
@@ -374,7 +374,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
         .card-back {
             background: var(--card-back-bg);
@@ -386,7 +386,7 @@
             content: '';
             position: absolute;
             inset: 5px;
-            border: 1.5px solid rgba(245,158,11,0.3);
+            border: 1.5px solid rgba(201,168,76,0.25);
             border-radius: 4px;
         }
         .card-back-pattern {
@@ -394,13 +394,13 @@
             z-index: 1;
             font-size: 1.3rem;
             font-weight: 700;
-            color: rgba(245,158,11,0.45);
+            color: rgba(201,168,76,0.4);
         }
         .card-front {
-            background: linear-gradient(150deg, #ffffff 0%, #f1f5f9 100%);
-            color: #000;
+            background: linear-gradient(150deg, #fafafa 0%, #f0f0f0 100%);
+            color: #0a0a0a;
             transform: rotateY(180deg);
-            border: 2px solid #cbd5e1;
+            border: 2px solid #d4d4d4;
         }
         .card-value {
             font-size: 1.4rem;
@@ -412,8 +412,8 @@
         }
         .card-label {
             font-size: 0.68rem;
-            color: var(--text-main);
-            font-weight: 600;
+            color: var(--text-secondary);
+            font-weight: 500;
             max-width: 78px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -422,17 +422,17 @@
         }
         .card-label.winner { 
             color: var(--success); 
-            font-weight: 800;
-            text-shadow: 0 0 10px rgba(16,185,129,0.5);
+            font-weight: 700;
+            text-shadow: 0 0 10px var(--accent-glow);
         }
         .card-label.loser { color: var(--danger); }
         .table-empty-msg {
-            color: #d1d5db;
+            color: var(--text-muted);
             font-size: 0.8rem;
             line-height: 1.5;
         }
         .table-empty-msg strong {
-            color: var(--gold);
+            color: var(--accent);
         }
 
         /* ========== SEARCH STATUS ========== */
@@ -453,7 +453,7 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background: var(--bg-card);
+            background: var(--bg-input);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -463,20 +463,19 @@
         }
         .search-avatar.found { 
             border-color: var(--success); 
-            box-shadow: 0 0 12px rgba(16,185,129,0.3);
+            box-shadow: 0 0 14px var(--accent-glow);
         }
         .search-avatar.searching { 
-            border-color: var(--accent); 
+            border-color: var(--warning); 
             animation: pulse-border 1.5s infinite; 
         }
         @keyframes pulse-border { 
-            0%,100%{ border-color: var(--accent); box-shadow: 0 0 8px rgba(37,99,235,0.2); } 
-            50%{ border-color: #60a5fa; box-shadow: 0 0 16px rgba(96,165,250,0.4); } 
+            0%,100%{ border-color: var(--warning); box-shadow: 0 0 8px rgba(251,191,36,0.2); } 
+            50%{ border-color: #fcd34d; box-shadow: 0 0 18px rgba(252,211,77,0.4); } 
         }
         .search-name {
             font-size: 0.68rem;
-            color: var(--text-main);
-            font-weight: 500;
+            color: var(--text-secondary);
             max-width: 65px;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -484,9 +483,9 @@
         }
         .search-progress-inline {
             font-size: 0.72rem;
-            color: var(--text-main);
+            color: var(--text-muted);
             margin-top: 10px;
-            font-weight: 600;
+            font-weight: 500;
         }
 
         /* ========== CONTROLS ========== */
@@ -496,7 +495,7 @@
             padding: 15px;
             margin-bottom: 10px;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
         }
         .section-label {
             font-size: 0.68rem;
@@ -525,14 +524,14 @@
             color: var(--text-secondary);
         }
         .mode-chip:hover { 
-            border-color: var(--gold);
+            border-color: var(--accent);
             background: var(--bg-card-hover);
         }
         .mode-chip.selected {
-            border-color: var(--gold);
-            background: var(--gold-soft);
-            color: var(--gold);
-            box-shadow: 0 0 12px rgba(245,158,11,0.12);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            box-shadow: 0 0 14px rgba(0,212,170,0.1);
         }
         .bet-row {
             display: flex;
@@ -555,22 +554,22 @@
             color: var(--text-secondary);
         }
         .bet-chip:hover { 
-            border-color: var(--gold);
+            border-color: var(--accent);
             background: var(--bg-card-hover);
         }
         .bet-chip.selected {
-            border-color: var(--gold);
-            background: var(--gold-soft);
-            color: var(--gold);
-            box-shadow: 0 0 10px rgba(245,158,11,0.1);
+            border-color: var(--accent);
+            background: var(--accent-soft);
+            color: var(--accent);
+            box-shadow: 0 0 10px rgba(0,212,170,0.1);
         }
         .btn-cta {
             width: 100%;
             padding: 15px;
             border: none;
             border-radius: var(--radius-sm);
-            background: var(--gold);
-            color: #000;
+            background: var(--accent);
+            color: #050505;
             font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
@@ -579,8 +578,8 @@
             letter-spacing: 1.2px;
         }
         .btn-cta:hover:not(:disabled) { 
-            background: var(--gold-hover);
-            box-shadow: 0 6px 20px rgba(245,158,11,0.35);
+            background: var(--accent-hover);
+            box-shadow: 0 6px 25px var(--accent-glow);
             transform: translateY(-1px);
         }
         .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -661,7 +660,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.88);
+            background: rgba(0,0,0,0.9);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -690,16 +689,16 @@
             border-radius: var(--radius-sm);
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--accent);
+            color: #e11d48;
             margin: 12px 0;
             letter-spacing: 1px;
-            border: 1.5px solid var(--accent);
+            border: 1.5px solid #e11d48;
         }
         .btn-wa {
             width: 100%;
             padding: 13px;
-            background: var(--success);
-            color: #000;
+            background: var(--accent);
+            color: #050505;
             border: none;
             border-radius: var(--radius-sm);
             font-weight: 700;
@@ -709,7 +708,7 @@
             letter-spacing: 0.5px;
             transition: all 0.2s;
         }
-        .btn-wa:hover { background: #0ea5e9; }
+        .btn-wa:hover { background: var(--accent-hover); }
         .btn-modal-close {
             background: none;
             border: none;
@@ -728,7 +727,7 @@
             border-radius: var(--radius-md);
             padding: 15px;
             margin-bottom: 10px;
-            box-shadow: 0 4px 16px rgba(245,158,11,0.06);
+            box-shadow: 0 4px 16px rgba(201,168,76,0.06);
         }
         .admin-title {
             color: var(--gold);
@@ -777,12 +776,12 @@
         }
         .admin-recarga input:focus { 
             outline: none; 
-            border-color: var(--gold);
+            border-color: var(--accent);
         }
         .btn-admin-recargar {
             padding: 9px 14px;
             background: var(--gold);
-            color: #000;
+            color: #050505;
             border: none;
             border-radius: var(--radius-xs);
             font-weight: 700;
@@ -854,7 +853,7 @@
             <div class="comm-stats">
                 <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
                 <div class="comm-stat"><span class="comm-dot gold"></span> <span id="statPlaying">0</span> jugando</div>
-                <div class="comm-stat"><span class="comm-dot rose"></span> <span id="statWaiting">0</span> esperando</div>
+                <div class="comm-stat"><span class="comm-dot amber"></span> <span id="statWaiting">0</span> esperando</div>
             </div>
             <div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div>
         </div>
@@ -958,28 +957,25 @@
     let esperandoPartida = false, currentMatchId = null;
 
     const pintas = [
-        { icon: '♠', color: '#0f172a' }, 
-        { icon: '♥', color: '#ef4444' }, 
-        { icon: '♦', color: '#2563eb' }, 
-        { icon: '♣', color: '#10b981' }
+        { icon: '♠', color: '#171717' }, 
+        { icon: '♥', color: '#dc2626' }, 
+        { icon: '♦', color: '#6366f1' }, 
+        { icon: '♣', color: '#059669' }
     ];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
 
     historyHeader.addEventListener('click', () => historyCollapsible.classList.toggle('open'));
-
     tabLogin.addEventListener('click', () => { tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.textContent = 'Ingresar'; });
     tabRegister.addEventListener('click', () => { tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.textContent = 'Registrarse'; });
 
     mode1v1.addEventListener('click', () => {
         if(esperandoPartida) return;
-        mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1';
-        updateTablePreview();
+        mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1'; updateTablePreview();
     });
     mode3p.addEventListener('click', () => {
         if(esperandoPartida) return;
-        mode3p.classList.add('selected'); mode1v1.classList.remove('selected'); modoJuego = '3p';
-        updateTablePreview();
+        mode3p.classList.add('selected'); mode1v1.classList.remove('selected'); modoJuego = '3p'; updateTablePreview();
     });
 
     betChips.forEach(chip => {
@@ -996,19 +992,7 @@
         const maxJ = MAX_JUGADORES[modoJuego];
         let html = '<div class="cards-row">';
         for(let i = 0; i < maxJ; i++) {
-            html += `
-                <div class="card-slot">
-                    <div class="card-wrapper">
-                        <div class="card-inner">
-                            <div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div>
-                            <div class="card-face card-front">
-                                <div class="card-value" style="color:#64748b">?</div>
-                                <div class="card-suit" style="color:#64748b">🂠</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-label">${i === 0 ? 'Tú' : 'Jugador ' + (i+1)}</div>
-                </div>`;
+            html += `<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:#737373">?</div><div class="card-suit" style="color:#737373">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;
         }
         html += '</div>';
         tableContent.innerHTML = html;
@@ -1018,15 +1002,13 @@
         if (user) {
             currentUserId = user.uid;
             currentUsername = user.email.split('@')[0];
-            authView.classList.add('hidden');
-            gameView.classList.remove('hidden');
+            authView.classList.add('hidden'); gameView.classList.remove('hidden');
             txtUsername.textContent = currentUsername;
             userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
             updateTablePreview();
 
             const presenceRef = ref(db, `presencia/${user.uid}`);
-            const connectedRef = ref(db, '.info/connected');
-            onValue(connectedRef, (snap) => {
+            onValue(ref(db, '.info/connected'), (snap) => {
                 if (snap.val() === true) {
                     set(presenceRef, { email: user.email, username: currentUsername, status: 'online', lastSeen: Date.now() });
                     onDisconnect(presenceRef).update({ status: 'offline', lastSeen: Date.now() });
@@ -1042,58 +1024,93 @@
                     document.getElementById('adminPlaying').textContent = d.partidas_jugando || 0;
                 });
                 onValue(ref(db, 'presencia'), (snap) => {
-                    const p = snap.val() || {};
-                    document.getElementById('adminOnline').textContent = Object.values(p).filter(v => v.status === 'online').length;
+                    document.getElementById('adminOnline').textContent = Object.values(snap.val()||{}).filter(v=>v.status==='online').length;
                 });
                 btnAdminRecargar.onclick = async () => {
-                    const email = adminUserEmail.value.trim().toLowerCase();
-                    const monto = parseInt(adminMontoRecarga.value);
-                    if(!email || !monto || monto < 1000) return alert('Datos inválidos');
-                    const usersSnap = await get(ref(db, 'usuarios'));
-                    const users = usersSnap.val() || {};
+                    const email = adminUserEmail.value.trim().toLowerCase(), monto = parseInt(adminMontoRecarga.value);
+                    if(!email||!monto||monto<1000) return alert('Datos inválidos');
+                    const users = (await get(ref(db,'usuarios'))).val()||{};
                     let uid = null;
-                    for(const k in users) { if(users[k].email?.toLowerCase() === email) { uid = k; break; } }
+                    for(const k in users){ if(users[k].email?.toLowerCase()===email){ uid=k; break; } }
                     if(!uid) return alert('Usuario no encontrado');
-                    await update(ref(db, `usuarios/${uid}`), { saldo: increment(monto) });
-                    await push(ref(db, 'adminData/recargas'), { adminId: currentUserId, userId: uid, email, monto, timestamp: Date.now() });
-                    alert('Recarga exitosa');
-                    adminUserEmail.value = ''; adminMontoRecarga.value = '';
+                    await update(ref(db,`usuarios/${uid}`),{saldo:increment(monto)});
+                    await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uid,email,monto,timestamp:Date.now()});
+                    alert('Recarga exitosa'); adminUserEmail.value=''; adminMontoRecarga.value='';
                 };
-            } else {
-                adminPanel.classList.add('hidden');
-            }
+            } else { adminPanel.classList.add('hidden'); }
 
-            onValue(ref(db, `usuarios/${user.uid}/saldo`), (snap) => {
-                saldoActual = snap.val() || 0;
-                saldoDisplay.textContent = '$' + saldoActual.toLocaleString('es-CO');
+            onValue(ref(db,`usuarios/${user.uid}/saldo`),(snap)=>{ saldoActual=snap.val()||0; saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO'); });
+            onValue(ref(db,`usuarios/${user.uid}/historial`),(snap)=>{
+                historialBody.innerHTML='';
+                const data=snap.val();
+                if(data){ Object.values(data).reverse().slice(0,10).forEach(item=>{ const w=item.resultado==='GANÓ'; historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${item.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${item.monto.toLocaleString('es-CO')}</td></tr>`; }); }
+                else { historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas aún</td></tr>'; }
             });
+            onValue(ref(db,'presencia'),(snap)=>{ const a=Object.values(snap.val()||{}); document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length; document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length; document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length; document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS; });
+        } else { authView.classList.remove('hidden'); gameView.classList.add('hidden'); }
+    });
 
-            onValue(ref(db, `usuarios/${user.uid}/historial`), (snap) => {
-                const data = snap.val();
-                historialBody.innerHTML = '';
-                if(data) {
-                    Object.values(data).reverse().slice(0, 10).forEach(item => {
-                        const isWin = item.resultado === 'GANÓ';
-                        historialBody.innerHTML += `
-                            <tr>
-                                <td class="${isWin ? 'result-win' : 'result-lose'}">${isWin ? '✅ Ganó' : '❌ Perdió'}</td>
-                                <td>Mesa ${item.mesa}</td>
-                                <td class="${isWin ? 'amount-win' : 'amount-lose'}">${isWin ? '+' : '-'}$${item.monto.toLocaleString('es-CO')}</td>
-                            </tr>`;
-                    });
-                } else {
-                    historialBody.innerHTML = '<tr><td colspan="3" class="history-empty">Sin partidas aún</td></tr>';
-                }
-            });
+    btnAction.addEventListener('click', async () => {
+        const email=emailInput.value.trim(), pass=passInput.value;
+        if(!email||!pass) return alert('Completa todos los campos');
+        if(pass.length<6) return alert('Mínimo 6 caracteres');
+        btnAction.disabled=true;
+        try {
+            if(tabLogin.classList.contains('active')) await signInWithEmailAndPassword(auth,email,pass);
+            else { const res=await createUserWithEmailAndPassword(auth,email,pass); await set(ref(db,`usuarios/${res.user.uid}`),{email,saldo:0,fechaRegistro:Date.now()}); alert('¡Registro exitoso!'); }
+        } catch(e){ alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos')); }
+        btnAction.disabled=false;
+    });
 
-            onValue(ref(db, 'presencia'), (snap) => {
-                const p = snap.val() || {};
-                const all = Object.values(p);
-                document.getElementById('statOnline').textContent = all.filter(v => v.status === 'online').length;
-                document.getElementById('statWaiting').textContent = all.filter(v => v.status === 'waiting').length;
-                document.getElementById('statPlaying').textContent = all.filter(v => v.status === 'playing').length;
-                document.getElementById('membershipText').textContent = `${all.filter(v => v.status === 'online').length}/${MAX_MIEMBROS}`;
-            });
+    btnLogout.addEventListener('click',()=>signOut(auth));
+    btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
+    btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
+    btnWaConfirm.addEventListener('click',()=>{ window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Adjunto comprobante de recarga.`)}`,'_blank'); nequiModal.classList.add('hidden'); });
+    btnRetirar.addEventListener('click',()=>{ if(saldoActual<=0) return alert('Sin saldo'); if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`)) window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi: `)}`,'_blank'); });
 
-        } else {
-            authView.classList.remove('hidden'); game
+    function generarCarta(){ const vi=Math.floor(Math.random()*nombresCartas.length); return {peso:vi,texto:nombresCartas[vi],pinta:pintas[Math.floor(Math.random()*pintas.length)]}; }
+    function renderSearchUI(e,t){ let h='<div class="search-inline">'; for(let i=0;i<t;i++){ const o=i<e; h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`; } h+=`</div><div class="search-progress-inline">${e}/${t} jugadores</div>`; tableContent.innerHTML=h; }
+    function renderGameCards(j,l){ let h='<div class="cards-row">'; j.forEach((p,i)=>{ h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`; }); h+='</div>'; tableContent.innerHTML=h; }
+
+    btnPlay.addEventListener('click', async () => {
+        if(!currentUserId) return;
+        if(saldoActual<apuestaActual) return alert('Saldo insuficiente');
+        const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`), maxJ=MAX_JUGADORES[modoJuego];
+        if(esperandoPartida){ await set(lobbyRef,null); await update(ref(db,`presencia/${currentUserId}`),{status:'online'}); esperandoPartida=false; btnPlay.textContent='Buscar Partida'; btnPlay.classList.remove('canceling'); updateTablePreview(); return; }
+        btnPlay.disabled=true; btnPlay.textContent='Buscando...'; btnPlay.classList.add('canceling'); esperandoPartida=true;
+        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting'}); renderSearchUI(1,maxJ);
+        const result=await runTransaction(lobbyRef,(lobby)=>{ if(!lobby||lobby.estado==='finalizado') return {host:currentUserId,jugadores:[currentUserId],estado:'esperando',creado:Date.now()}; if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){ if(!lobby.jugadores.includes(currentUserId)){ lobby.jugadores.push(currentUserId); if(lobby.jugadores.length===maxJ) lobby.estado='jugando'; } return lobby; } return lobby; });
+        if(!result.snapshot.val()){ resetSearch(); return alert('Error al conectar'); }
+        const listener=onValue(lobbyRef,async(snap)=>{ const d=snap.val(); if(!d?.jugadores){ off(lobbyRef,listener); resetSearch(); return; } renderSearchUI(d.jugadores.length,maxJ); if(d.estado==='jugando'&&d.matchId&&d.jugadores.length===maxJ){ off(lobbyRef,listener); await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}); await ejecutarPartida(d.matchId); } });
+        setTimeout(async()=>{ if((await get(lobbyRef)).val()?.jugadores?.length<maxJ){ await set(lobbyRef,null); off(lobbyRef,listener); resetSearch(); alert('Tiempo agotado.'); } },45000);
+    });
+
+    function resetSearch(){ esperandoPartida=false; btnPlay.disabled=false; btnPlay.textContent='Buscar Partida'; btnPlay.classList.remove('canceling'); updateTablePreview(); update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{}); }
+
+    async function ejecutarPartida(matchId){
+        currentMatchId=matchId; btnPlay.textContent='Repartiendo...';
+        const data=(await get(ref(db,`matches/${matchId}`))).val();
+        if(!data?.jugadores){ resetSearch(); return; }
+        const jugadores=data.jugadores, miIdx=jugadores.findIndex(j=>j.uid===currentUserId), labels=jugadores.map((j,i)=>i===miIdx?'Tú':j.username);
+        renderGameCards(jugadores,labels);
+        setTimeout(()=>{ btnPlay.textContent='Revelando...'; document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+            setTimeout(async()=>{
+                const pesos=jugadores.map(j=>j.carta.peso), maxP=Math.max(...pesos);
+                let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
+                if(jugadores.filter(j=>j.carta.peso===maxP).length>1){ const o={'♠':4,'♥':3,'♦':2,'♣':1}; ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a); }
+                const yoGane=ganador.uid===currentUserId, comision=apuestaActual*0.10, ganancia=(apuestaActual*jugadores.length)-comision;
+                jugadores.forEach((j,i)=>{ const lbl=document.getElementById('cl'+i); if(!lbl) return; lbl.classList.remove('winner','loser'); if(j.uid===ganador.uid){ lbl.classList.add('winner'); lbl.textContent='🏆 '+labels[i]; } else if(j.uid===currentUserId) lbl.classList.add('loser'); });
+                try{
+                    if(yoGane){ await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId}); await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(apuestaActual*jugadores.length),partidas_jugando:increment(1)}); }
+                    else { await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId}); }
+                } catch(e){}
+                btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
+                setTimeout(async()=>{ await set(ref(db,`matches/${matchId}`),null); await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null); await update(ref(db,'adminData'),{partidas_jugando:increment(-1)}); resetSearch(); },4000);
+            },1200);
+        },800);
+    }
+
+    window.addEventListener('beforeunload',()=>{ if(currentUserId) set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}); });
+</script>
+</body>
+</html>
