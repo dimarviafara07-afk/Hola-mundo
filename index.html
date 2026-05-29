@@ -56,19 +56,8 @@
         }
         input:focus { outline: none; border-color: var(--primary-gold); }
 
-        .error-message {
-            background: rgba(244, 63, 94, 0.1);
-            color: #fda4af;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            margin-bottom: 15px;
-            text-align: center;
-            border: 1px solid var(--pink-jubilado);
-        }
-
         /* Header Usuario */
-        .user-header { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+        .user-header { display: flex; justify-content: space-between; align-items: flex-start; }
         .user-info h3 { margin: 0 0 5px 0; font-size: 1.3rem; letter-spacing: 0.5px; }
         .btn-salir { background: rgba(244, 63, 94, 0.2); border: 1px solid var(--pink-jubilado); color: var(--pink-jubilado); padding: 4px 12px; border-radius: 6px; font-size: 0.8rem; cursor: pointer; font-weight: bold; }
         
@@ -99,17 +88,11 @@
             flex-direction: column;
             justify-content: center;
             gap: 2px;
-            transition: all 0.2s ease;
         }
         .mesa-btn strong { font-size: 0.95rem; }
-        .mesa-btn.active {
-            background: var(--primary-gold);
-            color: #000000;
-            border-color: var(--primary-gold);
-            font-weight: bold;
-        }
+        .mesa-btn.active { background: var(--primary-gold); color: #000000; border-color: var(--primary-gold); font-weight: bold; }
 
-        /* Tapete de Juego */
+        /* Tapete y Cartas Estilo Casino */
         .tapete-card { border: 2px solid var(--border-gold); background: #0f182b; border-radius: 1.2rem; padding: 2rem 1rem; }
         .game-mat { display: flex; justify-content: space-around; margin-bottom: 5px; }
         .carta-box { text-align: center; width: 28%; display: flex; flex-direction: column; align-items: center; }
@@ -121,15 +104,21 @@
             background: #1d2942; 
             border-radius: 12px; 
             display: flex; 
+            flex-direction: column;
             align-items: center; 
             justify-content: center; 
-            font-size: 2rem; 
+            font-size: 1.8rem; 
             font-weight: bold;
             color: #43587d;
             box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
+            position: relative;
+            background-color: #1d2942;
         }
-        .carta.revelada { background: #ffffff; color: #090d16; transform: rotateY(360deg); }
+        
+        /* Render de Carta Revelada */
+        .carta.revelada { background: #ffffff; color: #090d16; }
+        .carta .pinta-mini { position: absolute; font-size: 0.8rem; top: 5px; left: 8px; }
+        .carta .pinta-centro { font-size: 2rem; margin-top: -5px; }
         .carta-label { font-size: 0.8rem; margin-top: 10px; color: var(--text-muted); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* Botón Buscar Partida */
@@ -144,23 +133,11 @@
             width: 100%;
             cursor: pointer;
             margin-top: 15px;
-            letter-spacing: 0.5px;
             text-transform: uppercase;
-            transition: all 0.2s;
         }
-        .btn-buscar:active { transform: scale(0.98); }
-        .btn-buscar:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-buscar:disabled { opacity: 0.5; }
 
-        .footer-historial {
-            background: #131c2e;
-            padding: 14px;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: var(--text-muted);
-            margin-top: 15px;
-        }
+        .footer-historial { background: #131c2e; padding: 14px; border-radius: 10px; text-align: center; font-size: 0.9rem; font-weight: bold; color: var(--text-muted); margin-top: 15px; }
         .historial-lista { max-height: 110px; overflow-y: auto; margin-top: 10px; font-weight: normal; }
         .historial-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #1d2942; font-size: 0.8rem; color: #cbd5e1; }
         .divider { text-align: center; margin: 15px 0 5px 0; color: #475569; font-size: 0.9rem; }
@@ -171,8 +148,6 @@
 <div class="app-container">
     <div id="authView" class="card">
         <h2 style="text-align: center; margin-top: 0; color: var(--primary-gold)">Acceso SuerteFácil</h2>
-        <div id="errorBox" class="error-message hidden"></div>
-        
         <div class="form-group"><input type="email" id="email" placeholder="Correo electrónico"></div>
         <div class="form-group"><input type="password" id="pass" placeholder="Contraseña"></div>
         
@@ -239,7 +214,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off, set, get, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, set, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -257,7 +232,7 @@
 
     const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
     const emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
-    const errorBox = document.getElementById('errorBox'), txtUsername = document.getElementById('txtUsername'), saldoDisplay = document.getElementById('saldoDisplay');
+    const txtUsername = document.getElementById('txtUsername'), saldoDisplay = document.getElementById('saldoDisplay');
     const btnAuth = document.getElementById('btnAuth'), btnOut = document.getElementById('btnOut'), btnRecargar = document.getElementById('btnRecargar'), btnPlay = document.getElementById('btnPlay'), btnRegister = document.getElementById('btnRegister');
     const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
     const lblLocal = document.getElementById('lblLocal'), lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
@@ -265,6 +240,15 @@
 
     let saldoRef = null, historialRef = null;
     let saldoActual = 0, apuestaActual = 2000, textoApuesta = "$2k", mesaSeleccionada = "N1";
+
+    const pintas = [
+        { icon: '♠', color: '#090d16' }, // Picas
+        { icon: '♥', color: '#ef4444' }, // Corazones
+        { icon: '♦', color: '#3b82f6' }, // Diamantes Azules (Estilo Casino)
+        { icon: '♣', color: '#22c55e' }  // Tréboles Verdes
+    ];
+
+    const nombresCartas = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
     mesaBotones.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -277,13 +261,10 @@
         });
     });
 
-    // OBSERVADOR DE SESIÓN COMPLETAMENTE REDISEÑADO
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             authView.classList.add('hidden');
             gameView.classList.remove('hidden');
-            errorBox.classList.add('hidden');
-            btnAuth.innerText = "INGRESAR";
             
             const username = user.email.split('@')[0];
             txtUsername.innerText = username;
@@ -291,10 +272,9 @@
 
             saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
             onValue(saldoRef, (snapshot) => {
-                saldoActual = snapshot.val() !== null ? snapshot.val() : 15000;
+                saldoActual = snapshot.val() !== null ? snapshot.val() : 0;
                 saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
-            }, (error) => {
-                saldoActual = 15000;
+            }, () => {
                 saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
             });
 
@@ -319,96 +299,87 @@
         }
     });
 
-    // MANEJADORES DE CLICK DIRECTOS (EVITAN RESETEO POR SUBMIT)
+    // REDIRECCIÓN A TU WHATSAPP PARA RECARGAR TU NEQUI REAL
+    btnRecargar.addEventListener('click', () => {
+        const miTelefonoWhatsApp = "573000000000"; // <-- REEMPLAZA ESTO CON TU NÚMERO REAL CON CODIGO DE PAIS
+        const mensajeOriginal = `Hola, soy el usuario *${txtUsername.innerText}*. Deseo hacer una recarga para SuerteFácil. Adjunto el comprobante de pago enviado desde mi Nequi.`;
+        const urlWhatsApp = `https://wa.me/${miTelefonoWhatsApp}?text=${encodeURIComponent(mensajeOriginal)}`;
+        
+        alert("Te redirigiremos a WhatsApp para enviar el comprobante de tu Nequi al administrador.");
+        window.open(urlWhatsApp, '_blank');
+    });
+
     btnAuth.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const pass = passInput.value;
-
-        if(!email || !pass) {
-            alert("Por favor rellena ambos campos.");
-            return;
-        }
-
-        btnAuth.innerText = "VERIFICANDO...";
-        try { 
-            await signInWithEmailAndPassword(auth, email, pass); 
-        } catch (err) { 
-            btnAuth.innerText = "INGRESAR";
-            alert("Error de ingreso: " + err.message);
-            errorBox.innerText = "Credenciales incorrectas o problema de red."; 
-            errorBox.classList.remove('hidden'); 
-        }
+        if(!email || !pass) return alert("Ingresa tus datos.");
+        btnAuth.innerText = "ENTRANDO...";
+        try { await signInWithEmailAndPassword(auth, email, pass); } 
+        catch (err) { btnAuth.innerText = "INGRESAR"; alert("Error: Verifica tu cuenta."); }
     });
 
     btnRegister.addEventListener('click', async () => {
         const email = emailInput.value.trim();
         const pass = passInput.value;
-
-        if(!email || !pass) {
-            alert("Rellena los campos para registrarte.");
-            return;
-        }
-
-        btnRegister.innerText = "CREANDO...";
+        if(!email || !pass) return alert("Rellena los campos.");
         try {
             const res = await createUserWithEmailAndPassword(auth, email, pass);
-            try { await set(ref(db, `usuarios/${res.user.uid}/saldo`), 15000); } catch(e){}
-            alert("¡Cuenta creada con éxito!");
-            btnRegister.innerText = "REGISTRARSE";
-        } catch (err) { 
-            btnRegister.innerText = "REGISTRARSE";
-            alert("Error de registro: " + err.message);
-            errorBox.innerText = "La contraseña debe tener mínimo 6 letras/números."; 
-            errorBox.classList.remove('hidden'); 
-        }
+            await set(ref(db, `usuarios/${res.user.uid}/saldo`), 0);
+            alert("Cuenta registrada con $0 de saldo.");
+        } catch (err) { alert("Error al registrar: Contraseña mínimo de 6 caracteres."); }
     });
 
     btnOut.addEventListener('click', () => signOut(auth));
 
-    btnRecargar.addEventListener('click', async () => {
-        const user = auth.currentUser;
-        if(user) {
-            saldoActual += 50000;
-            saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
-            try { await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual); } catch(e){}
-        }
-    });
+    // GENERADOR DE CARTAS CON PINTAS REALES
+    function generarCartaVisual(elementoDOM) {
+        const valorIndex = Math.floor(Math.random() * nombresCartas.length);
+        const pintaRandom = pintas[Math.floor(Math.random() * pintas.length)];
+        const textoValor = nombresCartas[valorIndex];
+
+        elementoDOM.innerHTML = `
+            <div class="pinta-mini" style="color: ${pintaRandom.color}">${textoValor}</div>
+            <div>${textoValor}</div>
+            <div class="pinta-centro" style="color: ${pintaRandom.color}">${pintaRandom.icon}</div>
+        `;
+        elementoDOM.classList.add('revelada');
+        return valorIndex; // Retorna el peso real numérico para calcular quién gana
+    }
 
     btnPlay.addEventListener('click', async () => {
-        if (saldoActual < apuestaActual) {
-            alert(`Saldo insuficiente para ingresar a la mesa ${mesaSeleccionada}`);
-            return;
-        }
-        btnPlay.disabled = true; btnPlay.innerText = "BUSCANDO RIVALES..."; resetMesa();
+        if (saldoActual < apuestaActual) return alert(`No tienes saldo suficiente para la mesa ${mesaSeleccionada}. ¡Usa el botón + RECARGAR!`);
         
-        setTimeout(() => {
-            btnPlay.innerText = "¡EN PARTIDA!";
-            setTimeout(async () => {
-                const miC = Math.floor(Math.random() * 10) + 1;
-                const r1C = Math.floor(Math.random() * 10) + 1;
-                const r2C = Math.floor(Math.random() * 10) + 1;
+        btnPlay.disabled = true; btnPlay.innerText = "JUGANDO PARTIDA..."; resetMesa();
+        
+        setTimeout(async () => {
+            const pesoLocal = generarCartaVisual(cartaLocal);
+            const pesoRival1 = generarCartaVisual(cartaRival1);
+            const pesoRival2 = generarCartaVisual(cartaRival2);
 
-                cartaLocal.innerText = miC; cartaLocal.classList.add('revelada');
-                cartaRival1.innerText = r1C; cartaRival1.classList.add('revelada');
-                cartaRival2.innerText = r2C; cartaRival2.classList.add('revelada');
+            const pesoMaxRival = Math.max(pesoRival1, pesoRival2);
+            let gano = pesoLocal > pesoMaxRival;
 
-                const maxRival = Math.max(r1C, r2C);
-                let gano = miC > maxRival;
+            saldoActual = gano ? (saldoActual + (apuestaActual * 2)) : (saldoActual - apuestaActual);
+            saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
 
-                saldoActual = gano ? (saldoActual + (apuestaActual * 2)) : (saldoActual - apuestaActual);
-                saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
+            const user = auth.currentUser;
+            if(user) {
+                try {
+                    await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual);
+                    await push(ref(db, `usuarios/${user.uid}/historial`), {
+                        mesa: mesaSeleccionada,
+                        resultado: gano ? "GANÓ" : "PERDIÓ",
+                        monto: apuestaActual,
+                    });
+                } catch(e){}
+            }
 
-                const user = auth.currentUser;
-                if(user) { try { await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual); } catch(e){} }
-
-                btnPlay.disabled = false; btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
-            }, 1000);
+            btnPlay.disabled = false; btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
         }, 1200);
     });
 
     function resetMesa() {
-        cartaLocal.innerText = "¿"; cartaRival1.innerText = "¿"; cartaRival2.innerText = "¿";
-        cartaLocal.classList.remove('revelada'); cartaRival1.classList.remove('revelada'); cartaRival2.classList.remove('revelada');
+        [cartaLocal, cartaRival1, cartaRival2].forEach(c => { c.innerText = "¿"; c.classList.remove('revelada'); c.style.color = "#43587d"; });
     }
 </script>
 </body>
