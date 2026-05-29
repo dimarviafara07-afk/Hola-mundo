@@ -69,42 +69,22 @@
         .access-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
         .access-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4; }
         .access-input {
-            width: 100%;
-            padding: 14px;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-input);
-            color: var(--text-main);
-            font-size: 1.2rem;
-            text-align: center;
-            letter-spacing: 8px;
-            margin-bottom: 12px;
-            transition: all 0.2s;
+            width: 100%; padding: 14px; border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle); background: var(--bg-input);
+            color: var(--text-main); font-size: 1.2rem; text-align: center;
+            letter-spacing: 8px; margin-bottom: 12px; transition: all 0.2s;
         }
         .access-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
         .access-error { color: var(--danger); font-size: 0.75rem; margin-bottom: 8px; min-height: 20px; }
         .access-info { font-size: 0.7rem; color: var(--text-muted); margin-top: 14px; }
         .access-info span { color: var(--gold); font-weight: 600; }
         .jornada-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.72rem;
-            font-weight: 600;
-            margin-bottom: 16px;
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 20px; font-size: 0.72rem;
+            font-weight: 600; margin-bottom: 16px;
         }
-        .jornada-status.active {
-            background: rgba(22,163,74,0.12);
-            color: var(--success);
-            border: 1px solid rgba(22,163,74,0.3);
-        }
-        .jornada-status.inactive {
-            background: rgba(220,38,38,0.12);
-            color: var(--danger);
-            border: 1px solid rgba(220,38,38,0.3);
-        }
+        .jornada-status.active { background: rgba(22,163,74,0.12); color: var(--success); border: 1px solid rgba(22,163,74,0.3); }
+        .jornada-status.inactive { background: rgba(220,38,38,0.12); color: var(--danger); border: 1px solid rgba(220,38,38,0.3); }
         .jornada-dot { width: 7px; height: 7px; border-radius: 50%; }
         .jornada-status.active .jornada-dot { background: var(--success); animation: pulse-dot 2s infinite; }
         .jornada-status.inactive .jornada-dot { background: var(--danger); }
@@ -112,12 +92,8 @@
 
         /* ========== AUTH SCREEN ========== */
         .auth-screen {
-            background: var(--bg-card);
-            padding: 2.2rem 1.5rem;
-            border-radius: var(--radius-xl);
-            text-align: center;
-            margin-top: 30px;
-            border: 1px solid var(--border-subtle);
+            background: var(--bg-card); padding: 2.2rem 1.5rem; border-radius: var(--radius-xl);
+            text-align: center; margin-top: 30px; border: 1px solid var(--border-subtle);
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
         .auth-logo { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1.8rem; color: var(--text-main); }
@@ -183,7 +159,6 @@
             border: 1px solid var(--border-subtle); text-align: center; min-height: 150px;
             display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s;
         }
-        .game-table-main.active-game { border-color: var(--primary-border); box-shadow: 0 0 20px rgba(37,99,235,0.08); }
         .table-felt {
             background: linear-gradient(160deg, #0A1F14 0%, #0D2818 40%, #091A10 100%);
             border-radius: var(--radius-md); padding: 16px 10px; width: 100%; border: 3px solid #4A3724;
@@ -266,65 +241,44 @@
         .admin-panel { background: var(--bg-card); border: 1.5px solid var(--gold); border-radius: var(--radius-md); padding: 15px; margin-bottom: 10px; }
         .admin-title { color: var(--gold); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
         .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
-        .admin-stat { background: var(--bg-input); padding: 9px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); }
+        .admin-stat { background: var(--bg-input); padding: 9px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); position: relative; }
         .admin-stat-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .admin-stat-value { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-top: 3px; }
-        .admin-recarga { display: flex; gap: 6px; flex-wrap: wrap; }
+        .admin-stat-reset {
+            position: absolute; top: 4px; right: 6px;
+            background: none; border: none; color: var(--text-muted);
+            font-size: 0.55rem; cursor: pointer; padding: 2px 4px;
+            border-radius: 3px; transition: all 0.2s;
+        }
+        .admin-stat-reset:hover { color: var(--danger); background: var(--danger-soft); }
+        .admin-recarga { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
         .admin-recarga input { flex: 1 1 100px; min-width: 0; padding: 9px 10px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-main); font-size: 0.75rem; }
         .admin-recarga input:focus { outline: none; border-color: var(--primary-border); }
         .btn-admin-recargar { padding: 9px 14px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-xs); font-weight: 700; font-size: 0.75rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
         .btn-admin-recargar:hover { background: var(--primary-hover); }
 
-        /* Admin: Configuración de jornada */
         .admin-config {
-            background: var(--bg-input);
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            margin-top: 12px;
+            background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm);
             border: 1px solid var(--border-subtle);
         }
-        .admin-config-title {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        .config-row {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-            margin-bottom: 6px;
-            flex-wrap: wrap;
-        }
-        .config-row label {
-            font-size: 0.68rem;
-            color: var(--text-secondary);
-            min-width: 55px;
-        }
-        .config-row input {
-            flex: 1;
-            min-width: 0;
-            padding: 7px 9px;
-            border-radius: var(--radius-xs);
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-card);
-            color: var(--text-main);
-            font-size: 0.72rem;
-        }
+        .admin-config-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .config-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
+        .config-row label { font-size: 0.68rem; color: var(--text-secondary); min-width: 55px; }
+        .config-row input { flex: 1; min-width: 0; padding: 7px 9px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); background: var(--bg-card); color: var(--text-main); font-size: 0.72rem; }
         .config-row input:focus { outline: none; border-color: var(--primary-border); }
-        .btn-config-save {
-            padding: 8px 16px;
-            background: var(--success);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius-xs);
-            font-weight: 600;
-            font-size: 0.7rem;
-            cursor: pointer;
-            margin-top: 4px;
-        }
+        .btn-config-save { padding: 8px 16px; background: var(--success); color: #fff; border: none; border-radius: var(--radius-xs); font-weight: 600; font-size: 0.7rem; cursor: pointer; margin-top: 4px; }
         .btn-config-save:hover { background: #15803D; }
+
+        .admin-reset-row {
+            display: flex; gap: 6px; margin-top: 8px;
+        }
+        .btn-reset-contadores {
+            flex: 1; padding: 8px; background: var(--danger-soft);
+            color: var(--danger); border: 1px solid rgba(220,38,38,0.3);
+            border-radius: var(--radius-xs); font-weight: 600; font-size: 0.68rem;
+            cursor: pointer; transition: all 0.2s; text-align: center;
+        }
+        .btn-reset-contadores:hover { background: rgba(220,38,38,0.2); }
 
         @media (max-width: 360px) {
             .card-wrapper { width: 58px; height: 82px; }
@@ -372,21 +326,37 @@
 
         <!-- ADMIN PANEL -->
         <div id="adminPanel" class="admin-panel hidden">
-            <div class="admin-title">Panel de Control</div>
+            <div class="admin-title">✦ Panel de Control</div>
             <div class="admin-stats">
-                <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
-                <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
-                <div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div></div>
-                <div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Online</div>
+                    <div class="admin-stat-value" id="adminOnline">0</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Jugando</div>
+                    <div class="admin-stat-value" id="adminPlaying">0</div>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Comisiones</div>
+                    <div class="admin-stat-value" id="adminComision">$0</div>
+                    <button class="admin-stat-reset" id="btnResetComision" title="Reiniciar a cero">↺</button>
+                </div>
+                <div class="admin-stat">
+                    <div class="admin-stat-label">Movido</div>
+                    <div class="admin-stat-value" id="adminMovido">$0</div>
+                    <button class="admin-stat-reset" id="btnResetMovido" title="Reiniciar a cero">↺</button>
+                </div>
             </div>
             <div class="admin-recarga">
                 <input type="email" id="adminUserEmail" placeholder="Email" style="max-width:150px;">
                 <input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:90px;">
                 <button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button>
             </div>
-            <!-- Configuración de jornada (solo admin) -->
-            <div class="admin-config">
-                <div class="admin-config-title">Configuración de Jornada</div>
+            <div class="admin-reset-row">
+                <button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos los contadores a $0</button>
+            </div>
+            <div class="admin-config" style="margin-top:10px;">
+                <div class="admin-config-title">⚙️ Configuración de Jornada</div>
                 <div class="config-row">
                     <label>Código:</label>
                     <input type="text" id="configCodigo" maxlength="4" placeholder="4927">
@@ -403,7 +373,7 @@
                     <label>Activa:</label>
                     <input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;">
                 </div>
-                <button id="btnConfigSave" class="btn-config-save">Guardar Configuración</button>
+                <button id="btnConfigSave" class="btn-config-save">💾 Guardar Configuración</button>
             </div>
         </div>
 
@@ -471,7 +441,7 @@
         <!-- HISTORIAL -->
         <div class="history-collapsible" id="historyCollapsible">
             <div class="history-header" id="historyHeader">
-                <span class="history-title">Historial de partidas</span>
+                <span class="history-title">📊 Historial de partidas</span>
                 <span class="history-arrow">▼</span>
             </div>
             <div class="history-body">
@@ -519,12 +489,9 @@
     const NUMERO_WHATSAPP = "573123456789";
     const MAX_MIEMBROS = 50;
 
-    // Vistas
     const accessView = document.getElementById('accessView');
     const authView = document.getElementById('authView');
     const gameView = document.getElementById('gameView');
-
-    // Access
     const accessCode = document.getElementById('accessCode');
     const accessError = document.getElementById('accessError');
     const btnAccess = document.getElementById('btnAccess');
@@ -532,14 +499,12 @@
     const jornadaStatusText = document.getElementById('jornadaStatusText');
     const accessSchedule = document.getElementById('accessSchedule');
 
-    // Auth
     const tabLogin = document.getElementById('tabLogin');
     const tabRegister = document.getElementById('tabRegister');
     const btnAction = document.getElementById('btnAction');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('pass');
 
-    // Game
     const txtUsername = document.getElementById('txtUsername');
     const userAvatar = document.getElementById('userAvatar');
     const saldoDisplay = document.getElementById('saldoDisplay');
@@ -554,7 +519,6 @@
     const btnWaConfirm = document.getElementById('btnWaConfirm');
     const btnModalCerrar = document.getElementById('btnModalCerrar');
 
-    // Admin
     const adminPanel = document.getElementById('adminPanel');
     const adminUserEmail = document.getElementById('adminUserEmail');
     const adminMontoRecarga = document.getElementById('adminMontoRecarga');
@@ -564,8 +528,10 @@
     const configHoraFin = document.getElementById('configHoraFin');
     const configJornadaActiva = document.getElementById('configJornadaActiva');
     const btnConfigSave = document.getElementById('btnConfigSave');
+    const btnResetComision = document.getElementById('btnResetComision');
+    const btnResetMovido = document.getElementById('btnResetMovido');
+    const btnResetAll = document.getElementById('btnResetAll');
 
-    // Controles
     const mode1v1 = document.getElementById('mode1v1');
     const mode3p = document.getElementById('mode3p');
     const betChips = document.querySelectorAll('.bet-chip');
@@ -576,7 +542,6 @@
     let saldoActual = 0, apuestaActual = 2000, modoJuego = '1v1';
     let esperandoPartida = false, currentMatchId = null;
     let codigoAcceso = '';
-    let accesoConcedido = false;
 
     const pintas = [
         { icon: '♠', color: '#1E293B' }, { icon: '♥', color: '#DC2626' },
@@ -590,18 +555,13 @@
         try {
             const configSnap = await get(ref(db, 'configuracion'));
             const config = configSnap.val() || {};
-            
             codigoAcceso = config.codigo_acceso || '4927';
             const jornadaActiva = config.jornada_activa !== false;
             const horaInicio = config.hora_inicio || '20:00';
             const horaFin = config.hora_fin || '22:00';
-            
             accessSchedule.textContent = `${horaInicio} a ${horaFin}`;
-            
-            // Verificar horario
             const ahora = new Date();
             const horaActual = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
-            
             if (jornadaActiva && horaActual >= horaInicio && horaActual <= horaFin) {
                 jornadaStatus.className = 'jornada-status active';
                 jornadaStatusText.textContent = 'Jornada activa';
@@ -609,11 +569,8 @@
                 jornadaStatus.className = 'jornada-status inactive';
                 jornadaStatusText.textContent = 'Fuera de horario';
             }
-            
-            // Cargar código guardado en localStorage
             const savedCode = localStorage.getItem('suertefacil_access');
             if (savedCode && savedCode === codigoAcceso && jornadaActiva && horaActual >= horaInicio && horaActual <= horaFin) {
-                accesoConcedido = true;
                 accessView.classList.add('hidden');
                 authView.classList.remove('hidden');
             }
@@ -625,11 +582,7 @@
 
     btnAccess.addEventListener('click', async () => {
         const code = accessCode.value.trim();
-        if (!code || code.length !== 4) {
-            accessError.textContent = 'Ingresa un código de 4 dígitos';
-            return;
-        }
-        
+        if (!code || code.length !== 4) { accessError.textContent = 'Ingresa un código de 4 dígitos'; return; }
         const configSnap = await get(ref(db, 'configuracion'));
         const config = configSnap.val() || {};
         const jornadaActiva = config.jornada_activa !== false;
@@ -637,19 +590,9 @@
         const horaFin = config.hora_fin || '22:00';
         const ahora = new Date();
         const horaActual = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
-        
-        if (!jornadaActiva) {
-            accessError.textContent = 'La jornada no está activa';
-            return;
-        }
-        
-        if (horaActual < horaInicio || horaActual > horaFin) {
-            accessError.textContent = 'Fuera del horario de la jornada';
-            return;
-        }
-        
+        if (!jornadaActiva) { accessError.textContent = 'La jornada no está activa'; return; }
+        if (horaActual < horaInicio || horaActual > horaFin) { accessError.textContent = 'Fuera del horario de la jornada'; return; }
         if (code === codigoAcceso) {
-            accesoConcedido = true;
             accessError.textContent = '';
             localStorage.setItem('suertefacil_access', code);
             accessView.classList.add('hidden');
@@ -661,11 +604,28 @@
         }
     });
 
-    accessCode.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') btnAccess.click();
+    accessCode.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnAccess.click(); });
+
+    // ==================== RESET DE CONTADORES (SOLO ADMIN) ====================
+    async function resetContador(campo) {
+        if (!confirm(`¿Reiniciar ${campo} a $0?`)) return;
+        await update(ref(db, 'adminData'), { [campo]: 0 });
+    }
+
+    btnResetComision.addEventListener('click', () => resetContador('total_comisiones'));
+    btnResetMovido.addEventListener('click', () => resetContador('dinero_movido'));
+    btnResetAll.addEventListener('click', async () => {
+        if (!confirm('¿Reiniciar TODOS los contadores a $0?')) return;
+        await set(ref(db, 'adminData'), {
+            total_comisiones: 0,
+            dinero_movido: 0,
+            partidas_jugando: 0,
+            partidas_jugadas: 0
+        });
+        alert('Todos los contadores reiniciados a $0');
     });
 
-    // Admin: Guardar configuración
+    // ==================== CONFIGURACIÓN ====================
     btnConfigSave.addEventListener('click', async () => {
         const nuevaConfig = {
             codigo_acceso: configCodigo.value.trim() || '4927',
@@ -675,11 +635,10 @@
         };
         await set(ref(db, 'configuracion'), nuevaConfig);
         codigoAcceso = nuevaConfig.codigo_acceso;
-        alert('Configuración guardada exitosamente');
+        alert('✅ Configuración guardada');
     });
 
-    // ==================== FIN VERIFICACIÓN ====================
-
+    // ==================== RESTO DE FUNCIONES ====================
     function updatePotDisplay(count) {
         const total = apuestaActual * count;
         if(potAmount) potAmount.textContent = '$' + total.toLocaleString('es-CO');
@@ -752,7 +711,6 @@
                 onValue(ref(db, 'presencia'), (snap) => {
                     document.getElementById('adminOnline').textContent = Object.values(snap.val()||{}).filter(v=>v.status==='online').length;
                 });
-                // Cargar config actual
                 const cfg = (await get(ref(db, 'configuracion'))).val() || {};
                 configCodigo.value = cfg.codigo_acceso || '4927';
                 configHoraInicio.value = cfg.hora_inicio || '20:00';
@@ -787,7 +745,6 @@
         }
     });
 
-    // Iniciar verificando acceso
     verificarAcceso();
 
     btnAction.addEventListener('click', async () => {
