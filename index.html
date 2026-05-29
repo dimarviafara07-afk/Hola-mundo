@@ -13,18 +13,14 @@
             --blue-accent: #3b82f6;
             --blue-hover: #2563eb;
             --green-success: #22c55e;
-            --green-bg: rgba(34,197,94,0.1);
+            --green-bg: rgba(34,197,94,0.08);
             --red-danger: #ef4444;
-            --red-bg: rgba(239,68,68,0.1);
+            --red-bg: rgba(239,68,68,0.08);
             --gold-premium: #d9b44a;
-            --gold-bg: rgba(217,180,74,0.08);
             --text-primary: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
             --border-light: #1e293b;
-            --border-blue: rgba(59,130,246,0.3);
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -39,9 +35,9 @@
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
-            padding: 12px;
+            padding: 10px;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -50,13 +46,15 @@
             max-width: 460px;
         }
 
+        .hidden { display: none !important; }
+
         /* ========== AUTH SCREEN ========== */
         .auth-screen {
             background: var(--bg-card);
             padding: 2rem 1.5rem;
             border-radius: var(--radius-xl);
             text-align: center;
-            box-shadow: var(--shadow-md);
+            margin-top: 20px;
         }
         .auth-logo {
             font-size: 1.6rem;
@@ -85,10 +83,7 @@
             border-radius: 6px;
             transition: all 0.2s;
         }
-        .auth-tab.active {
-            background: var(--blue-accent);
-            color: #fff;
-        }
+        .auth-tab.active { background: var(--blue-accent); color: #fff; }
         .auth-input {
             width: 100%;
             padding: 12px 14px;
@@ -100,10 +95,7 @@
             margin-bottom: 10px;
             transition: border-color 0.2s;
         }
-        .auth-input:focus {
-            outline: none;
-            border-color: var(--blue-accent);
-        }
+        .auth-input:focus { outline: none; border-color: var(--blue-accent); }
         .btn-primary {
             width: 100%;
             padding: 14px;
@@ -120,336 +112,186 @@
         .btn-primary:hover { background: var(--blue-hover); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ========== MAIN GAME VIEW ========== */
-        .hidden { display: none !important; }
-
-        /* Header */
-        .header {
+        /* ========== HEADER UNIFICADO ========== */
+        .unified-header {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 14px 16px;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 8px 0;
-            margin-bottom: 8px;
+            flex-wrap: wrap;
         }
         .avatar {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: var(--blue-accent);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #fff;
             flex-shrink: 0;
         }
-        .header-info {
+        .user-info {
             flex: 1;
             min-width: 0;
         }
-        .header-username {
+        .user-name {
             font-weight: 600;
-            font-size: 0.95rem;
-            color: var(--text-primary);
+            font-size: 0.9rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .header-status {
-            font-size: 0.75rem;
+        .user-status {
+            font-size: 0.7rem;
             color: var(--green-success);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
         .status-dot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: var(--green-success);
             animation: pulse-dot 2s infinite;
         }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .balance-mini {
+            text-align: right;
         }
-        .btn-logout {
-            background: none;
-            border: 1px solid var(--border-light);
+        .balance-mini-label {
+            font-size: 0.65rem;
             color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .btn-logout:hover { border-color: var(--red-danger); color: var(--red-danger); }
-
-        /* Community Stats */
-        .community-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
-        }
-        .community-title {
-            font-size: 0.7rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 10px;
+            letter-spacing: 0.5px;
         }
-        .stats-row {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .stat-chip {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--bg-input);
-            padding: 7px 11px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-        }
-        .stat-chip .dot { width: 6px; height: 6px; border-radius: 50%; }
-        .dot-green { background: var(--green-success); }
-        .dot-blue { background: var(--blue-accent); }
-        .dot-yellow { background: #f59e0b; }
-        .dot-gold { background: var(--gold-premium); }
-        .membership-bar {
-            margin-top: 10px;
-            background: var(--bg-input);
-            border-radius: 20px;
-            height: 6px;
-            overflow: hidden;
-        }
-        .membership-fill {
-            height: 100%;
-            background: var(--blue-accent);
-            border-radius: 20px;
-            transition: width 0.5s ease;
-        }
-
-        /* Balance Card */
-        .balance-card {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            margin-bottom: 12px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--border-light);
-        }
-        .balance-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-        .balance-amount {
-            font-size: 2rem;
+        .balance-mini-amount {
+            font-size: 1.1rem;
             font-weight: 700;
             color: var(--text-primary);
-            letter-spacing: -0.5px;
-            margin-bottom: 14px;
         }
-        .balance-actions {
+        .header-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
+            width: 100%;
+            margin-top: 8px;
         }
-        .btn-balance {
+        .btn-sm {
             flex: 1;
-            padding: 10px;
+            padding: 8px 10px;
             border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.72rem;
             cursor: pointer;
             border: none;
             transition: all 0.2s;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-        }
-        .btn-deposit {
-            background: var(--green-bg);
-            color: var(--green-success);
-        }
-        .btn-deposit:hover { background: rgba(34,197,94,0.2); }
-        .btn-withdraw {
-            background: var(--red-bg);
-            color: var(--red-danger);
-        }
-        .btn-withdraw:hover { background: rgba(239,68,68,0.2); }
-
-        /* Mode Selection */
-        .section-label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-        }
-        .mode-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-        .mode-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-md);
-            padding: 14px;
-            cursor: pointer;
-            transition: all 0.2s;
             text-align: center;
         }
-        .mode-card:hover { border-color: var(--border-blue); }
-        .mode-card.selected {
-            border-color: var(--blue-accent);
-            background: rgba(59,130,246,0.06);
-        }
-        .mode-icon { font-size: 1.5rem; margin-bottom: 6px; }
-        .mode-name { font-weight: 600; font-size: 0.85rem; color: var(--text-primary); }
-        .mode-desc { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+        .btn-dep { background: var(--green-bg); color: var(--green-success); }
+        .btn-dep:hover { background: rgba(34,197,94,0.15); }
+        .btn-wit { background: var(--red-bg); color: var(--red-danger); }
+        .btn-wit:hover { background: rgba(239,68,68,0.15); }
+        .btn-out { background: transparent; color: var(--text-muted); border: 1px solid var(--border-light); }
+        .btn-out:hover { border-color: var(--red-danger); color: var(--red-danger); }
 
-        /* Bet Selection */
-        .bet-grid {
+        /* ========== COMMUNITY BAR ========== */
+        .community-bar {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 10px 14px;
+            margin-bottom: 10px;
             display: flex;
-            gap: 6px;
-            margin-bottom: 12px;
+            align-items: center;
+            gap: 10px;
             flex-wrap: wrap;
         }
-        .bet-chip {
-            flex: 1;
-            min-width: 50px;
-            padding: 10px 8px;
-            background: var(--bg-card);
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-sm);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 600;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-        .bet-chip:hover { border-color: var(--border-blue); }
-        .bet-chip.selected {
-            border-color: var(--blue-accent);
-            background: rgba(59,130,246,0.08);
-            color: var(--blue-accent);
-        }
-
-        /* CTA Button */
-        .btn-cta {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: var(--radius-md);
-            background: var(--blue-accent);
-            color: #fff;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-        }
-        .btn-cta:hover:not(:disabled) { background: var(--blue-hover); transform: translateY(-1px); }
-        .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-cta.canceling {
-            background: var(--red-danger);
-        }
-
-        /* Search Status */
-        .search-status {
-            background: var(--bg-card);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        .search-players {
+        .comm-stats {
             display: flex;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 10px;
+            gap: 12px;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            flex-wrap: wrap;
         }
-        .search-player {
+        .comm-stat { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .comm-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .comm-dot.green { background: var(--green-success); }
+        .comm-dot.blue { background: var(--blue-accent); }
+        .comm-dot.yellow { background: #f59e0b; }
+        .membership-mini {
+            margin-left: auto;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        .membership-mini strong { color: var(--text-primary); }
+
+        /* ========== GAME TABLE (ELEMENTO PRINCIPAL) ========== */
+        .game-table-main {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-light);
+            text-align: center;
+            min-height: 160px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
-        }
-        .search-player-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--bg-input);
-            display: flex;
-            align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
-            border: 2px solid var(--border-light);
         }
-        .search-player-avatar.found { border-color: var(--green-success); }
-        .search-player-avatar.searching { border-color: #f59e0b; animation: pulse-border 1.5s infinite; }
-        @keyframes pulse-border {
-            0%, 100% { border-color: #f59e0b; }
-            50% { border-color: #fbbf24; }
+        .game-table-main.active-game {
+            border-color: var(--blue-accent);
         }
-        .search-player-name {
-            font-size: 0.7rem;
-            color: var(--text-secondary);
-            max-width: 70px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+        .table-felt {
+            background: #0d2818;
+            border-radius: var(--radius-md);
+            padding: 16px 10px;
+            width: 100%;
+            border: 3px solid #3d2b1a;
+            position: relative;
         }
-        .search-progress {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Game Table */
-        .game-table {
-            background: var(--bg-card);
-            border-radius: var(--radius-lg);
-            padding: 20px 14px;
-            margin-bottom: 12px;
-            text-align: center;
-            border: 1px solid var(--border-light);
+        .table-felt::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+            border-radius: inherit;
+            pointer-events: none;
         }
         .cards-row {
             display: flex;
             justify-content: center;
-            gap: 14px;
+            align-items: center;
+            gap: 12px;
             flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
         }
         .card-slot {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
         .card-wrapper {
             perspective: 800px;
-            width: 70px;
-            height: 100px;
+            width: 68px;
+            height: 96px;
         }
         .card-inner {
             width: 100%;
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
         }
         .card-wrapper.flipped .card-inner { transform: rotateY(180deg); }
         .card-face {
@@ -457,7 +299,7 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 8px;
+            border-radius: 7px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -469,7 +311,7 @@
             border: 2px solid #334155;
         }
         .card-back-pattern {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #475569;
             font-weight: 700;
         }
@@ -480,69 +322,227 @@
             border: 2px solid #e2e8f0;
         }
         .card-value {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
         }
         .card-suit {
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
         .card-label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: var(--text-secondary);
             font-weight: 500;
-            max-width: 80px;
+            max-width: 75px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            text-align: center;
+        }
+        .card-label.winner { color: var(--green-success); font-weight: 700; }
+        .card-label.loser { color: var(--red-danger); }
+        .table-empty-msg {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .vs-divider {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        /* ========== SEARCH STATUS (dentro de la mesa) ========== */
+        .search-inline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+        .search-player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .search-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            border: 2px solid var(--border-light);
+            transition: border-color 0.3s;
+        }
+        .search-avatar.found { border-color: var(--green-success); }
+        .search-avatar.searching { border-color: #f59e0b; animation: pulse-border 1.5s infinite; }
+        @keyframes pulse-border { 0%,100%{border-color:#f59e0b} 50%{border-color:#fbbf24} }
+        .search-name {
+            font-size: 0.65rem;
+            color: var(--text-secondary);
+            max-width: 60px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .card-label.winner { color: var(--green-success); font-weight: 700; }
-        .card-label.loser { color: var(--red-danger); }
+        .search-progress-inline {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
 
-        /* History */
-        .history-card {
+        /* ========== CONTROLS ========== */
+        .controls-section {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 14px;
+            margin-bottom: 10px;
+        }
+        .section-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .mode-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .mode-chip {
+            flex: 1;
+            padding: 10px 8px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .mode-chip:hover { border-color: var(--blue-accent); }
+        .mode-chip.selected {
+            border-color: var(--blue-accent);
+            background: rgba(59,130,246,0.08);
+            color: var(--blue-accent);
+        }
+        .bet-row {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .bet-chip {
+            flex: 1;
+            min-width: 45px;
+            padding: 8px 4px;
+            background: var(--bg-input);
+            border: 2px solid var(--border-light);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+        }
+        .bet-chip:hover { border-color: var(--blue-accent); }
+        .bet-chip.selected {
+            border-color: var(--blue-accent);
+            background: rgba(59,130,246,0.08);
+            color: var(--blue-accent);
+        }
+        .btn-cta {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--blue-accent);
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-cta:hover:not(:disabled) { background: var(--blue-hover); }
+        .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-cta.canceling { background: var(--red-danger); }
+
+        /* ========== COLLAPSIBLE HISTORY ========== */
+        .history-collapsible {
             background: var(--bg-card);
             border-radius: var(--radius-md);
-            padding: 14px 16px;
-            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            margin-bottom: 10px;
         }
+        .history-header {
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.2s;
+        }
+        .history-header:hover { background: rgba(255,255,255,0.02); }
         .history-title {
             font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-muted);
-            margin-bottom: 10px;
+            font-weight: 600;
         }
+        .history-arrow {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            transition: transform 0.3s;
+        }
+        .history-collapsible.open .history-arrow { transform: rotate(180deg); }
+        .history-body {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .history-collapsible.open .history-body { max-height: 300px; overflow-y: auto; }
         .history-table {
             width: 100%;
-            font-size: 0.78rem;
+            font-size: 0.73rem;
             border-collapse: collapse;
+            padding: 0 16px 12px;
         }
         .history-table th {
             text-align: left;
             color: var(--text-muted);
             font-weight: 500;
-            padding-bottom: 8px;
-            font-size: 0.7rem;
+            padding: 6px 0;
+            font-size: 0.65rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .history-table td {
-            padding: 7px 0;
+            padding: 6px 0;
             border-bottom: 1px solid var(--border-light);
             color: var(--text-secondary);
         }
-        .history-table .result-win { color: var(--green-success); font-weight: 600; }
-        .history-table .result-lose { color: var(--red-danger); font-weight: 600; }
-        .history-table .amount-win { color: var(--green-success); }
-        .history-table .amount-lose { color: var(--red-danger); }
+        .result-win { color: var(--green-success); font-weight: 600; }
+        .result-lose { color: var(--red-danger); font-weight: 600; }
+        .amount-win { color: var(--green-success); }
+        .amount-lose { color: var(--red-danger); }
         .history-empty {
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             padding: 10px 0;
         }
 
-        /* Modal */
+        /* ========== MODAL ========== */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -555,38 +555,38 @@
         }
         .modal-content {
             background: var(--bg-card);
-            padding: 24px;
+            padding: 22px;
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 380px;
+            max-width: 360px;
             text-align: center;
             border: 1px solid var(--border-light);
         }
         .modal-title {
             font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
+            font-size: 1rem;
+            margin-bottom: 10px;
         }
         .nequi-number {
             background: var(--bg-input);
-            padding: 14px;
+            padding: 12px;
             border-radius: var(--radius-sm);
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #e11d48;
-            margin: 12px 0;
+            margin: 10px 0;
             letter-spacing: 1px;
             border: 1px solid #e11d48;
         }
         .btn-wa {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: var(--green-success);
             color: #fff;
             border: none;
             border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -596,73 +596,80 @@
             background: none;
             border: none;
             color: var(--text-muted);
-            margin-top: 10px;
+            margin-top: 8px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
-        /* Admin Panel */
+        /* ========== ADMIN ========== */
         .admin-panel {
             background: var(--bg-card);
             border: 1px solid var(--gold-premium);
             border-radius: var(--radius-md);
-            padding: 16px;
-            margin-bottom: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
         }
         .admin-title {
             color: var(--gold-premium);
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .admin-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-bottom: 12px;
+            gap: 6px;
+            margin-bottom: 10px;
         }
         .admin-stat {
             background: var(--bg-input);
-            padding: 10px;
-            border-radius: var(--radius-sm);
+            padding: 8px;
+            border-radius: 6px;
         }
         .admin-stat-label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--text-muted);
             text-transform: uppercase;
         }
         .admin-stat-value {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text-primary);
-            margin-top: 4px;
+            margin-top: 3px;
         }
         .admin-recarga {
             display: flex;
-            gap: 6px;
-            margin-top: 8px;
+            gap: 5px;
         }
         .admin-recarga input {
             flex: 1;
-            padding: 8px;
+            padding: 7px;
             border-radius: 6px;
             border: 1px solid var(--border-light);
             background: var(--bg-input);
             color: var(--text-primary);
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
         .admin-recarga input:focus { outline: none; border-color: var(--blue-accent); }
         .btn-admin-recargar {
-            padding: 8px 14px;
+            padding: 7px 12px;
             background: var(--blue-accent);
             color: #fff;
             border: none;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             cursor: pointer;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 360px) {
+            .card-wrapper { width: 55px; height: 78px; }
+            .card-value { font-size: 1.1rem; }
+            .card-suit { font-size: 0.85rem; }
+            .cards-row { gap: 8px; }
         }
     </style>
 </head>
@@ -689,22 +696,10 @@
         <div id="adminPanel" class="admin-panel hidden">
             <div class="admin-title">Panel de Control</div>
             <div class="admin-stats">
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Online</div>
-                    <div class="admin-stat-value" id="adminOnline">0</div>
-                </div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Jugando</div>
-                    <div class="admin-stat-value" id="adminPlaying">0</div>
-                </div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Comisiones</div>
-                    <div class="admin-stat-value" id="adminComision">$0</div>
-                </div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Movido</div>
-                    <div class="admin-stat-value" id="adminMovido">$0</div>
-                </div>
+                <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div>
             </div>
             <div class="admin-recarga">
                 <input type="email" id="adminUserEmail" placeholder="Email del usuario">
@@ -713,86 +708,69 @@
             </div>
         </div>
 
-        <!-- Header -->
-        <div class="header">
+        <!-- HEADER UNIFICADO: Usuario + Saldo + Acciones -->
+        <div class="unified-header">
             <div class="avatar" id="userAvatar">D</div>
-            <div class="header-info">
-                <div class="header-username" id="txtUsername">Usuario</div>
-                <div class="header-status"><span class="status-dot"></span> En línea</div>
+            <div class="user-info">
+                <div class="user-name" id="txtUsername">Usuario</div>
+                <div class="user-status"><span class="status-dot"></span> En línea</div>
             </div>
-            <button id="btnLogout" class="btn-logout">Salir</button>
-        </div>
-
-        <!-- Community Stats -->
-        <div class="community-card">
-            <div class="community-title">Comunidad</div>
-            <div class="stats-row">
-                <div class="stat-chip"><span class="dot dot-green"></span> <span id="statOnline">0</span> en línea</div>
-                <div class="stat-chip"><span class="dot dot-blue"></span> <span id="statPlaying">0</span> jugando</div>
-                <div class="stat-chip"><span class="dot dot-yellow"></span> <span id="statWaiting">0</span> esperando</div>
+            <div class="balance-mini">
+                <div class="balance-mini-label">Saldo</div>
+                <div class="balance-mini-amount" id="saldoDisplay">$0</div>
             </div>
-            <div class="membership-bar" style="margin-top:10px;">
-                <div class="membership-fill" id="membershipFill" style="width:0%;"></div>
-            </div>
-            <div style="font-size:0.7rem;color:var(--text-muted);margin-top:6px;display:flex;justify-content:space-between;">
-                <span>Miembros activos</span>
-                <span id="membershipText">0 / 50</span>
+            <div class="header-actions">
+                <button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button>
+                <button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button>
+                <button id="btnLogout" class="btn-sm btn-out">Salir</button>
             </div>
         </div>
 
-        <!-- Balance -->
-        <div class="balance-card">
-            <div class="balance-label">Saldo disponible</div>
-            <div class="balance-amount" id="saldoDisplay">$0</div>
-            <div class="balance-actions">
-                <button id="btnRecargar" class="btn-balance btn-deposit">+ Recargar</button>
-                <button id="btnRetirar" class="btn-balance btn-withdraw">- Retirar</button>
+        <!-- COMMUNITY BAR COMPACTA -->
+        <div class="community-bar">
+            <div class="comm-stats">
+                <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
+                <div class="comm-stat"><span class="comm-dot blue"></span> <span id="statPlaying">0</span> jugando</div>
+                <div class="comm-stat"><span class="comm-dot yellow"></span> <span id="statWaiting">0</span> esperando</div>
+            </div>
+            <div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div>
+        </div>
+
+        <!-- MESA DE JUEGO (ELEMENTO PRINCIPAL) -->
+        <div class="game-table-main" id="gameTableMain">
+            <div class="table-felt" id="tableFelt">
+                <!-- Contenido dinámico: mesa vacía, búsqueda o cartas -->
+                <div id="tableContent">
+                    <div class="table-empty-msg">Selecciona modalidad y presiona<br><strong>Buscar Partida</strong></div>
+                </div>
             </div>
         </div>
 
-        <!-- Mode Selection -->
-        <div class="section-label">Modalidad</div>
-        <div class="mode-grid">
-            <div class="mode-card selected" id="mode1v1" data-mode="1v1">
-                <div class="mode-icon">⚔️</div>
-                <div class="mode-name">1 VS 1</div>
-                <div class="mode-desc">Partida rápida</div>
+        <!-- CONTROLES: Modalidad + Apuesta + Botón -->
+        <div class="controls-section">
+            <div class="section-label">Modalidad</div>
+            <div class="mode-row">
+                <div class="mode-chip selected" id="mode1v1" data-mode="1v1">⚔️ 1 VS 1</div>
+                <div class="mode-chip" id="mode3p" data-mode="3p">👥 3 Jugadores</div>
             </div>
-            <div class="mode-card" id="mode3p" data-mode="3p">
-                <div class="mode-icon">👥</div>
-                <div class="mode-name">3 Jugadores</div>
-                <div class="mode-desc">Mayor premio</div>
+            <div class="section-label">Apuesta</div>
+            <div class="bet-row" id="betRow">
+                <div class="bet-chip selected" data-apuesta="2000">$2K</div>
+                <div class="bet-chip" data-apuesta="4000">$4K</div>
+                <div class="bet-chip" data-apuesta="8000">$8K</div>
+                <div class="bet-chip" data-apuesta="16000">$16K</div>
+                <div class="bet-chip" data-apuesta="32000">$32K</div>
             </div>
+            <button id="btnPlay" class="btn-cta">Buscar Partida</button>
         </div>
 
-        <!-- Bet Selection -->
-        <div class="section-label">Apuesta</div>
-        <div class="bet-grid" id="betGrid">
-            <div class="bet-chip selected" data-apuesta="2000">$2K</div>
-            <div class="bet-chip" data-apuesta="4000">$4K</div>
-            <div class="bet-chip" data-apuesta="8000">$8K</div>
-            <div class="bet-chip" data-apuesta="16000">$16K</div>
-            <div class="bet-chip" data-apuesta="32000">$32K</div>
-        </div>
-
-        <!-- CTA -->
-        <button id="btnPlay" class="btn-cta">Buscar Partida</button>
-
-        <!-- Search Status -->
-        <div id="searchStatus" class="search-status hidden">
-            <div class="search-players" id="searchPlayers"></div>
-            <div class="search-progress" id="searchProgress"></div>
-        </div>
-
-        <!-- Game Table -->
-        <div id="gameTable" class="game-table hidden">
-            <div class="cards-row" id="cardsRow"></div>
-        </div>
-
-        <!-- History -->
-        <div class="history-card">
-            <div class="history-title">Historial de partidas</div>
-            <div id="historialContent">
+        <!-- HISTORIAL COLAPSABLE -->
+        <div class="history-collapsible" id="historyCollapsible">
+            <div class="history-header" id="historyHeader">
+                <span class="history-title">📊 Historial de partidas</span>
+                <span class="history-arrow">▼</span>
+            </div>
+            <div class="history-body">
                 <table class="history-table">
                     <thead><tr><th>Resultado</th><th>Mesa</th><th>Monto</th></tr></thead>
                     <tbody id="historialBody"></tbody>
@@ -801,13 +779,13 @@
         </div>
     </div>
 
-    <!-- Nequi Modal -->
+    <!-- NEQUI MODAL -->
     <div id="nequiModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-title">Recargar Saldo</div>
-            <p style="font-size:0.8rem;color:var(--text-muted);">Transfiere a esta cuenta Nequi:</p>
+            <p style="font-size:0.75rem;color:var(--text-muted);">Transfiere a esta cuenta Nequi:</p>
             <div class="nequi-number">📱 3123456789</div>
-            <p style="font-size:0.75rem;color:var(--text-muted);margin-bottom:14px;">Envía el comprobante por WhatsApp</p>
+            <p style="font-size:0.7rem;color:var(--text-muted);margin-bottom:12px;">Envía el comprobante por WhatsApp</p>
             <button id="btnWaConfirm" class="btn-wa">Enviar Comprobante</button>
             <button id="btnModalCerrar" class="btn-modal-close">Cancelar</button>
         </div>
@@ -846,9 +824,7 @@
     const saldoDisplay = document.getElementById('saldoDisplay');
     const btnLogout = document.getElementById('btnLogout'), btnRecargar = document.getElementById('btnRecargar');
     const btnRetirar = document.getElementById('btnRetirar'), btnPlay = document.getElementById('btnPlay');
-    const searchStatus = document.getElementById('searchStatus'), searchPlayers = document.getElementById('searchPlayers');
-    const searchProgress = document.getElementById('searchProgress');
-    const gameTable = document.getElementById('gameTable'), cardsRow = document.getElementById('cardsRow');
+    const tableContent = document.getElementById('tableContent');
     const historialBody = document.getElementById('historialBody');
     const nequiModal = document.getElementById('nequiModal'), btnWaConfirm = document.getElementById('btnWaConfirm');
     const btnModalCerrar = document.getElementById('btnModalCerrar');
@@ -857,6 +833,8 @@
     const btnAdminRecargar = document.getElementById('btnAdminRecargar');
     const mode1v1 = document.getElementById('mode1v1'), mode3p = document.getElementById('mode3p');
     const betChips = document.querySelectorAll('.bet-chip');
+    const historyCollapsible = document.getElementById('historyCollapsible');
+    const historyHeader = document.getElementById('historyHeader');
 
     let currentUserId = null, currentUsername = '';
     let saldoActual = 0, apuestaActual = 2000, modoJuego = '1v1';
@@ -869,13 +847,26 @@
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
 
+    // History toggle
+    historyHeader.addEventListener('click', () => {
+        historyCollapsible.classList.toggle('open');
+    });
+
     // Auth tabs
     tabLogin.addEventListener('click', () => { tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.textContent = 'Ingresar'; });
     tabRegister.addEventListener('click', () => { tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.textContent = 'Registrarse'; });
 
     // Mode selection
-    mode1v1.addEventListener('click', () => { mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1'; });
-    mode3p.addEventListener('click', () => { mode3p.classList.add('selected'); mode1v1.classList.remove('selected'); modoJuego = '3p'; });
+    mode1v1.addEventListener('click', () => {
+        if(esperandoPartida) return;
+        mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1';
+        updateTablePreview();
+    });
+    mode3p.addEventListener('click', () => {
+        if(esperandoPartida) return;
+        mode3p.classList.add('selected'); mode1v1.classList.remove('selected'); modoJuego = '3p';
+        updateTablePreview();
+    });
 
     // Bet selection
     betChips.forEach(chip => {
@@ -887,6 +878,29 @@
         });
     });
 
+    function updateTablePreview() {
+        if(esperandoPartida) return;
+        const maxJ = MAX_JUGADORES[modoJuego];
+        let html = '<div class="cards-row">';
+        for(let i = 0; i < maxJ; i++) {
+            html += `
+                <div class="card-slot">
+                    <div class="card-wrapper">
+                        <div class="card-inner">
+                            <div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div>
+                            <div class="card-face card-front">
+                                <div class="card-value">?</div>
+                                <div class="card-suit">🂠</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-label">${i === 0 ? 'Tú' : 'Jugador ' + (i+1)}</div>
+                </div>`;
+        }
+        html += '</div>';
+        tableContent.innerHTML = html;
+    }
+
     // Auth observer
     onAuthStateChanged(auth, async (user) => {
         if (user) {
@@ -896,6 +910,7 @@
             gameView.classList.remove('hidden');
             txtUsername.textContent = currentUsername;
             userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
+            updateTablePreview();
 
             // Presence
             const presenceRef = ref(db, `presencia/${user.uid}`);
@@ -975,9 +990,7 @@
                 document.getElementById('statOnline').textContent = online;
                 document.getElementById('statWaiting').textContent = waiting;
                 document.getElementById('statPlaying').textContent = playing;
-                const pct = Math.min(100, (online / MAX_MIEMBROS) * 100);
-                document.getElementById('membershipFill').style.width = pct + '%';
-                document.getElementById('membershipText').textContent = `${online} / ${MAX_MIEMBROS}`;
+                document.getElementById('membershipText').textContent = `${online}/${MAX_MIEMBROS}`;
             });
 
         } else {
@@ -1026,10 +1039,25 @@
         return { peso: vi, texto: nombresCartas[vi], pinta: p };
     }
 
-    function renderCardsHTML(jugadores, labels) {
-        cardsRow.innerHTML = '';
+    function renderSearchUI(jugadoresEncontrados, total) {
+        let html = '<div class="search-inline">';
+        for(let i = 0; i < total; i++) {
+            const encontrado = i < jugadoresEncontrados;
+            html += `
+                <div class="search-player">
+                    <div class="search-avatar ${encontrado ? 'found' : 'searching'}">${encontrado ? '👤' : '⏳'}</div>
+                    <div class="search-name">${i === 0 ? 'Tú' : (encontrado ? 'Jugador ' + (i+1) : 'Buscando...')}</div>
+                </div>`;
+        }
+        html += '</div>';
+        html += `<div class="search-progress-inline">${jugadoresEncontrados}/${total} jugadores</div>`;
+        tableContent.innerHTML = html;
+    }
+
+    function renderGameCards(jugadores, labels) {
+        let html = '<div class="cards-row">';
         jugadores.forEach((j, i) => {
-            cardsRow.innerHTML += `
+            html += `
                 <div class="card-slot">
                     <div class="card-wrapper" id="cw${i}">
                         <div class="card-inner">
@@ -1043,19 +1071,8 @@
                     <div class="card-label" id="cl${i}">${labels[i] || ''}</div>
                 </div>`;
         });
-    }
-
-    function updateSearchUI(jugadores, labels, progress) {
-        searchPlayers.innerHTML = '';
-        jugadores.forEach((j, i) => {
-            const cls = j ? 'found' : 'searching';
-            searchPlayers.innerHTML += `
-                <div class="search-player">
-                    <div class="search-player-avatar ${j ? 'found' : 'searching'}">${j ? '👤' : '⏳'}</div>
-                    <div class="search-player-name">${labels[i]}</div>
-                </div>`;
-        });
-        searchProgress.textContent = progress;
+        html += '</div>';
+        tableContent.innerHTML = html;
     }
 
     btnPlay.addEventListener('click', async () => {
@@ -1071,7 +1088,7 @@
             esperandoPartida = false;
             btnPlay.textContent = 'Buscar Partida';
             btnPlay.classList.remove('canceling');
-            searchStatus.classList.add('hidden');
+            updateTablePreview();
             return;
         }
 
@@ -1080,17 +1097,9 @@
         btnPlay.classList.add('canceling');
         esperandoPartida = true;
 
-        // Update presence
         await update(ref(db, `presencia/${currentUserId}`), { status: 'waiting' });
+        renderSearchUI(1, maxJ);
 
-        // Show search UI
-        searchStatus.classList.remove('hidden');
-        gameTable.classList.add('hidden');
-        const labels = ['Tú', ...Array(maxJ - 1).fill('Buscando...')];
-        const jugadoresUI = [{ found: true }, ...Array(maxJ - 1).fill(null)];
-        updateSearchUI(jugadoresUI, labels, `0/${maxJ} jugadores`);
-
-        // Transaction
         const result = await runTransaction(lobbyRef, (lobby) => {
             if(!lobby || lobby.estado === 'finalizado') {
                 return { host: currentUserId, jugadores: [currentUserId], estado: 'esperando', creado: Date.now() };
@@ -1112,29 +1121,15 @@
             const data = snap.val();
             if(!data || !data.jugadores) { off(lobbyRef, listener); resetSearch(); return; }
 
-            const jLen = data.jugadores.length;
-            const labels2 = [];
-            const jugUI = [];
-            for(let i = 0; i < maxJ; i++) {
-                if(i < jLen) {
-                    labels2.push(i === 0 ? 'Tú' : 'Jugador ' + (i+1));
-                    jugUI.push({ found: true });
-                } else {
-                    labels2.push('Buscando...');
-                    jugUI.push(null);
-                }
-            }
-            updateSearchUI(jugUI, labels2, `${jLen}/${maxJ} jugadores`);
+            renderSearchUI(data.jugadores.length, maxJ);
 
-            if(data.estado === 'jugando' && data.matchId && jLen === maxJ) {
+            if(data.estado === 'jugando' && data.matchId && data.jugadores.length === maxJ) {
                 off(lobbyRef, listener);
                 await update(ref(db, `presencia/${currentUserId}`), { status: 'playing' });
-                searchStatus.classList.add('hidden');
                 await ejecutarPartida(data.matchId);
             }
         });
 
-        // Timeout
         setTimeout(async () => {
             const snap = await get(lobbyRef);
             if(snap.val() && snap.val().jugadores && snap.val().jugadores.length < maxJ) {
@@ -1151,14 +1146,13 @@
         btnPlay.disabled = false;
         btnPlay.textContent = 'Buscar Partida';
         btnPlay.classList.remove('canceling');
-        searchStatus.classList.add('hidden');
+        updateTablePreview();
         update(ref(db, `presencia/${currentUserId}`), { status: 'online' }).catch(()=>{});
     }
 
     async function ejecutarPartida(matchId) {
         currentMatchId = matchId;
         btnPlay.textContent = 'Repartiendo...';
-        gameTable.classList.remove('hidden');
 
         const snap = await get(ref(db, `matches/${matchId}`));
         const data = snap.val();
@@ -1168,7 +1162,7 @@
         const miIdx = jugadores.findIndex(j => j.uid === currentUserId);
         const labels = jugadores.map((j, i) => i === miIdx ? 'Tú' : j.username);
 
-        renderCardsHTML(jugadores, labels);
+        renderGameCards(jugadores, labels);
 
         setTimeout(() => {
             btnPlay.textContent = 'Revelando...';
@@ -1188,7 +1182,6 @@
                 const comision = apuestaActual * 0.10;
                 const ganancia = (apuestaActual * jugadores.length) - comision;
 
-                // Update labels
                 jugadores.forEach((j, i) => {
                     const lbl = document.getElementById('cl' + i);
                     if(!lbl) return;
@@ -1215,8 +1208,6 @@
                     await set(ref(db, `lobbies/${modoJuego}_${apuestaActual}`), null);
                     await update(ref(db, 'adminData'), { partidas_jugando: increment(-1) });
                     resetSearch();
-                    gameTable.classList.add('hidden');
-                    cardsRow.innerHTML = '';
                 }, 4000);
 
             }, 1200);
