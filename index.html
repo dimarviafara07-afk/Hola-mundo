@@ -447,9 +447,33 @@
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = {'1v1':2,'3p':3};
 
+    // ===== SISTEMA DE BLOQUEO DE SALDO =====
+    async function obtenerSaldoSeguro(uid) {
+        const saldoRef = ref(db, `usuarios/${uid}/saldo`);
+        const snap = await get(saldoRef);
+        return snap.val() || 0;
+    }
+
+    async function bloquearSaldoParaPartida(uid, monto) {
+        const saldoRef = ref(db, `usuarios/${uid}/saldo`);
+        await runTransaction(saldoRef, (saldoActual) => {
+            if ((saldoActual || 0) < monto) throw new Error('Saldo insuficiente');
+            return (saldoActual || 0) - monto;
+        });
+    }
+
+    async function liberarSaldoGanancia(uid, monto) {
+        const saldoRef = ref(db, `usuarios/${uid}/saldo`);
+        await runTransaction(saldoRef, (saldoActual) => {
+            return (saldoActual || 0) + monto;
+        });
+    }
+
+    // ===== TABS =====
     tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
     tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
 
+    // ===== RECUPERACIÓN =====
     btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
     btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
     btnRecovery.addEventListener('click',async()=>{
@@ -461,6 +485,7 @@
         btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';
     });
 
+    // ===== ACCESO =====
     async function verificarAcceso(){
         try{
             const cfg=(await get(ref(db,'configuracion'))).val()||{};
@@ -480,16 +505,19 @@
     });
     accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
+    // ===== RESET =====
     async function resetContador(c){if(confirm(`¿Reiniciar ${c}?`))await update(ref(db,'adminData'),{[c]:0});}
     btnResetComision.addEventListener('click',()=>resetContador('total_comisiones'));
     btnResetMovido.addEventListener('click',()=>resetContador('dinero_movido'));
     btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo');}});
 
+    // ===== CONFIG =====
     btnConfigSave.addEventListener('click',async()=>{
         await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});
         codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');
     });
 
+    // ===== UTILS =====
     function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO');}
     historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
     mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
@@ -505,6 +533,7 @@
 
     updatePotDisplay(2);
 
+    // ===== AUTH STATE =====
     onAuthStateChanged(auth,async(user)=>{
         if(user){
             currentUserId=user.uid;
@@ -526,7 +555,6 @@
                 const cfg=(await get(ref(db,'configuracion'))).val()||{};
                 configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
 
-                // ===== RECARGA CON TRANSACCIÓN ATÓMICA =====
                 btnAdminRecargar.onclick=async()=>{
                     const emailBuscar=adminUserEmail.value.trim().toLowerCase();
                     const monto=parseInt(adminMontoRecarga.value);
@@ -537,8 +565,7 @@
                         let uidEncontrado=null,emailEncontrado='';
                         for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break;}}
                         if(!uidEncontrado)return alert('❌ Usuario no encontrado');
-                        const saldoRef=ref(db,`usuarios/${uidEncontrado}/saldo`);
-                        await runTransaction(saldoRef,(saldoActual)=>{return(saldoActual||0)+monto;});
+                        await liberarSaldoGanancia(uidEncontrado,monto);
                         await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto:monto,timestamp:Date.now()});
                         alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);
                         adminUserEmail.value='';adminMontoRecarga.value='';
@@ -599,60 +626,122 @@
     function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;}
     function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`;});h+='</div>';tableContent.innerHTML=h;}
 
+    // ===== EMPAREJAMIENTO CON BLOQUEO DE SALDO =====
     btnPlay.addEventListener('click',async()=>{
         if(!currentUserId)return;
-        if(saldoActual<=0)return alert('❌ Saldo en $0. Recarga para jugar.');
-        if(saldoActual<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoActual.toLocaleString('es-CO')}, necesitas $${apuestaActual.toLocaleString('es-CO')}`);
+
+        // Verificar saldo seguro
+        const saldoSeguro = await obtenerSaldoSeguro(currentUserId);
+        if(saldoSeguro <= 0)return alert('❌ Tu saldo está en $0. Recarga para seguir jugando.');
+        if(saldoSeguro < apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoSeguro.toLocaleString('es-CO')} pero necesitas $${apuestaActual.toLocaleString('es-CO')}`);
+
         const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),maxJ=MAX_JUGADORES[modoJuego];
-        if(esperandoPartida){await set(lobbyRef,null);await update(ref(db,`presencia/${currentUserId}`),{status:'online'});esperandoPartida=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');btnPlay.disabled=false;updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();return;}
-        btnPlay.disabled=true;btnPlay.textContent='Buscando...';btnPlay.classList.add('canceling');esperandoPartida=true;
-        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias});renderSearchUI(1,maxJ);updatePotDisplay(1);
+
+        if(esperandoPartida){
+            await set(lobbyRef,null);
+            await update(ref(db,`presencia/${currentUserId}`),{status:'online'});
+            esperandoPartida=false;
+            btnPlay.textContent='Buscar Partida';
+            btnPlay.classList.remove('canceling');
+            btnPlay.disabled=false;
+            updatePotDisplay(MAX_JUGADORES[modoJuego]);
+            updateTablePreview();
+            return;
+        }
+
+        // BLOQUEAR SALDO ANTES DE EMPEZAR
+        try {
+            await bloquearSaldoParaPartida(currentUserId, apuestaActual);
+        } catch(error) {
+            return alert('❌ Saldo insuficiente para esta partida');
+        }
+
+        btnPlay.disabled=true;
+        btnPlay.textContent='Buscando...';
+        btnPlay.classList.add('canceling');
+        esperandoPartida=true;
+
+        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias});
+        renderSearchUI(1,maxJ);
+        updatePotDisplay(1);
+
         const result=await runTransaction(lobbyRef,(lobby)=>{
             if(!lobby||lobby.estado==='finalizado')return{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()};
-            if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){const yaEsta=lobby.jugadores.some(j=>j.uid===currentUserId);if(!yaEsta){lobby.jugadores.push({uid:currentUserId,alias:currentAlias});if(lobby.jugadores.length===maxJ){lobby.estado='jugando';lobby.cartas={};lobby.jugadores.forEach(j=>{lobby.cartas[j.uid]=generarCarta();});}return lobby;}}return lobby;
+            if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){
+                const yaEsta=lobby.jugadores.some(j=>j.uid===currentUserId);
+                if(!yaEsta){lobby.jugadores.push({uid:currentUserId,alias:currentAlias});if(lobby.jugadores.length===maxJ){lobby.estado='jugando';lobby.cartas={};lobby.jugadores.forEach(j=>{lobby.cartas[j.uid]=generarCarta();});}return lobby;}
+            }return lobby;
         });
+
         const lobbyData=result.snapshot.val();
         if(!lobbyData){resetSearch();return alert('Error al conectar');}
+
         const listener=onValue(lobbyRef,async(snap)=>{
             const data=snap.val();
             if(!data||!data.jugadores){off(lobbyRef,listener);resetSearch();return;}
             renderSearchUI(data.jugadores.length,maxJ);updatePotDisplay(data.jugadores.length);
             if(data.estado==='jugando'&&data.matchId&&data.jugadores.length===maxJ){off(lobbyRef,listener);await update(ref(db,`presencia/${currentUserId}`),{status:'playing'});await ejecutarPartida(data.matchId,data);}
-            else if(data.estado==='jugando'&&!data.matchId&&data.jugadores.length===maxJ){const matchId=push(ref(db,'matches')).key;const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};await set(ref(db,`matches/${matchId}`),matchData);await update(lobbyRef,{matchId:matchId});}
+            else if(data.estado==='jugando'&&!data.matchId&&data.jugadores.length===maxJ){
+                const matchId=push(ref(db,'matches')).key;
+                const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};
+                await set(ref(db,`matches/${matchId}`),matchData);await update(lobbyRef,{matchId:matchId});
+            }
         });
-        setTimeout(async()=>{const snap=await get(lobbyRef);if(snap.val()&&snap.val().jugadores&&snap.val().jugadores.length<maxJ){await set(lobbyRef,null);off(lobbyRef,listener);resetSearch();alert('Tiempo agotado.');}},60000);
+
+        setTimeout(async()=>{
+            const snap=await get(lobbyRef);
+            if(snap.val()&&snap.val().jugadores&&snap.val().jugadores.length<maxJ){
+                await set(lobbyRef,null);off(lobbyRef,listener);
+                // Devolver saldo bloqueado si no se encontró partida
+                await liberarSaldoGanancia(currentUserId,apuestaActual);
+                resetSearch();alert('Tiempo agotado.');
+            }
+        },60000);
     });
 
-    function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});}
+    function resetSearch(){
+        esperandoPartida=false;
+        btnPlay.disabled=false;
+        btnPlay.textContent='Buscar Partida';
+        btnPlay.classList.remove('canceling');
+        updatePotDisplay(MAX_JUGADORES[modoJuego]);
+        updateTablePreview();
+        update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
+    }
 
-    // ===== PARTIDA CON TRANSACCIÓN ATÓMICA (NO MODIFICA OTROS SALDOS) =====
+    // ===== PARTIDA CON SISTEMA DE BLOQUEO =====
     async function ejecutarPartida(matchId,lobbyData){
         currentMatchId=matchId;btnPlay.textContent='Repartiendo...';
         const matchSnap=await get(ref(db,`matches/${matchId}`));let matchData=matchSnap.val();
-        if(!matchData||!matchData.jugadores){const jugadores=(lobbyData.jugadores||[]).map((j,i)=>({uid:j.uid,alias:j.alias||('Jugador '+(i+1)),carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()}));matchData={jugadores,apuesta:apuestaActual,modalidad:modoJuego};await set(ref(db,`matches/${matchId}`),matchData);}
+        if(!matchData||!matchData.jugadores){
+            const jugadores=(lobbyData.jugadores||[]).map((j,i)=>({uid:j.uid,alias:j.alias||('Jugador '+(i+1)),carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()}));
+            matchData={jugadores,apuesta:apuestaActual,modalidad:modoJuego};await set(ref(db,`matches/${matchId}`),matchData);
+        }
         const jugadores=matchData.jugadores,miIdx=jugadores.findIndex(j=>j.uid===currentUserId),labels=jugadores.map((j,i)=>i===miIdx?'Tú':(j.alias||'Jugador '+(i+1)));
         const totalPot=apuestaActual*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores,labels);
+
         setTimeout(()=>{btnPlay.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
             setTimeout(async()=>{
                 const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
                 if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a);}
                 const yoGane=ganador.uid===currentUserId,comision=jugadores.length===2?apuestaActual*0.05:apuestaActual*0.10,ganancia=totalPot-comision;
+
                 if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
+
                 jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
 
-                // TRANSACCIÓN ATÓMICA - Solo modifica el saldo del usuario actual
-                const saldoRef=ref(db,`usuarios/${currentUserId}/saldo`);
-                await runTransaction(saldoRef,(saldoActualDB)=>{
-                    if(saldoActualDB===null)saldoActualDB=0;
-                    if(yoGane)return saldoActualDB+ganancia;
-                    else return Math.max(0,saldoActualDB-apuestaActual);
-                });
-
-                // Historial (no modifica saldo)
-                await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:yoGane?'GANÓ':'PERDIÓ',monto:yoGane?ganancia:apuestaActual,timestamp:Date.now(),matchId,oponentes:jugadores.filter(j=>j.uid!==currentUserId).map(j=>j.alias)});
-
-                // AdminData (solo estadísticas, no toca saldos)
-                if(yoGane){await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot)});}
+                // ACTUALIZAR SALDO CON SISTEMA DE BLOQUEO
+                try{
+                    if(yoGane){
+                        // El saldo ya estaba bloqueado (descontado), ahora sumamos el pozo completo
+                        await liberarSaldoGanancia(currentUserId,apuestaActual+ganancia);
+                        await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});
+                        await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});
+                    }else{
+                        // Si perdió, el saldo ya está descontado (bloqueado), no hacemos nada
+                        await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});
+                    }
+                }catch(e){console.error('Error actualizando saldo:',e);}
 
                 btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
                 setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);resetSearch();},4000);
