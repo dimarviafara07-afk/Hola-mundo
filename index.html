@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuerteFácil - Club Privado</title>
+    <title>SuerteFácil P2P</title>
     <style>
         :root {
-            /* Paleta Azul Oscuro Premium */
             --bg-app: #0B1121;
             --bg-card: #111B2E;
             --bg-card-hover: #162240;
@@ -14,6 +13,7 @@
             --primary: #2563EB;
             --primary-hover: #1D4ED8;
             --primary-soft: rgba(37, 99, 235, 0.15);
+            --primary-border: #3B82F6;
             --success: #16A34A;
             --success-soft: rgba(22, 163, 74, 0.15);
             --danger: #DC2626;
@@ -23,8 +23,19 @@
             --text-secondary: #94A3B8;
             --text-muted: #475569;
             --border-subtle: #1E293B;
-            --gold: #F5A623;
-            --gold-border: #B8860B;
+            --gold: #c9a84c;
+            --gold-soft: rgba(201,168,76,0.1);
+            --gold-border: rgba(201,168,76,0.25);
+            --pot-color: #d4a853;
+            --pot-glow: rgba(212,168,83,0.25);
+            --radius-xs: 6px;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 18px;
+            --radius-xl: 22px;
+            --card-back-bg: linear-gradient(145deg, #0F1A2C 0%, #162240 50%, #0F1A2C 100%);
+            --card-back-border: #c9a84c;
+            --card-back-pattern: rgba(201,168,76,0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -32,427 +43,371 @@
         body {
             background: var(--bg-app);
             color: var(--text-main);
-            font-family: 'Inter', 'Segoe UI', sans-serif;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             justify-content: center;
+            align-items: flex-start;
             min-height: 100vh;
             padding: 10px;
+            -webkit-font-smoothing: antialiased;
         }
 
         .app-container { width: 100%; max-width: 460px; }
         .hidden { display: none !important; }
 
-        /* ===== AUTH SCREEN ===== */
+        /* ========== CODIGO DE ACCESO ========== */
+        .access-screen {
+            background: var(--bg-card);
+            padding: 2.5rem 1.8rem;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            margin-top: 40px;
+            border: 1px solid var(--gold-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .access-icon { font-size: 3rem; margin-bottom: 1rem; }
+        .access-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
+        .access-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4; }
+        .access-input {
+            width: 100%;
+            padding: 14px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-size: 1.2rem;
+            text-align: center;
+            letter-spacing: 8px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        .access-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
+        .access-error { color: var(--danger); font-size: 0.75rem; margin-bottom: 8px; min-height: 20px; }
+        .access-info { font-size: 0.7rem; color: var(--text-muted); margin-top: 14px; }
+        .access-info span { color: var(--gold); font-weight: 600; }
+        .jornada-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .jornada-status.active {
+            background: rgba(22,163,74,0.12);
+            color: var(--success);
+            border: 1px solid rgba(22,163,74,0.3);
+        }
+        .jornada-status.inactive {
+            background: rgba(220,38,38,0.12);
+            color: var(--danger);
+            border: 1px solid rgba(220,38,38,0.3);
+        }
+        .jornada-dot { width: 7px; height: 7px; border-radius: 50%; }
+        .jornada-status.active .jornada-dot { background: var(--success); animation: pulse-dot 2s infinite; }
+        .jornada-status.inactive .jornada-dot { background: var(--danger); }
+        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ========== AUTH SCREEN ========== */
         .auth-screen {
             background: var(--bg-card);
-            padding: 2rem 1.5rem;
-            border-radius: 18px;
+            padding: 2.2rem 1.5rem;
+            border-radius: var(--radius-xl);
             text-align: center;
             margin-top: 30px;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
-        .auth-logo {
-            font-size: 1.7rem;
-            font-weight: 700;
-            margin-bottom: 1.8rem;
-            color: var(--text-main);
-        }
-        .auth-logo span { color: var(--gold); }
-        .auth-tabs {
-            display: flex;
-            background: var(--bg-input);
-            border-radius: 10px;
-            padding: 3px;
-            margin-bottom: 1.3rem;
-            border: 1px solid var(--border-subtle);
-        }
-        .auth-tab {
-            flex: 1;
-            padding: 11px;
-            border: none;
-            background: transparent;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.85rem;
-            cursor: pointer;
-            border-radius: 7px;
-            transition: all 0.25s;
-        }
-        .auth-tab.active { background: var(--primary); color: #fff; }
-        .auth-input {
-            width: 100%;
-            padding: 13px 15px;
-            border-radius: 10px;
-            border: 1px solid var(--border-subtle);
-            background: var(--bg-input);
-            color: var(--text-main);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        .auth-input:focus { outline: none; border-color: var(--primary); }
-        .btn-primary {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            background: var(--primary);
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.25s;
-            margin-top: 4px;
-        }
-        .btn-primary:hover { background: var(--primary-hover); }
+        .auth-logo { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1.8rem; color: var(--text-main); }
+        .auth-logo span { color: var(--primary); }
+        .auth-tabs { display: flex; background: var(--bg-input); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 1.3rem; border: 1px solid var(--border-subtle); }
+        .auth-tab { flex: 1; padding: 11px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 7px; transition: all 0.25s; }
+        .auth-tab.active { background: var(--primary); color: #fff; font-weight: 700; }
+        .auth-input { width: 100%; padding: 13px 15px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-main); font-size: 0.9rem; margin-bottom: 10px; transition: all 0.2s; }
+        .auth-input:focus { outline: none; border-color: var(--primary-border); box-shadow: 0 0 0 3px var(--primary-soft); }
+        .btn-primary { width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm); background: var(--primary); color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.25s; margin-top: 4px; letter-spacing: 0.5px; }
+        .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 20px rgba(37,99,235,0.3); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* ===== HEADER ===== */
+        /* ========== HEADER UNIFICADO ========== */
         .unified-header {
-            background: var(--bg-card);
-            border-radius: 18px;
-            padding: 14px 16px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            border: 1px solid var(--border-subtle);
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border: 1px solid var(--border-subtle); box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold), #f0c800);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            color: #050505;
-        }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #3B82F6); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: #fff; flex-shrink: 0; }
         .user-info { flex: 1; min-width: 0; }
-        .user-name { font-weight: 600; font-size: 0.9rem; }
+        .user-name { font-weight: 600; font-size: 0.9rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-status { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 5px; }
-        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse-dot 2s infinite; }
-        @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse-dot 2s infinite; box-shadow: 0 0 6px rgba(22,163,74,0.5); }
         .balance-mini { text-align: right; }
-        .balance-mini-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+        .balance-mini-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .balance-mini-amount { font-size: 1.15rem; font-weight: 700; color: var(--gold); }
         .header-actions { display: flex; gap: 6px; width: 100%; margin-top: 10px; }
-        .btn-sm {
-            flex: 1;
-            padding: 9px 10px;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.73rem;
-            cursor: pointer;
-            border: none;
-            text-transform: uppercase;
-            text-align: center;
-        }
-        .btn-dep { background: var(--success-soft); color: var(--success); border: 1px solid rgba(22, 163, 74, 0.3); }
-        .btn-wit { background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(220, 38, 38, 0.3); }
+        .btn-sm { flex: 1; padding: 9px 10px; border-radius: var(--radius-xs); font-weight: 600; font-size: 0.73rem; cursor: pointer; border: none; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+        .btn-dep { background: var(--success-soft); color: var(--success); border: 1px solid rgba(22,163,74,0.25); }
+        .btn-dep:hover { background: rgba(22,163,74,0.25); }
+        .btn-wit { background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(220,38,38,0.25); }
+        .btn-wit:hover { background: rgba(220,38,38,0.25); }
         .btn-out { background: transparent; color: var(--text-muted); border: 1px solid var(--border-subtle); }
+        .btn-out:hover { border-color: var(--danger); color: var(--danger); }
 
-        /* ===== COMMUNITY BAR ===== */
+        /* ========== COMMUNITY BAR ========== */
         .community-bar {
-            background: var(--bg-card);
-            border-radius: 14px;
-            padding: 10px 14px;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            border: 1px solid var(--border-subtle);
+            background: var(--bg-card); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid var(--border-subtle);
         }
         .comm-stats { display: flex; gap: 12px; font-size: 0.7rem; color: var(--text-secondary); flex-wrap: wrap; }
-        .comm-stat { display: flex; align-items: center; gap: 5px; }
+        .comm-stat { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .comm-dot { width: 6px; height: 6px; border-radius: 50%; }
-        .comm-dot.yellow { background: var(--gold); }
-        .comm-dot.gold { background: var(--gold); }
-        .comm-dot.amber { background: var(--warning); }
-        .membership-mini { margin-left: auto; font-size: 0.68rem; color: var(--text-muted); }
-        .membership-mini strong { color: var(--gold); }
+        .comm-dot.green { background: var(--success); box-shadow: 0 0 6px rgba(22,163,74,0.5); }
+        .comm-dot.blue { background: var(--primary); box-shadow: 0 0 6px rgba(37,99,235,0.5); }
+        .comm-dot.amber { background: var(--warning); box-shadow: 0 0 6px rgba(245,158,11,0.5); }
+        .membership-mini { margin-left: auto; font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
+        .membership-mini strong { color: var(--primary); }
 
-        /* ===== MESA DE PÓKER REALISTA ===== */
+        /* ========== POZO ========== */
+        .pot-container {
+            background: var(--bg-card); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 10px;
+            text-align: center; border: 1px solid var(--gold-border);
+        }
+        .pot-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+        .pot-amount { font-size: 1.6rem; font-weight: 700; color: var(--pot-color); text-shadow: 0 0 12px var(--pot-glow); }
+        .pot-amount.pot-won { animation: pot-pulse 0.5s ease-out; }
+        @keyframes pot-pulse { 0%{transform:scale(1)} 50%{transform:scale(1.15); color:#e8c97a} 100%{transform:scale(1)} }
+
+        /* ========== GAME TABLE ========== */
         .game-table-main {
-            background: var(--bg-card);
-            border-radius: 18px;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-subtle);
-            text-align: center;
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 18px 12px; margin-bottom: 10px;
+            border: 1px solid var(--border-subtle); text-align: center; min-height: 150px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s;
         }
-        .poker-table {
-            position: relative;
-            width: 100%;
-            max-width: 420px;
-            margin: 0 auto;
-            aspect-ratio: 1.6 / 1;
-            background: #1a1a1a;
-            border-radius: 50% / 40%;
-            padding: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        .game-table-main.active-game { border-color: var(--primary-border); box-shadow: 0 0 20px rgba(37,99,235,0.08); }
+        .table-felt {
+            background: linear-gradient(160deg, #0A1F14 0%, #0D2818 40%, #091A10 100%);
+            border-radius: var(--radius-md); padding: 16px 10px; width: 100%; border: 3px solid #4A3724;
+            position: relative; box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
         }
-        .table-border {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 50% / 40%;
-            border: 8px solid #111;
-            box-shadow: inset 0 0 15px var(--primary), 0 0 10px var(--primary);
-            pointer-events: none;
-        }
-        .table-surface {
-            width: 100%;
-            height: 100%;
-            border-radius: 50% / 40%;
-            background: radial-gradient(ellipse at center, #0a1a2a 0%, #0f172a 60%, #020617 100%);
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #1e293b;
-        }
-        .players-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .player-spot { position: absolute; display: flex; flex-direction: column; align-items: center; gap: 5px; }
-        .pos-left { bottom: 15%; left: 5%; }
-        .pos-center { bottom: 10%; left: 50%; transform: translateX(-50%); }
-        .pos-right { bottom: 15%; right: 5%; }
-        .card-wrapper { width: 52px; height: 72px; perspective: 800px; }
-        .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s; }
+        .cards-row { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .card-slot { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+        .card-wrapper { perspective: 800px; width: 72px; height: 100px; }
+        .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
         .card-wrapper.flipped .card-inner { transform: rotateY(180deg); }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-        }
-        .card-back { background: linear-gradient(145deg, #0a0a0a, #1a1a2e); border: 2px solid var(--gold); }
-        .card-front { background: #fafafa; color: #0a0a0a; transform: rotateY(180deg); border: 2px solid #d4d4d4; }
-        .card-value { font-size: 1.1rem; font-weight: 800; }
-        .card-suit { font-size: 0.9rem; }
-        .player-label { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-        .player-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #fff; }
-        .player-name { font-size: 0.6rem; color: var(--text-secondary); }
-        .player-chips { display: flex; gap: 2px; }
-        .chip-mini { width: 14px; height: 14px; border-radius: 50%; border: 1px solid #333; }
-        .chip-mini.red { background: #dc2626; }
-        .chip-mini.blue { background: #2563eb; }
-        .chip-mini.green { background: #16a34a; }
-        .chip-mini.black { background: #111; }
-        .chip-mini.yellow { background: #f59e0b; }
-        .chip-mini.white { background: #f1f5f9; }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.35); }
+        .card-back { background: var(--card-back-bg); border: 2px solid var(--card-back-border); position: relative; overflow: hidden; }
+        .card-back::before { content: ''; position: absolute; inset: 5px; border: 1.5px solid rgba(201,168,76,0.25); border-radius: 4px; }
+        .card-back-pattern { position: relative; z-index: 1; font-size: 1.3rem; font-weight: 700; color: rgba(201,168,76,0.4); }
+        .card-front { background: linear-gradient(150deg, #ffffff 0%, #F8FAFC 100%); color: #0F172A; transform: rotateY(180deg); border: 2px solid #E2E8F0; }
+        .card-value { font-size: 1.4rem; font-weight: 800; }
+        .card-suit { font-size: 1.1rem; margin-top: 2px; }
+        .card-label { font-size: 0.68rem; color: var(--text-secondary); font-weight: 500; max-width: 78px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
+        .card-label.winner { color: var(--success); font-weight: 700; text-shadow: 0 0 8px rgba(22,163,74,0.4); }
+        .card-label.loser { color: var(--danger); }
+        .table-empty-msg { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; }
+        .table-empty-msg strong { color: var(--primary); }
 
-        /* ===== POZO ===== */
-        .pot-area { position: absolute; top: 25%; left: 50%; transform: translateX(-50%); text-align: center; z-index: 10; }
-        .pot-label { font-size: 0.5rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 2px; }
-        .pot-chips-container { display: flex; justify-content: center; gap: 2px; margin-bottom: 4px; }
-        .chip-3d { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        .chip-3d.red { background: radial-gradient(circle at 30% 30%, #ef4444, #b91c1c); }
-        .chip-3d.blue { background: radial-gradient(circle at 30% 30%, #3b82f6, #1d4ed8); }
-        .chip-3d.green { background: radial-gradient(circle at 30% 30%, #22c55e, #15803d); }
-        .chip-3d.black { background: radial-gradient(circle at 30% 30%, #333, #000); }
-        .chip-3d.white { background: radial-gradient(circle at 30% 30%, #fff, #cbd5e1); }
-        .pot-amount { font-size: 1rem; font-weight: 700; color: var(--gold); text-shadow: 0 0 10px rgba(245, 166, 35, 0.3); }
+        /* ========== SEARCH ========== */
+        .search-inline { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .search-player { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .search-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--bg-input); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 2.5px solid var(--border-subtle); transition: all 0.3s; }
+        .search-avatar.found { border-color: var(--success); box-shadow: 0 0 14px rgba(22,163,74,0.2); }
+        .search-avatar.searching { border-color: var(--warning); animation: pulse-border 1.5s infinite; }
+        @keyframes pulse-border { 0%,100%{border-color:var(--warning);box-shadow:0 0 8px rgba(245,158,11,0.2)} 50%{border-color:#FBBF24;box-shadow:0 0 18px rgba(251,191,36,0.4)} }
+        .search-name { font-size: 0.68rem; color: var(--text-secondary); max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .search-progress-inline { font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; font-weight: 500; }
 
-        /* ===== CONTROLES ===== */
+        /* ========== CONTROLS ========== */
         .controls-section {
-            background: var(--bg-card);
-            border-radius: 18px;
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-subtle);
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 15px; margin-bottom: 10px;
+            border: 1px solid var(--border-subtle); box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
-        .section-label { font-size: 0.68rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 9px; font-weight: 600; }
+        .section-label { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 9px; font-weight: 600; }
         .mode-row { display: flex; gap: 7px; margin-bottom: 12px; }
-        .mode-chip {
-            flex: 1;
-            padding: 11px 8px;
-            background: var(--bg-input);
-            border: 2px solid var(--border-subtle);
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.25s;
-            font-weight: 600;
-            color: var(--text-secondary);
-        }
-        .mode-chip:hover { border-color: var(--primary); }
+        .mode-chip { flex: 1; padding: 11px 8px; background: var(--bg-input); border: 2px solid var(--border-subtle); border-radius: var(--radius-sm); text-align: center; cursor: pointer; transition: all 0.25s; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); }
+        .mode-chip:hover { border-color: var(--primary-border); background: var(--bg-card-hover); }
         .mode-chip.selected { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
         .bet-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
-        .bet-chip {
-            flex: 1;
-            min-width: 48px;
-            padding: 9px 4px;
-            background: var(--bg-input);
-            border: 2px solid var(--border-subtle);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.25s;
-            font-weight: 600;
-            font-size: 0.74rem;
-            color: var(--text-secondary);
-        }
-        .bet-chip:hover { border-color: var(--primary); }
+        .bet-chip { flex: 1; min-width: 48px; padding: 9px 4px; background: var(--bg-input); border: 2px solid var(--border-subtle); border-radius: var(--radius-xs); text-align: center; cursor: pointer; transition: all 0.25s; font-weight: 600; font-size: 0.74rem; color: var(--text-secondary); }
+        .bet-chip:hover { border-color: var(--primary-border); background: var(--bg-card-hover); }
         .bet-chip.selected { border-color: var(--primary); background: var(--primary-soft); color: var(--primary); }
-        .btn-cta {
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            background: var(--primary);
-            color: #fff;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.25s;
-            text-transform: uppercase;
-        }
-        .btn-cta:hover:not(:disabled) { background: var(--primary-hover); box-shadow: 0 6px 25px rgba(37, 99, 235, 0.3); }
+        .btn-cta { width: 100%; padding: 15px; border: none; border-radius: var(--radius-sm); background: var(--primary); color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.25s; text-transform: uppercase; letter-spacing: 1.2px; }
+        .btn-cta:hover:not(:disabled) { background: var(--primary-hover); box-shadow: 0 6px 25px rgba(37,99,235,0.35); }
         .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-cta.canceling { background: var(--danger); }
+        .btn-cta.canceling { background: var(--danger); color: #fff; }
 
-        /* ===== HISTORIAL ===== */
-        .history-collapsible {
-            background: var(--bg-card);
-            border-radius: 14px;
-            overflow: hidden;
-            margin-bottom: 10px;
-            border: 1px solid var(--border-subtle);
-        }
-        .history-header { padding: 13px 16px; display: flex; justify-content: space-between; cursor: pointer; }
-        .history-title { font-size: 0.72rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        /* ========== HISTORY ========== */
+        .history-collapsible { background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-subtle); }
+        .history-header { padding: 13px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .history-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; }
         .history-arrow { font-size: 0.7rem; color: var(--text-muted); transition: transform 0.3s; }
         .history-collapsible.open .history-arrow { transform: rotate(180deg); }
         .history-body { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
         .history-collapsible.open .history-body { max-height: 300px; overflow-y: auto; }
         .history-table { width: 100%; font-size: 0.74rem; border-collapse: collapse; padding: 0 16px 12px; }
-        .history-table th { text-align: left; color: var(--text-muted); font-weight: 500; padding: 7px 0; }
+        .history-table th { text-align: left; color: var(--text-muted); font-weight: 500; padding: 7px 0; font-size: 0.66rem; text-transform: uppercase; }
         .history-table td { padding: 7px 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); }
-        .result-win { color: var(--gold); font-weight: 600; }
+        .result-win { color: var(--success); font-weight: 600; }
         .result-lose { color: var(--danger); font-weight: 600; }
-        .amount-win { color: var(--gold); }
+        .amount-win { color: var(--success); }
         .amount-lose { color: var(--danger); }
+        .history-empty { text-align: center; color: var(--text-muted); font-size: 0.72rem; padding: 12px 0; }
 
-        /* ===== MODAL ===== */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 16px;
-        }
-        .modal-content {
-            background: var(--bg-card);
-            padding: 24px;
-            border-radius: 18px;
-            width: 100%;
-            max-width: 370px;
-            text-align: center;
-            border: 1px solid var(--gold-border);
-        }
-        .modal-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 12px; }
-        .btn-wa {
-            width: 100%;
-            padding: 13px;
-            background: var(--gold);
-            color: #050505;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-        .btn-modal-close { background: none; border: none; color: var(--text-muted); margin-top: 10px; cursor: pointer; }
-        .nequi-number { background: var(--bg-input); padding: 13px; border-radius: 10px; font-size: 1.25rem; font-weight: 700; color: #e11d48; margin: 12px 0; border: 1.5px solid #e11d48; }
+        /* ========== MODAL ========== */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; justify-content: center; align-items: center; z-index: 100; padding: 16px; }
+        .modal-content { background: var(--bg-card); padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 370px; text-align: center; border: 1px solid var(--gold-border); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        .modal-title { font-weight: 700; font-size: 1.05rem; color: var(--text-main); margin-bottom: 12px; }
+        .nequi-number { background: var(--bg-input); padding: 13px; border-radius: var(--radius-sm); font-size: 1.25rem; font-weight: 700; color: #E11D48; margin: 12px 0; letter-spacing: 1px; border: 1.5px solid #E11D48; }
+        .btn-wa { width: 100%; padding: 13px; background: var(--success); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.88rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-wa:hover { background: #15803D; }
+        .btn-modal-close { background: none; border: none; color: var(--text-muted); margin-top: 10px; cursor: pointer; font-size: 0.78rem; padding: 6px; }
 
-        /* ===== ACCESS CODE ===== */
-        .access-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-            padding: 16px;
-        }
-        .access-box {
-            background: var(--bg-card);
-            padding: 30px;
-            border-radius: 18px;
-            width: 100%;
-            max-width: 340px;
-            text-align: center;
-            border: 2px solid var(--gold);
-        }
-        .access-box h2 { color: var(--gold); margin-bottom: 8px; }
-        .access-box p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 16px; }
-        .access-input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 2px solid var(--border-subtle);
+        /* ========== ADMIN ========== */
+        .admin-panel { background: var(--bg-card); border: 1.5px solid var(--gold); border-radius: var(--radius-md); padding: 15px; margin-bottom: 10px; }
+        .admin-title { color: var(--gold); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
+        .admin-stat { background: var(--bg-input); padding: 9px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); }
+        .admin-stat-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .admin-stat-value { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-top: 3px; }
+        .admin-recarga { display: flex; gap: 6px; flex-wrap: wrap; }
+        .admin-recarga input { flex: 1 1 100px; min-width: 0; padding: 9px 10px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-main); font-size: 0.75rem; }
+        .admin-recarga input:focus { outline: none; border-color: var(--primary-border); }
+        .btn-admin-recargar { padding: 9px 14px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-xs); font-weight: 700; font-size: 0.75rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+        .btn-admin-recargar:hover { background: var(--primary-hover); }
+
+        /* Admin: Configuración de jornada */
+        .admin-config {
             background: var(--bg-input);
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            margin-top: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+        .admin-config-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .config-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .config-row label {
+            font-size: 0.68rem;
+            color: var(--text-secondary);
+            min-width: 55px;
+        }
+        .config-row input {
+            flex: 1;
+            min-width: 0;
+            padding: 7px 9px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-card);
             color: var(--text-main);
-            font-size: 1.2rem;
-            text-align: center;
-            letter-spacing: 4px;
-            margin-bottom: 12px;
+            font-size: 0.72rem;
         }
-        .access-input:focus { outline: none; border-color: var(--gold); }
-        .btn-access {
-            width: 100%;
-            padding: 14px;
+        .config-row input:focus { outline: none; border-color: var(--primary-border); }
+        .btn-config-save {
+            padding: 8px 16px;
+            background: var(--success);
+            color: #fff;
             border: none;
-            border-radius: 10px;
-            background: var(--gold);
-            color: #050505;
-            font-weight: 700;
-            font-size: 1rem;
+            border-radius: var(--radius-xs);
+            font-weight: 600;
+            font-size: 0.7rem;
             cursor: pointer;
+            margin-top: 4px;
         }
-        .btn-access:hover { background: #d4a853; }
-        .access-error { color: var(--danger); font-size: 0.8rem; margin-top: 8px; display: none; }
+        .btn-config-save:hover { background: #15803D; }
+
+        @media (max-width: 360px) {
+            .card-wrapper { width: 58px; height: 82px; }
+            .card-value { font-size: 1.15rem; }
+            .card-suit { font-size: 0.9rem; }
+            .cards-row { gap: 8px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="app-container">
 
-    <!-- ===== ACCESO POR CÓDIGO ===== -->
-    <div id="accessOverlay" class="access-overlay">
-        <div class="access-box">
-            <h2>🔐 Acceso Restringido</h2>
-            <p>Ingresa el código de la jornada de hoy</p>
-            <input type="text" id="accessInput" class="access-input" maxlength="4" placeholder="0000">
-            <button id="btnAccess" class="btn-access">Verificar código</button>
-            <div id="accessError" class="access-error">Código incorrecto o jornada finalizada</div>
+    <!-- PANTALLA DE ACCESO (CÓDIGO) -->
+    <div id="accessView" class="access-screen">
+        <div class="access-icon">🔐</div>
+        <div class="access-title">Acceso Restringido</div>
+        <div class="access-subtitle">Ingresa el código de la jornada para continuar</div>
+        <div class="jornada-status" id="jornadaStatus">
+            <span class="jornada-dot"></span>
+            <span id="jornadaStatusText">Verificando...</span>
+        </div>
+        <input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+        <div class="access-error" id="accessError"></div>
+        <button id="btnAccess" class="btn-primary">Ingresar</button>
+        <div class="access-info">
+            Horario: <span id="accessSchedule">--:-- a --:--</span>
         </div>
     </div>
 
-    <!-- ===== AUTH SCREEN ===== -->
-    <div id="authView" class="auth-screen">
+    <!-- AUTH SCREEN -->
+    <div id="authView" class="auth-screen hidden">
         <div class="auth-logo">Suerte<span>Fácil</span></div>
         <div class="auth-tabs">
             <button id="tabLogin" class="auth-tab active">Iniciar sesión</button>
             <button id="tabRegister" class="auth-tab">Registrarse</button>
         </div>
-        <input type="email" id="email" class="auth-input" placeholder="Correo electrónico">
-        <input type="password" id="pass" class="auth-input" placeholder="Contraseña">
+        <input type="email" id="email" class="auth-input" placeholder="Correo electrónico" autocomplete="email">
+        <input type="password" id="pass" class="auth-input" placeholder="Contraseña" autocomplete="current-password">
         <button id="btnAction" class="btn-primary">Ingresar</button>
     </div>
 
-    <!-- ===== GAME VIEW ===== -->
+    <!-- GAME VIEW -->
     <div id="gameView" class="hidden">
 
+        <!-- ADMIN PANEL -->
+        <div id="adminPanel" class="admin-panel hidden">
+            <div class="admin-title">Panel de Control</div>
+            <div class="admin-stats">
+                <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div>
+            </div>
+            <div class="admin-recarga">
+                <input type="email" id="adminUserEmail" placeholder="Email" style="max-width:150px;">
+                <input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:90px;">
+                <button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button>
+            </div>
+            <!-- Configuración de jornada (solo admin) -->
+            <div class="admin-config">
+                <div class="admin-config-title">Configuración de Jornada</div>
+                <div class="config-row">
+                    <label>Código:</label>
+                    <input type="text" id="configCodigo" maxlength="4" placeholder="4927">
+                </div>
+                <div class="config-row">
+                    <label>Inicio:</label>
+                    <input type="time" id="configHoraInicio" value="20:00">
+                </div>
+                <div class="config-row">
+                    <label>Fin:</label>
+                    <input type="time" id="configHoraFin" value="22:00">
+                </div>
+                <div class="config-row">
+                    <label>Activa:</label>
+                    <input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;">
+                </div>
+                <button id="btnConfigSave" class="btn-config-save">Guardar Configuración</button>
+            </div>
+        </div>
+
+        <!-- HEADER -->
         <div class="unified-header">
             <div class="avatar" id="userAvatar">D</div>
             <div class="user-info">
@@ -470,73 +425,32 @@
             </div>
         </div>
 
+        <!-- COMMUNITY -->
         <div class="community-bar">
             <div class="comm-stats">
-                <div class="comm-stat"><span class="comm-dot yellow"></span> <span id="statOnline">0</span> en línea</div>
-                <div class="comm-stat"><span class="comm-dot gold"></span> <span id="statPlaying">0</span> jugando</div>
+                <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
+                <div class="comm-stat"><span class="comm-dot blue"></span> <span id="statPlaying">0</span> jugando</div>
                 <div class="comm-stat"><span class="comm-dot amber"></span> <span id="statWaiting">0</span> esperando</div>
             </div>
             <div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div>
         </div>
 
-        <!-- ===== MESA DE PÓKER ===== -->
+        <!-- POZO -->
+        <div class="pot-container">
+            <div class="pot-label">Pozo acumulado</div>
+            <div class="pot-amount" id="potAmount">$0</div>
+        </div>
+
+        <!-- MESA -->
         <div class="game-table-main" id="gameTableMain">
-            <div class="poker-table" id="tableFelt">
-                <div class="table-border"></div>
-                <div class="table-surface" id="tableContent">
-                    <div class="players-area" id="playersArea">
-                        <!-- Jugador Izquierda (Tú) -->
-                        <div class="player-spot pos-left">
-                            <div class="card-slot">
-                                <div class="card-wrapper" id="cw0"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front" id="card-front-0"><div class="card-value">?</div><div class="card-suit">?</div></div></div></div>
-                            </div>
-                            <div class="player-label">
-                                <div class="player-avatar" style="background:#2563EB;">T</div>
-                                <span class="player-name" id="playerName0">Tú</span>
-                                <div class="player-chips"><div class="chip-mini red"></div><div class="chip-mini blue"></div></div>
-                            </div>
-                        </div>
-                        <!-- Jugador Centro -->
-                        <div class="player-spot pos-center">
-                            <div class="card-slot">
-                                <div class="card-wrapper" id="cw1"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front" id="card-front-1"><div class="card-value">?</div><div class="card-suit">?</div></div></div></div>
-                            </div>
-                            <div class="player-label">
-                                <div class="player-avatar" style="background:#16A34A;">J</div>
-                                <span class="player-name" id="playerName1">Esperando...</span>
-                                <div class="player-chips"><div class="chip-mini green"></div><div class="chip-mini black"></div></div>
-                            </div>
-                        </div>
-                        <!-- Jugador Derecha -->
-                        <div class="player-spot pos-right">
-                            <div class="card-slot">
-                                <div class="card-wrapper" id="cw2"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front" id="card-front-2"><div class="card-value">?</div><div class="card-suit">?</div></div></div></div>
-                            </div>
-                            <div class="player-label">
-                                <div class="player-avatar" style="background:#F59E0B;">J</div>
-                                <span class="player-name" id="playerName2">Esperando...</span>
-                                <div class="player-chips"><div class="chip-mini yellow"></div><div class="chip-mini white"></div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- POZO CENTRAL -->
-                    <div class="pot-area">
-                        <div class="pot-label">POZO</div>
-                        <div class="pot-chips-container">
-                            <div class="chip-3d red"></div>
-                            <div class="chip-3d blue"></div>
-                            <div class="chip-3d green"></div>
-                            <div class="chip-3d black"></div>
-                            <div class="chip-3d white"></div>
-                            <div class="chip-3d red"></div>
-                        </div>
-                        <div class="pot-amount" id="potAmount">$0</div>
-                    </div>
+            <div class="table-felt">
+                <div id="tableContent">
+                    <div class="table-empty-msg">Selecciona modalidad y presiona<br><strong>Buscar Partida</strong></div>
                 </div>
             </div>
         </div>
 
-        <!-- ===== CONTROLES ===== -->
+        <!-- CONTROLES -->
         <div class="controls-section">
             <div class="section-label">Modalidad</div>
             <div class="mode-row">
@@ -554,10 +468,10 @@
             <button id="btnPlay" class="btn-cta">Buscar Partida</button>
         </div>
 
-        <!-- ===== HISTORIAL ===== -->
+        <!-- HISTORIAL -->
         <div class="history-collapsible" id="historyCollapsible">
             <div class="history-header" id="historyHeader">
-                <span class="history-title">📊 Historial de partidas</span>
+                <span class="history-title">Historial de partidas</span>
                 <span class="history-arrow">▼</span>
             </div>
             <div class="history-body">
@@ -569,13 +483,13 @@
         </div>
     </div>
 
-    <!-- ===== MODAL DE RECARGA ===== -->
+    <!-- MODAL -->
     <div id="nequiModal" class="modal-overlay hidden">
         <div class="modal-content">
-            <div class="modal-title">💰 Recargar Saldo</div>
-            <p style="font-size:0.78rem;color:var(--text-secondary);">Transfiere a esta cuenta Nequi:</p>
+            <div class="modal-title">Recargar Saldo</div>
+            <p style="font-size:0.78rem;color:var(--text-muted);">Transfiere a esta cuenta Nequi:</p>
             <div class="nequi-number">📱 3123456789</div>
-            <p style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:14px;">Envía el comprobante por WhatsApp</p>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:14px;">Envía el comprobante por WhatsApp</p>
             <button id="btnWaConfirm" class="btn-wa">Enviar Comprobante</button>
             <button id="btnModalCerrar" class="btn-modal-close">Cancelar</button>
         </div>
@@ -604,20 +518,28 @@
     const CORREO_ADMIN = "dimarviafara07@gmail.com";
     const NUMERO_WHATSAPP = "573123456789";
     const MAX_MIEMBROS = 50;
-    const COMISION = 0.05; // 5% de comisión
 
-    // DOM elements
-    const accessOverlay = document.getElementById('accessOverlay');
-    const accessInput = document.getElementById('accessInput');
-    const btnAccess = document.getElementById('btnAccess');
-    const accessError = document.getElementById('accessError');
+    // Vistas
+    const accessView = document.getElementById('accessView');
     const authView = document.getElementById('authView');
     const gameView = document.getElementById('gameView');
+
+    // Access
+    const accessCode = document.getElementById('accessCode');
+    const accessError = document.getElementById('accessError');
+    const btnAccess = document.getElementById('btnAccess');
+    const jornadaStatus = document.getElementById('jornadaStatus');
+    const jornadaStatusText = document.getElementById('jornadaStatusText');
+    const accessSchedule = document.getElementById('accessSchedule');
+
+    // Auth
     const tabLogin = document.getElementById('tabLogin');
     const tabRegister = document.getElementById('tabRegister');
     const btnAction = document.getElementById('btnAction');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('pass');
+
+    // Game
     const txtUsername = document.getElementById('txtUsername');
     const userAvatar = document.getElementById('userAvatar');
     const saldoDisplay = document.getElementById('saldoDisplay');
@@ -625,449 +547,313 @@
     const btnRecargar = document.getElementById('btnRecargar');
     const btnRetirar = document.getElementById('btnRetirar');
     const btnPlay = document.getElementById('btnPlay');
+    const tableContent = document.getElementById('tableContent');
     const potAmount = document.getElementById('potAmount');
     const historialBody = document.getElementById('historialBody');
     const nequiModal = document.getElementById('nequiModal');
     const btnWaConfirm = document.getElementById('btnWaConfirm');
     const btnModalCerrar = document.getElementById('btnModalCerrar');
+
+    // Admin
+    const adminPanel = document.getElementById('adminPanel');
+    const adminUserEmail = document.getElementById('adminUserEmail');
+    const adminMontoRecarga = document.getElementById('adminMontoRecarga');
+    const btnAdminRecargar = document.getElementById('btnAdminRecargar');
+    const configCodigo = document.getElementById('configCodigo');
+    const configHoraInicio = document.getElementById('configHoraInicio');
+    const configHoraFin = document.getElementById('configHoraFin');
+    const configJornadaActiva = document.getElementById('configJornadaActiva');
+    const btnConfigSave = document.getElementById('btnConfigSave');
+
+    // Controles
     const mode1v1 = document.getElementById('mode1v1');
     const mode3p = document.getElementById('mode3p');
     const betChips = document.querySelectorAll('.bet-chip');
     const historyCollapsible = document.getElementById('historyCollapsible');
     const historyHeader = document.getElementById('historyHeader');
 
-    // Variables de estado
-    let currentUserId = null;
-    let currentUsername = '';
-    let saldoActual = 0;
-    let apuestaActual = 2000;
-    let modoJuego = '1v1';
-    let esperandoPartida = false;
-    let currentMatchId = null;
-    let accesoVerificado = false;
+    let currentUserId = null, currentUsername = '';
+    let saldoActual = 0, apuestaActual = 2000, modoJuego = '1v1';
+    let esperandoPartida = false, currentMatchId = null;
+    let codigoAcceso = '';
+    let accesoConcedido = false;
 
     const pintas = [
-        { icon: '♠', color: '#171717' }, 
-        { icon: '♥', color: '#dc2626' }, 
-        { icon: '♦', color: '#6366f1' }, 
-        { icon: '♣', color: '#059669' }
+        { icon: '♠', color: '#1E293B' }, { icon: '♥', color: '#DC2626' },
+        { icon: '♦', color: '#2563EB' }, { icon: '♣', color: '#16A34A' }
     ];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
 
-    // ===== SISTEMA DE ACCESO POR CÓDIGO =====
+    // ==================== VERIFICACIÓN DE ACCESO ====================
     async function verificarAcceso() {
-        const codigo = accessInput.value.trim();
-        if (codigo.length !== 4) {
-            accessError.style.display = 'block';
-            accessError.textContent = 'Ingresa un código de 4 dígitos';
-            return;
-        }
         try {
-            const configRef = ref(db, 'configuracion');
-            const snap = await get(configRef);
-            const config = snap.val() || {};
-            if (codigo === config.codigo_acceso && config.jornada_activa === true) {
-                accesoVerificado = true;
-                accessOverlay.classList.add('hidden');
-                accessError.style.display = 'none';
+            const configSnap = await get(ref(db, 'configuracion'));
+            const config = configSnap.val() || {};
+            
+            codigoAcceso = config.codigo_acceso || '4927';
+            const jornadaActiva = config.jornada_activa !== false;
+            const horaInicio = config.hora_inicio || '20:00';
+            const horaFin = config.hora_fin || '22:00';
+            
+            accessSchedule.textContent = `${horaInicio} a ${horaFin}`;
+            
+            // Verificar horario
+            const ahora = new Date();
+            const horaActual = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
+            
+            if (jornadaActiva && horaActual >= horaInicio && horaActual <= horaFin) {
+                jornadaStatus.className = 'jornada-status active';
+                jornadaStatusText.textContent = 'Jornada activa';
             } else {
-                accessError.style.display = 'block';
-                accessError.textContent = 'Código incorrecto o jornada finalizada';
+                jornadaStatus.className = 'jornada-status inactive';
+                jornadaStatusText.textContent = 'Fuera de horario';
+            }
+            
+            // Cargar código guardado en localStorage
+            const savedCode = localStorage.getItem('suertefacil_access');
+            if (savedCode && savedCode === codigoAcceso && jornadaActiva && horaActual >= horaInicio && horaActual <= horaFin) {
+                accesoConcedido = true;
+                accessView.classList.add('hidden');
+                authView.classList.remove('hidden');
             }
         } catch (e) {
-            accessError.style.display = 'block';
-            accessError.textContent = 'Error de conexión';
+            console.error("Error verificando acceso:", e);
+            codigoAcceso = '4927';
         }
     }
 
-    btnAccess.addEventListener('click', verificarAcceso);
-    accessInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') verificarAcceso(); });
+    btnAccess.addEventListener('click', async () => {
+        const code = accessCode.value.trim();
+        if (!code || code.length !== 4) {
+            accessError.textContent = 'Ingresa un código de 4 dígitos';
+            return;
+        }
+        
+        const configSnap = await get(ref(db, 'configuracion'));
+        const config = configSnap.val() || {};
+        const jornadaActiva = config.jornada_activa !== false;
+        const horaInicio = config.hora_inicio || '20:00';
+        const horaFin = config.hora_fin || '22:00';
+        const ahora = new Date();
+        const horaActual = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
+        
+        if (!jornadaActiva) {
+            accessError.textContent = 'La jornada no está activa';
+            return;
+        }
+        
+        if (horaActual < horaInicio || horaActual > horaFin) {
+            accessError.textContent = 'Fuera del horario de la jornada';
+            return;
+        }
+        
+        if (code === codigoAcceso) {
+            accesoConcedido = true;
+            accessError.textContent = '';
+            localStorage.setItem('suertefacil_access', code);
+            accessView.classList.add('hidden');
+            authView.classList.remove('hidden');
+        } else {
+            accessError.textContent = 'Código incorrecto';
+            accessCode.value = '';
+            accessCode.focus();
+        }
+    });
 
-    // ===== AUTH =====
+    accessCode.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') btnAccess.click();
+    });
+
+    // Admin: Guardar configuración
+    btnConfigSave.addEventListener('click', async () => {
+        const nuevaConfig = {
+            codigo_acceso: configCodigo.value.trim() || '4927',
+            jornada_activa: configJornadaActiva.checked,
+            hora_inicio: configHoraInicio.value || '20:00',
+            hora_fin: configHoraFin.value || '22:00'
+        };
+        await set(ref(db, 'configuracion'), nuevaConfig);
+        codigoAcceso = nuevaConfig.codigo_acceso;
+        alert('Configuración guardada exitosamente');
+    });
+
+    // ==================== FIN VERIFICACIÓN ====================
+
+    function updatePotDisplay(count) {
+        const total = apuestaActual * count;
+        if(potAmount) potAmount.textContent = '$' + total.toLocaleString('es-CO');
+    }
+
     historyHeader.addEventListener('click', () => historyCollapsible.classList.toggle('open'));
-
-    tabLogin.addEventListener('click', () => {
-        tabLogin.classList.add('active'); 
-        tabRegister.classList.remove('active'); 
-        btnAction.textContent = 'Ingresar';
-    });
-    tabRegister.addEventListener('click', () => {
-        tabRegister.classList.add('active'); 
-        tabLogin.classList.remove('active'); 
-        btnAction.textContent = 'Registrarse';
-    });
+    tabLogin.addEventListener('click', () => { tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.textContent = 'Ingresar'; });
+    tabRegister.addEventListener('click', () => { tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.textContent = 'Registrarse'; });
 
     mode1v1.addEventListener('click', () => {
-        if (esperandoPartida) return;
-        mode1v1.classList.add('selected'); 
-        mode3p.classList.remove('selected'); 
-        modoJuego = '1v1';
+        if(esperandoPartida) return;
+        mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1';
+        updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview();
     });
     mode3p.addEventListener('click', () => {
-        if (esperandoPartida) return;
-        mode3p.classList.add('selected'); 
-        mode1v1.classList.remove('selected'); 
-        modoJuego = '3p';
+        if(esperandoPartida) return;
+        mode3p.classList.add('selected'); mode1v1.classList.remove('selected'); modoJuego = '3p';
+        updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview();
     });
 
     betChips.forEach(chip => {
         chip.addEventListener('click', () => {
-            if (esperandoPartida) return;
+            if(esperandoPartida) return;
             betChips.forEach(c => c.classList.remove('selected'));
             chip.classList.add('selected');
             apuestaActual = parseInt(chip.dataset.apuesta);
+            updatePotDisplay(MAX_JUGADORES[modoJuego]);
         });
     });
 
-    // ===== FUNCIONES DEL JUEGO =====
-    function generarCarta() {
-        const vi = Math.floor(Math.random() * nombresCartas.length);
-        return {
-            peso: vi,
-            texto: nombresCartas[vi],
-            pinta: pintas[Math.floor(Math.random() * pintas.length)]
-        };
+    function updateTablePreview() {
+        if(esperandoPartida) return;
+        const maxJ = MAX_JUGADORES[modoJuego];
+        let html = '<div class="cards-row">';
+        for(let i = 0; i < maxJ; i++) {
+            html += `<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div class="card-suit" style="color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;
+        }
+        html += '</div>';
+        tableContent.innerHTML = html;
     }
 
-    function resetearMesa() {
-        document.querySelectorAll('.card-wrapper').forEach(cw => cw.classList.remove('flipped'));
-        document.getElementById('playerName1').textContent = 'Esperando...';
-        document.getElementById('playerName2').textContent = 'Esperando...';
-        document.querySelectorAll('.card-value').forEach(el => el.textContent = '?');
-        document.querySelectorAll('.card-suit').forEach(el => el.textContent = '?');
-        potAmount.textContent = '$0';
-    }
+    updatePotDisplay(MAX_JUGADORES[modoJuego]);
 
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUserId = user.uid;
             currentUsername = user.email.split('@')[0];
-            
-            // Verificar si es admin
-            if (user.email.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
-                accessOverlay.classList.add('hidden');
-                accesoVerificado = true;
-            }
-
             authView.classList.add('hidden');
             gameView.classList.remove('hidden');
             txtUsername.textContent = currentUsername;
             userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
-            resetearMesa();
+            updateTablePreview();
 
-            // Presencia
             const presenceRef = ref(db, `presencia/${user.uid}`);
             onValue(ref(db, '.info/connected'), (snap) => {
                 if (snap.val() === true) {
-                    set(presenceRef, { 
-                        email: user.email, 
-                        username: currentUsername, 
-                        status: 'online', 
-                        lastSeen: Date.now() 
-                    });
+                    set(presenceRef, { email: user.email, username: currentUsername, status: 'online', lastSeen: Date.now() });
                     onDisconnect(presenceRef).update({ status: 'offline', lastSeen: Date.now() });
                 }
             });
 
-            // Saldo
-            onValue(ref(db, `usuarios/${user.uid}/saldo`), (snap) => {
-                saldoActual = snap.val() || 0;
-                saldoDisplay.textContent = '$' + saldoActual.toLocaleString('es-CO');
-            });
-
-            // Historial
-            onValue(ref(db, `usuarios/${user.uid}/historial`), (snap) => {
-                historialBody.innerHTML = '';
-                const data = snap.val();
-                if (data) {
-                    Object.values(data).reverse().slice(0, 10).forEach(item => {
-                        const w = item.resultado === 'GANÓ';
-                        historialBody.innerHTML += `<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${item.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${item.monto.toLocaleString('es-CO')}</td></tr>`;
-                    });
-                } else {
-                    historialBody.innerHTML = '<tr><td colspan="3" class="history-empty" style="text-align:center;color:var(--text-muted);padding:12px 0;">Sin partidas aún</td></tr>';
-                }
-            });
-
-            // Estadísticas
-            onValue(ref(db, 'presencia'), (snap) => {
-                const a = Object.values(snap.val() || {});
-                document.getElementById('statOnline').textContent = a.filter(v => v.status === 'online').length;
-                document.getElementById('statWaiting').textContent = a.filter(v => v.status === 'waiting').length;
-                document.getElementById('statPlaying').textContent = a.filter(v => v.status === 'playing').length;
-                document.getElementById('membershipText').textContent = a.filter(v => v.status === 'online').length + '/' + MAX_MIEMBROS;
-            });
-
-        } else {
-            authView.classList.remove('hidden');
-            gameView.classList.add('hidden');
-            accessOverlay.classList.add('hidden');
-        }
-    });
-
-    // ===== BOTONES PRINCIPALES =====
-    btnAction.addEventListener('click', async () => {
-        const email = emailInput.value.trim();
-        const pass = passInput.value;
-        if (!email || !pass) return alert('Completa todos los campos');
-        if (pass.length < 6) return alert('Mínimo 6 caracteres');
-        btnAction.disabled = true;
-        try {
-            if (tabLogin.classList.contains('active')) {
-                await signInWithEmailAndPassword(auth, email, pass);
-            } else {
-                const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await set(ref(db, `usuarios/${res.user.uid}`), {
-                    email,
-                    saldo: 0,
-                    fechaRegistro: Date.now()
+            if (user.email.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
+                adminPanel.classList.remove('hidden');
+                onValue(ref(db, 'adminData'), (snap) => {
+                    const d = snap.val() || {};
+                    document.getElementById('adminComision').textContent = '$' + (d.total_comisiones || 0).toLocaleString('es-CO');
+                    document.getElementById('adminMovido').textContent = '$' + (d.dinero_movido || 0).toLocaleString('es-CO');
+                    document.getElementById('adminPlaying').textContent = d.partidas_jugando || 0;
                 });
-                alert('¡Registro exitoso!');
-            }
-        } catch (e) {
-            alert('Error: ' + (e.code === 'auth/email-already-in-use' ? 'Email ya registrado' : 'Verifica tus datos'));
-        }
-        btnAction.disabled = false;
-    });
-
-    btnLogout.addEventListener('click', () => signOut(auth));
-    btnRecargar.addEventListener('click', () => nequiModal.classList.remove('hidden'));
-    btnModalCerrar.addEventListener('click', () => nequiModal.classList.add('hidden'));
-    btnWaConfirm.addEventListener('click', () => {
-        window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Adjunto comprobante de recarga.`)}`, '_blank');
-        nequiModal.classList.add('hidden');
-    });
-    btnRetirar.addEventListener('click', () => {
-        if (saldoActual <= 0) return alert('Sin saldo');
-        if (confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`)) {
-            window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi: `)}`, '_blank');
-        }
-    });
-
-    // ===== LÓGICA DE PARTIDA =====
-    btnPlay.addEventListener('click', async () => {
-        if (!currentUserId) return;
-        if (!accesoVerificado) {
-            accessOverlay.classList.remove('hidden');
-            return;
-        }
-        if (saldoActual < apuestaActual) return alert('Saldo insuficiente');
-
-        const lobbyRef = ref(db, `lobbies/${modoJuego}_${apuestaActual}`);
-        const maxJ = MAX_JUGADORES[modoJuego];
-
-        if (esperandoPartida) {
-            // Cancelar búsqueda
-            await set(lobbyRef, null);
-            await update(ref(db, `presencia/${currentUserId}`), { status: 'online' });
-            esperandoPartida = false;
-            btnPlay.textContent = 'Buscar Partida';
-            btnPlay.classList.remove('canceling');
-            resetearMesa();
-            return;
-        }
-
-        btnPlay.disabled = true;
-        btnPlay.textContent = 'Buscando...';
-        btnPlay.classList.add('canceling');
-        esperandoPartida = true;
-        await update(ref(db, `presencia/${currentUserId}`), { status: 'waiting' });
-
-        // Mostrar búsqueda en la mesa
-        document.getElementById('playerName1').textContent = 'Buscando...';
-        document.getElementById('playerName2').textContent = 'Buscando...';
-
-        const result = await runTransaction(lobbyRef, (lobby) => {
-            if (!lobby || lobby.estado === 'finalizado') {
-                return {
-                    host: currentUserId,
-                    jugadores: [currentUserId],
-                    estado: 'esperando',
-                    creado: Date.now()
+                onValue(ref(db, 'presencia'), (snap) => {
+                    document.getElementById('adminOnline').textContent = Object.values(snap.val()||{}).filter(v=>v.status==='online').length;
+                });
+                // Cargar config actual
+                const cfg = (await get(ref(db, 'configuracion'))).val() || {};
+                configCodigo.value = cfg.codigo_acceso || '4927';
+                configHoraInicio.value = cfg.hora_inicio || '20:00';
+                configHoraFin.value = cfg.hora_fin || '22:00';
+                configJornadaActiva.checked = cfg.jornada_activa !== false;
+                
+                btnAdminRecargar.onclick = async () => {
+                    const email = adminUserEmail.value.trim().toLowerCase(), monto = parseInt(adminMontoRecarga.value);
+                    if(!email||!monto||monto<1000) return alert('Datos inválidos');
+                    const users = (await get(ref(db,'usuarios'))).val()||{};
+                    let uid = null;
+                    for(const k in users){ if(users[k].email?.toLowerCase()===email){ uid=k; break; } }
+                    if(!uid) return alert('Usuario no encontrado');
+                    await update(ref(db,`usuarios/${uid}`),{saldo:increment(monto)});
+                    await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uid,email,monto,timestamp:Date.now()});
+                    alert('Recarga exitosa'); adminUserEmail.value=''; adminMontoRecarga.value='';
                 };
-            }
-            if (lobby.estado === 'esperando' && lobby.jugadores && lobby.jugadores.length < maxJ) {
-                if (!lobby.jugadores.includes(currentUserId)) {
-                    lobby.jugadores.push(currentUserId);
-                    if (lobby.jugadores.length === maxJ) lobby.estado = 'jugando';
-                }
-                return lobby;
-            }
-            return lobby;
-        });
+            } else { adminPanel.classList.add('hidden'); }
 
-        if (!result.snapshot.val()) {
-            resetSearch();
-            return alert('Error al conectar');
-        }
-
-        const listener = onValue(lobbyRef, async (snap) => {
-            const d = snap.val();
-            if (!d?.jugadores) {
-                off(lobbyRef, listener);
-                resetSearch();
-                return;
-            }
-
-            // Actualizar UI de búsqueda
-            const count = d.jugadores.length;
-            if (count >= 1) document.getElementById('playerName0').textContent = 'Tú';
-            if (count >= 2) document.getElementById('playerName1').textContent = 'Jugador 1';
-            if (count >= 3) document.getElementById('playerName2').textContent = 'Jugador 2';
-
-            if (d.estado === 'jugando' && d.matchId && d.jugadores.length === maxJ) {
-                off(lobbyRef, listener);
-                await update(ref(db, `presencia/${currentUserId}`), { status: 'playing' });
-                await ejecutarPartida(d.matchId);
-            }
-        });
-
-        // Timeout de búsqueda
-        setTimeout(async () => {
-            if ((await get(lobbyRef)).val()?.jugadores?.length < maxJ) {
-                await set(lobbyRef, null);
-                off(lobbyRef, listener);
-                resetSearch();
-                alert('Tiempo de búsqueda agotado.');
-            }
-        }, 45000);
-    });
-
-    function resetSearch() {
-        esperandoPartida = false;
-        btnPlay.disabled = false;
-        btnPlay.textContent = 'Buscar Partida';
-        btnPlay.classList.remove('canceling');
-        resetearMesa();
-        update(ref(db, `presencia/${currentUserId}`), { status: 'online' }).catch(() => {});
-    }
-
-    async function ejecutarPartida(matchId) {
-        currentMatchId = matchId;
-        btnPlay.textContent = 'Repartiendo...';
-
-        const data = (await get(ref(db, `matches/${matchId}`))).val();
-        if (!data?.jugadores) {
-            resetSearch();
-            return;
-        }
-
-        const jugadores = data.jugadores;
-        const miIdx = jugadores.findIndex(j => j.uid === currentUserId);
-
-        // Actualizar nombres en la mesa
-        jugadores.forEach((j, i) => {
-            const el = document.getElementById('playerName' + i);
-            if (el) el.textContent = i === miIdx ? 'Tú' : (j.username || 'Jugador ' + (i + 1));
-        });
-
-        // Mostrar cartas boca abajo
-        jugadores.forEach((j, i) => {
-            const cardVal = document.getElementById('card-front-' + i);
-            if (cardVal) {
-                cardVal.querySelector('.card-value').textContent = '?';
-                cardVal.querySelector('.card-suit').textContent = '?';
-            }
-            document.getElementById('cw' + i).classList.remove('flipped');
-        });
-
-        // Calcular pozo
-        const totalPot = apuestaActual * jugadores.length;
-        potAmount.textContent = '$' + totalPot.toLocaleString('es-CO');
-
-        setTimeout(() => {
-            btnPlay.textContent = 'Revelando...';
-            // Voltear cartas
-            jugadores.forEach((j, i) => {
-                const cardVal = document.getElementById('card-front-' + i);
-                if (cardVal && j.carta) {
-                    cardVal.querySelector('.card-value').textContent = j.carta.texto;
-                    cardVal.querySelector('.card-suit').textContent = j.carta.pinta.icon;
-                    cardVal.querySelector('.card-value').style.color = j.carta.pinta.color;
-                    cardVal.querySelector('.card-suit').style.color = j.carta.pinta.color;
-                }
-                document.getElementById('cw' + i).classList.add('flipped');
+            onValue(ref(db,`usuarios/${user.uid}/saldo`),(snap)=>{ saldoActual=snap.val()||0; saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO'); });
+            onValue(ref(db,`usuarios/${user.uid}/historial`),(snap)=>{
+                historialBody.innerHTML='';
+                const data=snap.val();
+                if(data){ Object.values(data).reverse().slice(0,10).forEach(item=>{ const w=item.resultado==='GANÓ'; historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${item.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${item.monto.toLocaleString('es-CO')}</td></tr>`; }); }
+                else { historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas aún</td></tr>'; }
             });
-
-            setTimeout(async () => {
-                // Determinar ganador
-                const pesos = jugadores.map(j => j.carta.peso);
-                const maxP = Math.max(...pesos);
-                let ganador = jugadores.filter(j => j.carta.peso === maxP)[0];
-
-                // Desempate por pinta
-                if (jugadores.filter(j => j.carta.peso === maxP).length > 1) {
-                    const orden = { '♠': 4, '♥': 3, '♦': 2, '♣': 1 };
-                    ganador = jugadores.filter(j => j.carta.peso === maxP).reduce((a, b) => 
-                        (orden[b.carta.pinta.icon] || 0) > (orden[a.carta.pinta.icon] || 0) ? b : a
-                    );
-                }
-
-                const yoGane = ganador.uid === currentUserId;
-                const comision = Math.floor(totalPot * COMISION);
-                const ganancia = totalPot - comision;
-
-                // Marcar ganador en la UI
-                jugadores.forEach((j, i) => {
-                    const lbl = document.getElementById('playerName' + i);
-                    if (lbl) {
-                        if (j.uid === ganador.uid) {
-                            lbl.textContent = '🏆 ' + (i === miIdx ? 'Tú' : (j.username || 'Jugador ' + (i + 1)));
-                            lbl.style.color = '#F5A623';
-                        } else {
-                            lbl.style.color = '#94A3B8';
-                        }
-                    }
-                });
-
-                // Actualizar saldo y historial
-                try {
-                    if (yoGane) {
-                        await update(ref(db, `usuarios/${currentUserId}`), { saldo: increment(ganancia) });
-                        await push(ref(db, `usuarios/${currentUserId}/historial`), {
-                            mesa: 'N1',
-                            resultado: 'GANÓ',
-                            monto: ganancia,
-                            timestamp: Date.now(),
-                            matchId
-                        });
-                    } else {
-                        await update(ref(db, `usuarios/${currentUserId}`), { saldo: increment(-apuestaActual) });
-                        await push(ref(db, `usuarios/${currentUserId}/historial`), {
-                            mesa: 'N1',
-                            resultado: 'PERDIÓ',
-                            monto: apuestaActual,
-                            timestamp: Date.now(),
-                            matchId
-                        });
-                    }
-                    // Registrar comisión en admin
-                    await update(ref(db, 'adminData'), {
-                        total_comisiones: increment(comision),
-                        dinero_movido: increment(totalPot),
-                        partidas_jugando: increment(-1)
-                    });
-                } catch (e) {}
-
-                btnPlay.textContent = yoGane ? '🎉 ¡Ganaste!' : '😔 Perdiste';
-
-                setTimeout(async () => {
-                    await set(ref(db, `matches/${matchId}`), null);
-                    await set(ref(db, `lobbies/${modoJuego}_${apuestaActual}`), null);
-                    resetSearch();
-                }, 4000);
-
-            }, 1500);
-        }, 1000);
-    }
-
-    // ===== CIERRE DE SESIÓN =====
-    window.addEventListener('beforeunload', () => {
-        if (currentUserId) {
-            set(ref(db, `presencia/${currentUserId}`), { status: 'offline', lastSeen: Date.now() });
+            onValue(ref(db,'presencia'),(snap)=>{ const a=Object.values(snap.val()||{}); document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length; document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length; document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length; document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS; });
+        } else {
+            authView.classList.add('hidden'); gameView.classList.add('hidden');
+            accessView.classList.remove('hidden');
+            verificarAcceso();
         }
     });
+
+    // Iniciar verificando acceso
+    verificarAcceso();
+
+    btnAction.addEventListener('click', async () => {
+        const email=emailInput.value.trim(), pass=passInput.value;
+        if(!email||!pass) return alert('Completa todos los campos');
+        if(pass.length<6) return alert('Mínimo 6 caracteres');
+        btnAction.disabled=true;
+        try {
+            if(tabLogin.classList.contains('active')) await signInWithEmailAndPassword(auth,email,pass);
+            else { const res=await createUserWithEmailAndPassword(auth,email,pass); await set(ref(db,`usuarios/${res.user.uid}`),{email,saldo:0,fechaRegistro:Date.now()}); alert('¡Registro exitoso!'); }
+        } catch(e){ alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos')); }
+        btnAction.disabled=false;
+    });
+
+    btnLogout.addEventListener('click',()=>{ localStorage.removeItem('suertefacil_access'); signOut(auth); });
+    btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
+    btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
+    btnWaConfirm.addEventListener('click',()=>{ window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Adjunto comprobante de recarga.`)}`,'_blank'); nequiModal.classList.add('hidden'); });
+    btnRetirar.addEventListener('click',()=>{ if(saldoActual<=0) return alert('Sin saldo'); if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`)) window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi: `)}`,'_blank'); });
+
+    function generarCarta(){ const vi=Math.floor(Math.random()*nombresCartas.length); return {peso:vi,texto:nombresCartas[vi],pinta:pintas[Math.floor(Math.random()*pintas.length)]}; }
+    function renderSearchUI(e,t){ let h='<div class="search-inline">'; for(let i=0;i<t;i++){ const o=i<e; h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`; } h+=`</div><div class="search-progress-inline">${e}/${t} jugadores</div>`; tableContent.innerHTML=h; }
+    function renderGameCards(j,l){ let h='<div class="cards-row">'; j.forEach((p,i)=>{ h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`; }); h+='</div>'; tableContent.innerHTML=h; }
+
+    btnPlay.addEventListener('click', async () => {
+        if(!currentUserId) return;
+        if(saldoActual<apuestaActual) return alert('Saldo insuficiente');
+        const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`), maxJ=MAX_JUGADORES[modoJuego];
+        if(esperandoPartida){ await set(lobbyRef,null); await update(ref(db,`presencia/${currentUserId}`),{status:'online'}); esperandoPartida=false; btnPlay.textContent='Buscar Partida'; btnPlay.classList.remove('canceling'); updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview(); return; }
+        btnPlay.disabled=true; btnPlay.textContent='Buscando...'; btnPlay.classList.add('canceling'); esperandoPartida=true;
+        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting'}); renderSearchUI(1,maxJ); updatePotDisplay(1);
+        const result=await runTransaction(lobbyRef,(lobby)=>{ if(!lobby||lobby.estado==='finalizado') return {host:currentUserId,jugadores:[currentUserId],estado:'esperando',creado:Date.now()}; if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){ if(!lobby.jugadores.includes(currentUserId)){ lobby.jugadores.push(currentUserId); if(lobby.jugadores.length===maxJ) lobby.estado='jugando'; } return lobby; } return lobby; });
+        if(!result.snapshot.val()){ resetSearch(); return alert('Error al conectar'); }
+        const listener=onValue(lobbyRef,async(snap)=>{ const d=snap.val(); if(!d?.jugadores){ off(lobbyRef,listener); resetSearch(); return; } renderSearchUI(d.jugadores.length,maxJ); updatePotDisplay(d.jugadores.length); if(d.estado==='jugando'&&d.matchId&&d.jugadores.length===maxJ){ off(lobbyRef,listener); await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}); await ejecutarPartida(d.matchId); } });
+        setTimeout(async()=>{ if((await get(lobbyRef)).val()?.jugadores?.length<maxJ){ await set(lobbyRef,null); off(lobbyRef,listener); resetSearch(); alert('Tiempo agotado.'); } },45000);
+    });
+
+    function resetSearch(){ esperandoPartida=false; btnPlay.disabled=false; btnPlay.textContent='Buscar Partida'; btnPlay.classList.remove('canceling'); updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview(); update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{}); }
+
+    async function ejecutarPartida(matchId){
+        currentMatchId=matchId; btnPlay.textContent='Repartiendo...';
+        const data=(await get(ref(db,`matches/${matchId}`))).val();
+        if(!data?.jugadores){ resetSearch(); return; }
+        const jugadores=data.jugadores, miIdx=jugadores.findIndex(j=>j.uid===currentUserId), labels=jugadores.map((j,i)=>i===miIdx?'Tú':j.username);
+        const totalPot = apuestaActual * jugadores.length;
+        updatePotDisplay(jugadores.length);
+        renderGameCards(jugadores,labels);
+        setTimeout(()=>{ btnPlay.textContent='Revelando...'; document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+            setTimeout(async()=>{
+                const pesos=jugadores.map(j=>j.carta.peso), maxP=Math.max(...pesos);
+                let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
+                if(jugadores.filter(j=>j.carta.peso===maxP).length>1){ const o={'♠':4,'♥':3,'♦':2,'♣':1}; ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a); }
+                const yoGane=ganador.uid===currentUserId, comision=apuestaActual*0.10, ganancia=totalPot-comision;
+                if(yoGane && potAmount) { potAmount.classList.add('pot-won'); setTimeout(()=>potAmount.classList.remove('pot-won'),600); }
+                jugadores.forEach((j,i)=>{ const lbl=document.getElementById('cl'+i); if(!lbl) return; lbl.classList.remove('winner','loser'); if(j.uid===ganador.uid){ lbl.classList.add('winner'); lbl.textContent='🏆 '+labels[i]; } else if(j.uid===currentUserId) lbl.classList.add('loser'); });
+                try{
+                    if(yoGane){ await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId}); await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}); }
+                    else { await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId}); }
+                } catch(e){}
+                btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
+                setTimeout(async()=>{ await set(ref(db,`matches/${matchId}`),null); await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null); await update(ref(db,'adminData'),{partidas_jugando:increment(-1)}); resetSearch(); },4000);
+            },1200);
+        },800);
+    }
+
+    window.addEventListener('beforeunload',()=>{ if(currentUserId) set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}); });
 </script>
 </body>
 </html>
