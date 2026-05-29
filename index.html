@@ -55,6 +55,27 @@
         .app-container { width: 100%; max-width: 460px; }
         .hidden { display: none !important; }
 
+        /* ========== RECUPERAR CONTRASEÑA ========== */
+        .recovery-screen {
+            background: var(--bg-card);
+            padding: 2.5rem 1.8rem;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            margin-top: 40px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .recovery-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+        .recovery-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
+        .recovery-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4; }
+        .recovery-success { color: var(--success); font-size: 0.8rem; margin-bottom: 10px; min-height: 20px; }
+        .btn-back {
+            background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted);
+            padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600;
+            font-size: 0.8rem; cursor: pointer; transition: all 0.2s; margin-top: 8px;
+        }
+        .btn-back:hover { border-color: var(--text-muted); color: var(--text-main); }
+
         /* ========== CODIGO DE ACCESO ========== */
         .access-screen {
             background: var(--bg-card);
@@ -106,6 +127,13 @@
         .btn-primary { width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm); background: var(--primary); color: #fff; font-weight: 700; font-size: 0.95rem; cursor: pointer; transition: all 0.25s; margin-top: 4px; letter-spacing: 0.5px; }
         .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 20px rgba(37,99,235,0.3); }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-gold { background: var(--gold); color: #0B1121; }
+        .btn-gold:hover { background: #b8963a; box-shadow: 0 4px 20px rgba(201,168,76,0.3); }
+        .forgot-link {
+            display: block; margin-top: 14px; font-size: 0.72rem; color: var(--text-muted);
+            cursor: pointer; transition: color 0.2s; background: none; border: none; text-decoration: underline;
+        }
+        .forgot-link:hover { color: var(--primary); }
 
         /* ========== HEADER UNIFICADO ========== */
         .unified-header {
@@ -244,23 +272,17 @@
         .admin-stat { background: var(--bg-input); padding: 9px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); position: relative; }
         .admin-stat-label { font-size: 0.62rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
         .admin-stat-value { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-top: 3px; }
-        .admin-stat-reset {
-            position: absolute; top: 4px; right: 6px;
-            background: none; border: none; color: var(--text-muted);
-            font-size: 0.55rem; cursor: pointer; padding: 2px 4px;
-            border-radius: 3px; transition: all 0.2s;
-        }
+        .admin-stat-reset { position: absolute; top: 4px; right: 6px; background: none; border: none; color: var(--text-muted); font-size: 0.55rem; cursor: pointer; padding: 2px 4px; border-radius: 3px; transition: all 0.2s; }
         .admin-stat-reset:hover { color: var(--danger); background: var(--danger-soft); }
         .admin-recarga { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
         .admin-recarga input { flex: 1 1 100px; min-width: 0; padding: 9px 10px; border-radius: var(--radius-xs); border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-main); font-size: 0.75rem; }
         .admin-recarga input:focus { outline: none; border-color: var(--primary-border); }
         .btn-admin-recargar { padding: 9px 14px; background: var(--primary); color: #fff; border: none; border-radius: var(--radius-xs); font-weight: 700; font-size: 0.75rem; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
         .btn-admin-recargar:hover { background: var(--primary-hover); }
-
-        .admin-config {
-            background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm);
-            border: 1px solid var(--border-subtle);
-        }
+        .admin-reset-row { display: flex; gap: 6px; margin-top: 8px; }
+        .btn-reset-contadores { flex: 1; padding: 8px; background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(220,38,38,0.3); border-radius: var(--radius-xs); font-weight: 600; font-size: 0.68rem; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .btn-reset-contadores:hover { background: rgba(220,38,38,0.2); }
+        .admin-config { background: var(--bg-input); padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-top: 10px; }
         .admin-config-title { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
         .config-row { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; flex-wrap: wrap; }
         .config-row label { font-size: 0.68rem; color: var(--text-secondary); min-width: 55px; }
@@ -268,17 +290,6 @@
         .config-row input:focus { outline: none; border-color: var(--primary-border); }
         .btn-config-save { padding: 8px 16px; background: var(--success); color: #fff; border: none; border-radius: var(--radius-xs); font-weight: 600; font-size: 0.7rem; cursor: pointer; margin-top: 4px; }
         .btn-config-save:hover { background: #15803D; }
-
-        .admin-reset-row {
-            display: flex; gap: 6px; margin-top: 8px;
-        }
-        .btn-reset-contadores {
-            flex: 1; padding: 8px; background: var(--danger-soft);
-            color: var(--danger); border: 1px solid rgba(220,38,38,0.3);
-            border-radius: var(--radius-xs); font-weight: 600; font-size: 0.68rem;
-            cursor: pointer; transition: all 0.2s; text-align: center;
-        }
-        .btn-reset-contadores:hover { background: rgba(220,38,38,0.2); }
 
         @media (max-width: 360px) {
             .card-wrapper { width: 58px; height: 82px; }
@@ -292,10 +303,21 @@
 
 <div class="app-container">
 
-    <!-- PANTALLA DE ACCESO (CÓDIGO) -->
-    <div id="accessView" class="access-screen">
+    <!-- PANTALLA DE RECUPERACIÓN DE CONTRASEÑA -->
+    <div id="recoveryView" class="recovery-screen hidden">
+        <div class="recovery-icon">📧</div>
+        <div class="recovery-title">Recuperar Contraseña</div>
+        <div class="recovery-subtitle">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</div>
+        <input type="email" id="recoveryEmail" class="auth-input" placeholder="Correo electrónico" autocomplete="email">
+        <div class="recovery-success" id="recoveryMsg"></div>
+        <button id="btnRecovery" class="btn-primary">Enviar enlace</button>
+        <button id="btnBackToLogin" class="btn-back">← Volver al inicio de sesión</button>
+    </div>
+
+    <!-- PANTALLA DE ACCESO (CÓDIGO) - SOLO USUARIOS -->
+    <div id="accessView" class="access-screen hidden">
         <div class="access-icon">🔐</div>
-        <div class="access-title">Acceso Restringido</div>
+        <div class="access-title">Código de Acceso</div>
         <div class="access-subtitle">Ingresa el código de la jornada para continuar</div>
         <div class="jornada-status" id="jornadaStatus">
             <span class="jornada-dot"></span>
@@ -303,14 +325,14 @@
         </div>
         <input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
         <div class="access-error" id="accessError"></div>
-        <button id="btnAccess" class="btn-primary">Ingresar</button>
+        <button id="btnAccess" class="btn-primary btn-gold">Ingresar</button>
         <div class="access-info">
             Horario: <span id="accessSchedule">--:-- a --:--</span>
         </div>
     </div>
 
     <!-- AUTH SCREEN -->
-    <div id="authView" class="auth-screen hidden">
+    <div id="authView" class="auth-screen">
         <div class="auth-logo">Suerte<span>Fácil</span></div>
         <div class="auth-tabs">
             <button id="tabLogin" class="auth-tab active">Iniciar sesión</button>
@@ -319,6 +341,7 @@
         <input type="email" id="email" class="auth-input" placeholder="Correo electrónico" autocomplete="email">
         <input type="password" id="pass" class="auth-input" placeholder="Contraseña" autocomplete="current-password">
         <button id="btnAction" class="btn-primary">Ingresar</button>
+        <button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button>
     </div>
 
     <!-- GAME VIEW -->
@@ -328,22 +351,14 @@
         <div id="adminPanel" class="admin-panel hidden">
             <div class="admin-title">✦ Panel de Control</div>
             <div class="admin-stats">
+                <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
                 <div class="admin-stat">
-                    <div class="admin-stat-label">Online</div>
-                    <div class="admin-stat-value" id="adminOnline">0</div>
-                </div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Jugando</div>
-                    <div class="admin-stat-value" id="adminPlaying">0</div>
-                </div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Comisiones</div>
-                    <div class="admin-stat-value" id="adminComision">$0</div>
+                    <div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div>
                     <button class="admin-stat-reset" id="btnResetComision" title="Reiniciar a cero">↺</button>
                 </div>
                 <div class="admin-stat">
-                    <div class="admin-stat-label">Movido</div>
-                    <div class="admin-stat-value" id="adminMovido">$0</div>
+                    <div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div>
                     <button class="admin-stat-reset" id="btnResetMovido" title="Reiniciar a cero">↺</button>
                 </div>
             </div>
@@ -353,27 +368,15 @@
                 <button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button>
             </div>
             <div class="admin-reset-row">
-                <button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos los contadores a $0</button>
+                <button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos a $0</button>
             </div>
-            <div class="admin-config" style="margin-top:10px;">
+            <div class="admin-config">
                 <div class="admin-config-title">⚙️ Configuración de Jornada</div>
-                <div class="config-row">
-                    <label>Código:</label>
-                    <input type="text" id="configCodigo" maxlength="4" placeholder="4927">
-                </div>
-                <div class="config-row">
-                    <label>Inicio:</label>
-                    <input type="time" id="configHoraInicio" value="20:00">
-                </div>
-                <div class="config-row">
-                    <label>Fin:</label>
-                    <input type="time" id="configHoraFin" value="22:00">
-                </div>
-                <div class="config-row">
-                    <label>Activa:</label>
-                    <input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;">
-                </div>
-                <button id="btnConfigSave" class="btn-config-save">💾 Guardar Configuración</button>
+                <div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4" placeholder="4927"></div>
+                <div class="config-row"><label>Inicio:</label><input type="time" id="configHoraInicio" value="20:00"></div>
+                <div class="config-row"><label>Fin:</label><input type="time" id="configHoraFin" value="22:00"></div>
+                <div class="config-row"><label>Activa:</label><input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;"></div>
+                <button id="btnConfigSave" class="btn-config-save">💾 Guardar</button>
             </div>
         </div>
 
@@ -413,11 +416,7 @@
 
         <!-- MESA -->
         <div class="game-table-main" id="gameTableMain">
-            <div class="table-felt">
-                <div id="tableContent">
-                    <div class="table-empty-msg">Selecciona modalidad y presiona<br><strong>Buscar Partida</strong></div>
-                </div>
-            </div>
+            <div class="table-felt"><div id="tableContent"><div class="table-empty-msg">Selecciona modalidad y presiona<br><strong>Buscar Partida</strong></div></div></div>
         </div>
 
         <!-- CONTROLES -->
@@ -440,20 +439,12 @@
 
         <!-- HISTORIAL -->
         <div class="history-collapsible" id="historyCollapsible">
-            <div class="history-header" id="historyHeader">
-                <span class="history-title">📊 Historial de partidas</span>
-                <span class="history-arrow">▼</span>
-            </div>
-            <div class="history-body">
-                <table class="history-table">
-                    <thead><tr><th>Resultado</th><th>Mesa</th><th>Monto</th></tr></thead>
-                    <tbody id="historialBody"></tbody>
-                </table>
-            </div>
+            <div class="history-header" id="historyHeader"><span class="history-title">📊 Historial de partidas</span><span class="history-arrow">▼</span></div>
+            <div class="history-body"><table class="history-table"><thead><tr><th>Resultado</th><th>Mesa</th><th>Monto</th></tr></thead><tbody id="historialBody"></tbody></table></div>
         </div>
     </div>
 
-    <!-- MODAL -->
+    <!-- MODAL NEQUI -->
     <div id="nequiModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-title">Recargar Saldo</div>
@@ -468,7 +459,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
     import { getDatabase, ref, onValue, off, set, push, update, increment, onDisconnect, runTransaction, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
@@ -489,9 +480,19 @@
     const NUMERO_WHATSAPP = "573123456789";
     const MAX_MIEMBROS = 50;
 
+    // Vistas
+    const recoveryView = document.getElementById('recoveryView');
     const accessView = document.getElementById('accessView');
     const authView = document.getElementById('authView');
     const gameView = document.getElementById('gameView');
+
+    // Recovery
+    const recoveryEmail = document.getElementById('recoveryEmail');
+    const recoveryMsg = document.getElementById('recoveryMsg');
+    const btnRecovery = document.getElementById('btnRecovery');
+    const btnBackToLogin = document.getElementById('btnBackToLogin');
+
+    // Access
     const accessCode = document.getElementById('accessCode');
     const accessError = document.getElementById('accessError');
     const btnAccess = document.getElementById('btnAccess');
@@ -499,12 +500,15 @@
     const jornadaStatusText = document.getElementById('jornadaStatusText');
     const accessSchedule = document.getElementById('accessSchedule');
 
+    // Auth
     const tabLogin = document.getElementById('tabLogin');
     const tabRegister = document.getElementById('tabRegister');
     const btnAction = document.getElementById('btnAction');
     const emailInput = document.getElementById('email');
     const passInput = document.getElementById('pass');
+    const btnForgotPassword = document.getElementById('btnForgotPassword');
 
+    // Game
     const txtUsername = document.getElementById('txtUsername');
     const userAvatar = document.getElementById('userAvatar');
     const saldoDisplay = document.getElementById('saldoDisplay');
@@ -519,6 +523,7 @@
     const btnWaConfirm = document.getElementById('btnWaConfirm');
     const btnModalCerrar = document.getElementById('btnModalCerrar');
 
+    // Admin
     const adminPanel = document.getElementById('adminPanel');
     const adminUserEmail = document.getElementById('adminUserEmail');
     const adminMontoRecarga = document.getElementById('adminMontoRecarga');
@@ -532,6 +537,7 @@
     const btnResetMovido = document.getElementById('btnResetMovido');
     const btnResetAll = document.getElementById('btnResetAll');
 
+    // Controles
     const mode1v1 = document.getElementById('mode1v1');
     const mode3p = document.getElementById('mode3p');
     const betChips = document.querySelectorAll('.bet-chip');
@@ -549,6 +555,41 @@
     ];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
+
+    // ==================== RECUPERACIÓN DE CONTRASEÑA ====================
+    btnForgotPassword.addEventListener('click', () => {
+        authView.classList.add('hidden');
+        recoveryView.classList.remove('hidden');
+        recoveryEmail.value = emailInput.value;
+    });
+
+    btnBackToLogin.addEventListener('click', () => {
+        recoveryView.classList.add('hidden');
+        authView.classList.remove('hidden');
+        recoveryMsg.textContent = '';
+    });
+
+    btnRecovery.addEventListener('click', async () => {
+        const email = recoveryEmail.value.trim();
+        if (!email) {
+            recoveryMsg.textContent = '❌ Ingresa tu correo electrónico';
+            return;
+        }
+        btnRecovery.disabled = true;
+        btnRecovery.textContent = 'Enviando...';
+        try {
+            await sendPasswordResetEmail(auth, email);
+            recoveryMsg.textContent = '✅ Correo enviado. Revisa tu bandeja de entrada.';
+            recoveryEmail.value = '';
+        } catch (error) {
+            let msg = 'Error al enviar el correo.';
+            if (error.code === 'auth/user-not-found') msg = '❌ No existe una cuenta con ese correo.';
+            if (error.code === 'auth/invalid-email') msg = '❌ Correo electrónico inválido.';
+            recoveryMsg.textContent = msg;
+        }
+        btnRecovery.disabled = false;
+        btnRecovery.textContent = 'Enviar enlace';
+    });
 
     // ==================== VERIFICACIÓN DE ACCESO ====================
     async function verificarAcceso() {
@@ -569,13 +610,7 @@
                 jornadaStatus.className = 'jornada-status inactive';
                 jornadaStatusText.textContent = 'Fuera de horario';
             }
-            const savedCode = localStorage.getItem('suertefacil_access');
-            if (savedCode && savedCode === codigoAcceso && jornadaActiva && horaActual >= horaInicio && horaActual <= horaFin) {
-                accessView.classList.add('hidden');
-                authView.classList.remove('hidden');
-            }
         } catch (e) {
-            console.error("Error verificando acceso:", e);
             codigoAcceso = '4927';
         }
     }
@@ -583,20 +618,10 @@
     btnAccess.addEventListener('click', async () => {
         const code = accessCode.value.trim();
         if (!code || code.length !== 4) { accessError.textContent = 'Ingresa un código de 4 dígitos'; return; }
-        const configSnap = await get(ref(db, 'configuracion'));
-        const config = configSnap.val() || {};
-        const jornadaActiva = config.jornada_activa !== false;
-        const horaInicio = config.hora_inicio || '20:00';
-        const horaFin = config.hora_fin || '22:00';
-        const ahora = new Date();
-        const horaActual = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
-        if (!jornadaActiva) { accessError.textContent = 'La jornada no está activa'; return; }
-        if (horaActual < horaInicio || horaActual > horaFin) { accessError.textContent = 'Fuera del horario de la jornada'; return; }
         if (code === codigoAcceso) {
             accessError.textContent = '';
-            localStorage.setItem('suertefacil_access', code);
             accessView.classList.add('hidden');
-            authView.classList.remove('hidden');
+            gameView.classList.remove('hidden');
         } else {
             accessError.textContent = 'Código incorrecto';
             accessCode.value = '';
@@ -606,42 +631,34 @@
 
     accessCode.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnAccess.click(); });
 
-    // ==================== RESET DE CONTADORES (SOLO ADMIN) ====================
+    // ==================== RESET CONTADORES ====================
     async function resetContador(campo) {
         if (!confirm(`¿Reiniciar ${campo} a $0?`)) return;
         await update(ref(db, 'adminData'), { [campo]: 0 });
     }
-
     btnResetComision.addEventListener('click', () => resetContador('total_comisiones'));
     btnResetMovido.addEventListener('click', () => resetContador('dinero_movido'));
     btnResetAll.addEventListener('click', async () => {
-        if (!confirm('¿Reiniciar TODOS los contadores a $0?')) return;
-        await set(ref(db, 'adminData'), {
-            total_comisiones: 0,
-            dinero_movido: 0,
-            partidas_jugando: 0,
-            partidas_jugadas: 0
-        });
-        alert('Todos los contadores reiniciados a $0');
+        if (!confirm('¿Reiniciar TODOS los contadores?')) return;
+        await set(ref(db, 'adminData'), { total_comisiones: 0, dinero_movido: 0, partidas_jugando: 0, partidas_jugadas: 0 });
+        alert('Contadores reiniciados');
     });
 
-    // ==================== CONFIGURACIÓN ====================
+    // ==================== CONFIG ====================
     btnConfigSave.addEventListener('click', async () => {
-        const nuevaConfig = {
+        await set(ref(db, 'configuracion'), {
             codigo_acceso: configCodigo.value.trim() || '4927',
             jornada_activa: configJornadaActiva.checked,
             hora_inicio: configHoraInicio.value || '20:00',
             hora_fin: configHoraFin.value || '22:00'
-        };
-        await set(ref(db, 'configuracion'), nuevaConfig);
-        codigoAcceso = nuevaConfig.codigo_acceso;
+        });
+        codigoAcceso = configCodigo.value.trim() || '4927';
         alert('✅ Configuración guardada');
     });
 
-    // ==================== RESTO DE FUNCIONES ====================
+    // ==================== RESTO ====================
     function updatePotDisplay(count) {
-        const total = apuestaActual * count;
-        if(potAmount) potAmount.textContent = '$' + total.toLocaleString('es-CO');
+        if(potAmount) potAmount.textContent = '$' + (apuestaActual * count).toLocaleString('es-CO');
     }
 
     historyHeader.addEventListener('click', () => historyCollapsible.classList.toggle('open'));
@@ -686,8 +703,22 @@
         if (user) {
             currentUserId = user.uid;
             currentUsername = user.email.split('@')[0];
+            
+            const isAdmin = user.email.toLowerCase() === CORREO_ADMIN.toLowerCase();
+            
             authView.classList.add('hidden');
-            gameView.classList.remove('hidden');
+            recoveryView.classList.add('hidden');
+            accessView.classList.add('hidden');
+            
+            if (isAdmin) {
+                // Admin: directo al juego
+                gameView.classList.remove('hidden');
+            } else {
+                // Usuario normal: verificar código
+                await verificarAcceso();
+                accessView.classList.remove('hidden');
+            }
+            
             txtUsername.textContent = currentUsername;
             userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
             updateTablePreview();
@@ -700,7 +731,7 @@
                 }
             });
 
-            if (user.email.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
+            if (isAdmin) {
                 adminPanel.classList.remove('hidden');
                 onValue(ref(db, 'adminData'), (snap) => {
                     const d = snap.val() || {};
@@ -716,7 +747,6 @@
                 configHoraInicio.value = cfg.hora_inicio || '20:00';
                 configHoraFin.value = cfg.hora_fin || '22:00';
                 configJornadaActiva.checked = cfg.jornada_activa !== false;
-                
                 btnAdminRecargar.onclick = async () => {
                     const email = adminUserEmail.value.trim().toLowerCase(), monto = parseInt(adminMontoRecarga.value);
                     if(!email||!monto||monto<1000) return alert('Datos inválidos');
@@ -739,13 +769,13 @@
             });
             onValue(ref(db,'presencia'),(snap)=>{ const a=Object.values(snap.val()||{}); document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length; document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length; document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length; document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS; });
         } else {
-            authView.classList.add('hidden'); gameView.classList.add('hidden');
-            accessView.classList.remove('hidden');
+            gameView.classList.add('hidden');
+            recoveryView.classList.add('hidden');
+            accessView.classList.add('hidden');
+            authView.classList.remove('hidden');
             verificarAcceso();
         }
     });
-
-    verificarAcceso();
 
     btnAction.addEventListener('click', async () => {
         const email=emailInput.value.trim(), pass=passInput.value;
@@ -759,7 +789,7 @@
         btnAction.disabled=false;
     });
 
-    btnLogout.addEventListener('click',()=>{ localStorage.removeItem('suertefacil_access'); signOut(auth); });
+    btnLogout.addEventListener('click',()=>signOut(auth));
     btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
     btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
     btnWaConfirm.addEventListener('click',()=>{ window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Adjunto comprobante de recarga.`)}`,'_blank'); nequiModal.classList.add('hidden'); });
@@ -789,7 +819,7 @@
         const data=(await get(ref(db,`matches/${matchId}`))).val();
         if(!data?.jugadores){ resetSearch(); return; }
         const jugadores=data.jugadores, miIdx=jugadores.findIndex(j=>j.uid===currentUserId), labels=jugadores.map((j,i)=>i===miIdx?'Tú':j.username);
-        const totalPot = apuestaActual * jugadores.length;
+        const totalPot=apuestaActual*jugadores.length;
         updatePotDisplay(jugadores.length);
         renderGameCards(jugadores,labels);
         setTimeout(()=>{ btnPlay.textContent='Revelando...'; document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
@@ -798,7 +828,7 @@
                 let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
                 if(jugadores.filter(j=>j.carta.peso===maxP).length>1){ const o={'♠':4,'♥':3,'♦':2,'♣':1}; ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a); }
                 const yoGane=ganador.uid===currentUserId, comision=apuestaActual*0.10, ganancia=totalPot-comision;
-                if(yoGane && potAmount) { potAmount.classList.add('pot-won'); setTimeout(()=>potAmount.classList.remove('pot-won'),600); }
+                if(yoGane&&potAmount){ potAmount.classList.add('pot-won'); setTimeout(()=>potAmount.classList.remove('pot-won'),600); }
                 jugadores.forEach((j,i)=>{ const lbl=document.getElementById('cl'+i); if(!lbl) return; lbl.classList.remove('winner','loser'); if(j.uid===ganador.uid){ lbl.classList.add('winner'); lbl.textContent='🏆 '+labels[i]; } else if(j.uid===currentUserId) lbl.classList.add('loser'); });
                 try{
                     if(yoGane){ await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId}); await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}); }
