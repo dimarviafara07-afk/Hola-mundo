@@ -119,8 +119,12 @@
 
         /* DISEÑO EXCLUSIVO PANEL ADMIN */
         .admin-panel { background: #1f1107; border: 2px solid var(--primary-gold); margin-bottom: 15px; padding: 15px; border-radius: 1.2rem; text-align: center; }
-        .admin-title { color: var(--primary-gold); margin: 0 0 5px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
-        .admin-val { font-size: 2rem; color: var(--green-recargar); font-weight: 900; margin: 10px 0; }
+        .admin-title { color: var(--primary-gold); margin: 0 0 10px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .admin-stat { background: #131c2e; padding: 10px; border-radius: 8px; border: 1px solid #3d2b1f; }
+        .admin-stat span { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .admin-stat strong { display: block; font-size: 1.4rem; color: var(--green-recargar); margin-top: 5px; }
+        .admin-stat strong.oro { color: var(--primary-gold); }
     </style>
 </head>
 <body>
@@ -144,10 +148,26 @@
     <div id="gameView" class="hidden" style="background:transparent; padding:0; box-shadow:none;">
         
         <div id="adminPanel" class="admin-panel hidden">
-            <h3 class="admin-title">👑 Panel de Administrador</h3>
-            <div style="color: #cbd5e1; font-size: 0.85rem;">Comisiones Acumuladas (10% por mesa)</div>
-            <div id="adminComisionDisplay" class="admin-val">$0</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Las comisiones se guardan automáticamente en la nube.</div>
+            <h3 class="admin-title">👑 Panel de Control Privado</h3>
+            <div class="admin-grid">
+                <div class="admin-stat">
+                    <span>Jugadores Activos</span>
+                    <strong id="adminActivosDisplay" class="oro">0</strong>
+                </div>
+                <div class="admin-stat">
+                    <span>Mesas en Curso</span>
+                    <strong id="adminMesasDisplay" class="oro">0</strong>
+                </div>
+                <div class="admin-stat">
+                    <span>Comisiones (10%)</span>
+                    <strong id="adminComisionDisplay">$0</strong>
+                </div>
+                <div class="admin-stat">
+                    <span>Dinero Movido</span>
+                    <strong id="adminDineroDisplay">$0</strong>
+                </div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Las métricas se actualizan en tiempo real.</div>
         </div>
 
         <div class="card">
@@ -236,7 +256,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off, set, push, update, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, set, push, update, increment, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -268,10 +288,9 @@
     const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
     const lblLocal = document.getElementById('lblLocal'), lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
     const nequiModal = document.getElementById('nequiModal'), btnWaConfirm = document.getElementById('btnWaConfirm'), btnModalCerrar = document.getElementById('btnModalCerrar');
-    const adminPanel = document.getElementById('adminPanel'), adminComisionDisplay = document.getElementById('adminComisionDisplay');
-    const mesaBotones = document.querySelectorAll('.mesa-btn');
+    const adminPanel = document.getElementById('adminPanel'), mesaBotones = document.querySelectorAll('.mesa-btn');
 
-    let saldoRef = null, historialRef = null, adminComisionRef = null;
+    let saldoRef = null, historialRef = null, adminDataRef = null, usuariosActivosRef = null;
     let saldoActual = 0, apuestaActual = 2000, textoApuesta = "$2k", mesaSeleccionada = "N1", modoActual = "login";
 
     const pintas = [{ icon: '♠', color: '#090d16' }, { icon: '♥', color: '#ef4444' }, { icon: '♦', color: '#3b82f6' }, { icon: '♣', color: '#22c55e' }];
@@ -295,17 +314,39 @@
             const username = user.email.split('@')[0];
             txtUsername.innerText = username; lblLocal.innerText = username;
 
+            // SISTEMA DE PRESENCIA (Detecta si el usuario está en la app)
+            const myConnectionRef = ref(db, `usuarios_activos/${user.uid}`);
+            const connectedRef = ref(db, '.info/connected');
+            onValue(connectedRef, (snap) => {
+                if (snap.val() === true) {
+                    set(myConnectionRef, true);
+                    onDisconnect(myConnectionRef).remove(); // Lo borra si cierra la página
+                }
+            });
+
             // SI EL USUARIO ES EL ADMINISTRADOR: MOSTRAR PANEL
             if (user.email.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
                 adminPanel.classList.remove('hidden');
-                adminComisionRef = ref(db, 'adminData/total_comisiones');
-                onValue(adminComisionRef, (snapshot) => {
-                    const comisionAcumulada = snapshot.val() || 0;
-                    adminComisionDisplay.innerText = `$${comisionAcumulada.toLocaleString('es-CO')}`;
+                
+                // 1. Escuchar Estadísticas Globales (Comisiones, Mesas, Dinero)
+                adminDataRef = ref(db, 'adminData');
+                onValue(adminDataRef, (snapshot) => {
+                    const data = snapshot.val() || {};
+                    document.getElementById('adminComisionDisplay').innerText = `$${(data.total_comisiones || 0).toLocaleString('es-CO')}`;
+                    document.getElementById('adminDineroDisplay').innerText = `$${(data.dinero_movido || 0).toLocaleString('es-CO')}`;
+                    document.getElementById('adminMesasDisplay').innerText = data.mesas_jugando || 0;
+                });
+
+                // 2. Escuchar Cuántos usuarios están conectados ahora mismo
+                usuariosActivosRef = ref(db, 'usuarios_activos');
+                onValue(usuariosActivosRef, (snapshot) => {
+                    const activos = snapshot.val();
+                    document.getElementById('adminActivosDisplay').innerText = activos ? Object.keys(activos).length : 0;
                 });
             } else {
                 adminPanel.classList.add('hidden');
-                if(adminComisionRef) off(adminComisionRef);
+                if(adminDataRef) off(adminDataRef);
+                if(usuariosActivosRef) off(usuariosActivosRef);
             }
 
             saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
@@ -327,7 +368,8 @@
             });
         } else {
             authView.classList.remove('hidden'); gameView.classList.add('hidden');
-            if (saldoRef) off(saldoRef); if (historialRef) off(historialRef); if(adminComisionRef) off(adminComisionRef);
+            if (saldoRef) off(saldoRef); if (historialRef) off(historialRef); 
+            if(adminDataRef) off(adminDataRef); if(usuariosActivosRef) off(usuariosActivosRef);
         }
     });
 
@@ -379,6 +421,14 @@
         
         [containerLocal, containerRival1, containerRival2].forEach(c => c.classList.remove('voltear'));
         
+        // REPORTAR AL ADMIN: Sumar 1 mesa activa y sumar al dinero histórico movido
+        try {
+            await update(ref(db, 'adminData'), { 
+                mesas_jugando: increment(1),
+                dinero_movido: increment(apuestaActual)
+            });
+        } catch(e) {}
+
         setTimeout(() => {
             const pesoL = armarEstructuraCarta(cartaLocal); const pesoR1 = armarEstructuraCarta(cartaRival1); const pesoR2 = armarEstructuraCarta(cartaRival2);
 
@@ -398,9 +448,12 @@
                         await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual);
                         await push(ref(db, `usuarios/${user.uid}/historial`), { mesa: mesaSeleccionada, resultado: gano ? "GANÓ" : "PERDIÓ", monto: apuestaActual });
                         
-                        // 2. SUMAR COMISIÓN A LA NUBE GLOBAL (10% DEL VALOR DE LA MESA)
+                        // 2. REPORTAR AL ADMIN: Restar la mesa que acaba de terminar y guardar la comisión
                         const comisionDeLaCasa = apuestaActual * 0.10;
-                        await update(ref(db, 'adminData'), { total_comisiones: increment(comisionDeLaCasa) });
+                        await update(ref(db, 'adminData'), { 
+                            total_comisiones: increment(comisionDeLaCasa),
+                            mesas_jugando: increment(-1) 
+                        });
                     } catch(error) { console.error("Error actualizando datos de partida:", error); }
                 }
 
