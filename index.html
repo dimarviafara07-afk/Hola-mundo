@@ -12,27 +12,27 @@
             --bg-card-hover: #141414;
             --bg-input: #0a0a0a;
             
-            /* Acento - Esmeralda vibrante */
-            --accent: #00d4aa;
-            --accent-hover: #00b894;
-            --accent-soft: rgba(0,212,170,0.08);
-            --accent-border: rgba(0,212,170,0.2);
-            --accent-glow: rgba(0,212,170,0.3);
+            /* Acento - Amarillo ámbar premium */
+            --accent: #e6b800;
+            --accent-hover: #cca300;
+            --accent-soft: rgba(230,184,0,0.08);
+            --accent-border: rgba(230,184,0,0.2);
+            --accent-glow: rgba(230,184,0,0.25);
             
-            /* Dorado premium */
-            --gold: #c9a84c;
-            --gold-hover: #b8963a;
-            --gold-soft: rgba(201,168,76,0.08);
-            --gold-border: rgba(201,168,76,0.2);
+            /* Dorado premium (para detalles) */
+            --gold: #d4a853;
+            --gold-hover: #c49640;
+            --gold-soft: rgba(212,168,83,0.08);
+            --gold-border: rgba(212,168,83,0.2);
             
             /* Estados */
-            --success: #00d4aa;
-            --success-soft: rgba(0,212,170,0.08);
-            --success-border: rgba(0,212,170,0.2);
+            --success: #e6b800;
+            --success-soft: rgba(230,184,0,0.08);
+            --success-border: rgba(230,184,0,0.2);
             --danger: #ff6b6b;
             --danger-soft: rgba(255,107,107,0.08);
             --danger-border: rgba(255,107,107,0.2);
-            --warning: #fbbf24;
+            --warning: #f59e0b;
             
             /* Texto */
             --text-main: #fafafa;
@@ -41,7 +41,7 @@
             
             /* Bordes */
             --border-subtle: #262626;
-            --border-active: #c9a84c;
+            --border-active: #e6b800;
             
             /* Radios */
             --radius-xs: 6px;
@@ -52,8 +52,8 @@
             
             /* Cartas - dorso */
             --card-back-bg: linear-gradient(145deg, #0a0a0a 0%, #161616 50%, #0a0a0a 100%);
-            --card-back-border: #c9a84c;
-            --card-back-pattern: rgba(201,168,76,0.2);
+            --card-back-border: #d4a853;
+            --card-back-pattern: rgba(212,168,83,0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -70,11 +70,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 460px;
-        }
-
+        .app-container { width: 100%; max-width: 460px; }
         .hidden { display: none !important; }
 
         /* ========== AUTH SCREEN ========== */
@@ -137,7 +133,7 @@
         .auth-input:focus { 
             outline: none; 
             border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
+            box-shadow: 0 0 0 3px rgba(230,184,0,0.1);
         }
         .btn-primary {
             width: 100%;
@@ -176,7 +172,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #00f5c8);
+            background: linear-gradient(135deg, var(--accent), #f0c800);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -186,10 +182,7 @@
             flex-shrink: 0;
             box-shadow: 0 0 15px var(--accent-glow);
         }
-        .user-info {
-            flex: 1;
-            min-width: 0;
-        }
+        .user-info { flex: 1; min-width: 0; }
         .user-name {
             font-weight: 600;
             font-size: 0.9rem;
@@ -214,9 +207,7 @@
             box-shadow: 0 0 6px var(--accent-glow);
         }
         @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
-        .balance-mini {
-            text-align: right;
-        }
+        .balance-mini { text-align: right; }
         .balance-mini-label {
             font-size: 0.65rem;
             color: var(--text-muted);
@@ -252,7 +243,7 @@
             color: var(--success);
             border: 1px solid var(--success-border);
         }
-        .btn-dep:hover { background: rgba(0,212,170,0.15); }
+        .btn-dep:hover { background: rgba(230,184,0,0.15); }
         .btn-wit { 
             background: var(--danger-soft); 
             color: var(--danger);
@@ -287,18 +278,16 @@
         }
         .comm-stat { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .comm-dot { width: 6px; height: 6px; border-radius: 50%; }
-        .comm-dot.green { background: var(--success); box-shadow: 0 0 6px var(--accent-glow); }
-        .comm-dot.gold { background: var(--gold); box-shadow: 0 0 6px rgba(201,168,76,0.4); }
-        .comm-dot.amber { background: var(--warning); box-shadow: 0 0 6px rgba(251,191,36,0.4); }
+        .comm-dot.yellow { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
+        .comm-dot.gold { background: var(--gold); box-shadow: 0 0 6px rgba(212,168,83,0.4); }
+        .comm-dot.amber { background: var(--warning); box-shadow: 0 0 6px rgba(245,158,11,0.4); }
         .membership-mini {
             margin-left: auto;
             font-size: 0.68rem;
             color: var(--text-muted);
             white-space: nowrap;
         }
-        .membership-mini strong { 
-            color: var(--gold);
-        }
+        .membership-mini strong { color: var(--gold); }
 
         /* ========== GAME TABLE ========== */
         .game-table-main {
@@ -317,7 +306,7 @@
         }
         .game-table-main.active-game {
             border-color: var(--accent);
-            box-shadow: 0 0 25px rgba(0,212,170,0.08);
+            box-shadow: 0 0 25px rgba(230,184,0,0.08);
         }
         .table-felt {
             background: linear-gradient(160deg, #0a1a14 0%, #0d2218 40%, #091410 100%);
@@ -386,7 +375,7 @@
             content: '';
             position: absolute;
             inset: 5px;
-            border: 1.5px solid rgba(201,168,76,0.25);
+            border: 1.5px solid rgba(212,168,83,0.25);
             border-radius: 4px;
         }
         .card-back-pattern {
@@ -394,7 +383,7 @@
             z-index: 1;
             font-size: 1.3rem;
             font-weight: 700;
-            color: rgba(201,168,76,0.4);
+            color: rgba(212,168,83,0.4);
         }
         .card-front {
             background: linear-gradient(150deg, #fafafa 0%, #f0f0f0 100%);
@@ -402,14 +391,8 @@
             transform: rotateY(180deg);
             border: 2px solid #d4d4d4;
         }
-        .card-value {
-            font-size: 1.4rem;
-            font-weight: 800;
-        }
-        .card-suit {
-            font-size: 1.1rem;
-            margin-top: 2px;
-        }
+        .card-value { font-size: 1.4rem; font-weight: 800; }
+        .card-suit { font-size: 1.1rem; margin-top: 2px; }
         .card-label {
             font-size: 0.68rem;
             color: var(--text-secondary);
@@ -421,7 +404,7 @@
             text-align: center;
         }
         .card-label.winner { 
-            color: var(--success); 
+            color: var(--accent); 
             font-weight: 700;
             text-shadow: 0 0 10px var(--accent-glow);
         }
@@ -431,9 +414,7 @@
             font-size: 0.8rem;
             line-height: 1.5;
         }
-        .table-empty-msg strong {
-            color: var(--accent);
-        }
+        .table-empty-msg strong { color: var(--accent); }
 
         /* ========== SEARCH STATUS ========== */
         .search-inline {
@@ -462,7 +443,7 @@
             transition: all 0.3s;
         }
         .search-avatar.found { 
-            border-color: var(--success); 
+            border-color: var(--accent); 
             box-shadow: 0 0 14px var(--accent-glow);
         }
         .search-avatar.searching { 
@@ -470,8 +451,8 @@
             animation: pulse-border 1.5s infinite; 
         }
         @keyframes pulse-border { 
-            0%,100%{ border-color: var(--warning); box-shadow: 0 0 8px rgba(251,191,36,0.2); } 
-            50%{ border-color: #fcd34d; box-shadow: 0 0 18px rgba(252,211,77,0.4); } 
+            0%,100%{ border-color: var(--warning); box-shadow: 0 0 8px rgba(245,158,11,0.2); } 
+            50%{ border-color: #fbbf24; box-shadow: 0 0 18px rgba(251,191,36,0.4); } 
         }
         .search-name {
             font-size: 0.68rem;
@@ -505,11 +486,7 @@
             margin-bottom: 9px;
             font-weight: 600;
         }
-        .mode-row {
-            display: flex;
-            gap: 7px;
-            margin-bottom: 12px;
-        }
+        .mode-row { display: flex; gap: 7px; margin-bottom: 12px; }
         .mode-chip {
             flex: 1;
             padding: 11px 8px;
@@ -531,14 +508,9 @@
             border-color: var(--accent);
             background: var(--accent-soft);
             color: var(--accent);
-            box-shadow: 0 0 14px rgba(0,212,170,0.1);
+            box-shadow: 0 0 14px rgba(230,184,0,0.1);
         }
-        .bet-row {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-bottom: 12px;
-        }
+        .bet-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
         .bet-chip {
             flex: 1;
             min-width: 48px;
@@ -561,7 +533,7 @@
             border-color: var(--accent);
             background: var(--accent-soft);
             color: var(--accent);
-            box-shadow: 0 0 10px rgba(0,212,170,0.1);
+            box-shadow: 0 0 10px rgba(230,184,0,0.1);
         }
         .btn-cta {
             width: 100%;
@@ -645,9 +617,9 @@
             border-bottom: 1px solid var(--border-subtle);
             color: var(--text-secondary);
         }
-        .result-win { color: var(--success); font-weight: 600; }
+        .result-win { color: var(--accent); font-weight: 600; }
         .result-lose { color: var(--danger); font-weight: 600; }
-        .amount-win { color: var(--success); }
+        .amount-win { color: var(--accent); }
         .amount-lose { color: var(--danger); }
         .history-empty {
             text-align: center;
@@ -727,7 +699,7 @@
             border-radius: var(--radius-md);
             padding: 15px;
             margin-bottom: 10px;
-            box-shadow: 0 4px 16px rgba(201,168,76,0.06);
+            box-shadow: 0 4px 16px rgba(212,168,83,0.06);
         }
         .admin-title {
             color: var(--gold);
@@ -761,10 +733,7 @@
             color: var(--text-main);
             margin-top: 3px;
         }
-        .admin-recarga {
-            display: flex;
-            gap: 6px;
-        }
+        .admin-recarga { display: flex; gap: 6px; }
         .admin-recarga input {
             flex: 1;
             padding: 9px 10px;
@@ -851,7 +820,7 @@
 
         <div class="community-bar">
             <div class="comm-stats">
-                <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
+                <div class="comm-stat"><span class="comm-dot yellow"></span> <span id="statOnline">0</span> en línea</div>
                 <div class="comm-stat"><span class="comm-dot gold"></span> <span id="statPlaying">0</span> jugando</div>
                 <div class="comm-stat"><span class="comm-dot amber"></span> <span id="statWaiting">0</span> esperando</div>
             </div>
