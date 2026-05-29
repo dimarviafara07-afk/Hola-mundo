@@ -6,32 +6,52 @@
     <title>SuerteFácil P2P</title>
     <style>
         :root {
-            --bg-primary: #0a0e14;
-            --bg-secondary: #12171f;
-            --bg-card: #181e28;
-            --bg-input: #1a202c;
-            --blue-accent: #3b82f6;
-            --blue-hover: #2563eb;
-            --green-success: #22c55e;
-            --green-bg: rgba(34,197,94,0.08);
-            --red-danger: #ef4444;
-            --red-bg: rgba(239,68,68,0.08);
-            --gold-premium: #d9b44a;
-            --text-primary: #f1f5f9;
+            --bg-deep: #06080c;
+            --bg-primary: #0b0f17;
+            --bg-card: #111827;
+            --bg-card-hover: #1a2332;
+            --bg-input: #0f1724;
+            
+            --accent-primary: #6366f1;
+            --accent-hover: #4f46e5;
+            --accent-soft: rgba(99,102,241,0.12);
+            
+            --success: #10b981;
+            --success-soft: rgba(16,185,129,0.1);
+            --danger: #f43f5e;
+            --danger-soft: rgba(244,63,94,0.1);
+            --warning: #f59e0b;
+            --warning-soft: rgba(245,158,11,0.1);
+            
+            --gold: #c9a84c;
+            --gold-soft: rgba(201,168,76,0.1);
+            
+            --text-main: #f1f5f9;
             --text-secondary: #94a3b8;
             --text-muted: #64748b;
-            --border-light: #1e293b;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
+            
+            --border-subtle: #1e293b;
+            --border-active: #6366f1;
+            
+            --radius-xs: 6px;
+            --radius-sm: 10px;
+            --radius-md: 14px;
+            --radius-lg: 18px;
+            --radius-xl: 22px;
+            
+            --card-back-bg: linear-gradient(145deg, #1e1040 0%, #2d1454 30%, #1a0c38 60%, #251345 100%);
+            --card-back-border: #4c3a6e;
+            --card-back-pattern: rgba(168,139,219,0.25);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            background: var(--bg-deep);
+            background-image: 
+                radial-gradient(ellipse at 20% 20%, rgba(99,102,241,0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(16,185,129,0.04) 0%, transparent 50%);
+            color: var(--text-main);
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             justify-content: center;
@@ -51,65 +71,83 @@
         /* ========== AUTH SCREEN ========== */
         .auth-screen {
             background: var(--bg-card);
-            padding: 2rem 1.5rem;
+            padding: 2.2rem 1.5rem;
             border-radius: var(--radius-xl);
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
         .auth-logo {
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             font-weight: 700;
             letter-spacing: -0.5px;
-            margin-bottom: 1.5rem;
-            color: var(--text-primary);
+            margin-bottom: 1.8rem;
+            color: var(--text-main);
         }
-        .auth-logo span { color: var(--blue-accent); }
+        .auth-logo span { 
+            background: linear-gradient(135deg, var(--accent-primary), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         .auth-tabs {
             display: flex;
             background: var(--bg-input);
             border-radius: var(--radius-sm);
             padding: 3px;
-            margin-bottom: 1.2rem;
+            margin-bottom: 1.3rem;
+            border: 1px solid var(--border-subtle);
         }
         .auth-tab {
             flex: 1;
-            padding: 10px;
+            padding: 11px;
             border: none;
             background: transparent;
             color: var(--text-muted);
             font-weight: 600;
             font-size: 0.85rem;
             cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s;
+            border-radius: 7px;
+            transition: all 0.25s;
         }
-        .auth-tab.active { background: var(--blue-accent); color: #fff; }
+        .auth-tab.active { 
+            background: var(--accent-primary); 
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(99,102,241,0.3);
+        }
         .auth-input {
             width: 100%;
-            padding: 12px 14px;
+            padding: 13px 15px;
             border-radius: var(--radius-sm);
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-subtle);
             background: var(--bg-input);
-            color: var(--text-primary);
+            color: var(--text-main);
             font-size: 0.9rem;
             margin-bottom: 10px;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
-        .auth-input:focus { outline: none; border-color: var(--blue-accent); }
+        .auth-input:focus { 
+            outline: none; 
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
         .btn-primary {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: var(--radius-sm);
-            background: var(--blue-accent);
+            background: var(--accent-primary);
             color: #fff;
             font-weight: 600;
             font-size: 0.95rem;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: all 0.25s;
             margin-top: 4px;
         }
-        .btn-primary:hover { background: var(--blue-hover); }
+        .btn-primary:hover { 
+            background: var(--accent-hover);
+            box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+        }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
         /* ========== HEADER UNIFICADO ========== */
@@ -122,19 +160,22 @@
             align-items: center;
             gap: 12px;
             flex-wrap: wrap;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
         .avatar {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            background: var(--blue-accent);
+            background: linear-gradient(135deg, var(--accent-primary), #818cf8);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #fff;
             flex-shrink: 0;
+            box-shadow: 0 3px 12px rgba(99,102,241,0.3);
         }
         .user-info {
             flex: 1;
@@ -149,17 +190,18 @@
         }
         .user-status {
             font-size: 0.7rem;
-            color: var(--green-success);
+            color: var(--success);
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
         .status-dot {
-            width: 6px;
-            height: 6px;
+            width: 7px;
+            height: 7px;
             border-radius: 50%;
-            background: var(--green-success);
+            background: var(--success);
             animation: pulse-dot 2s infinite;
+            box-shadow: 0 0 6px rgba(16,185,129,0.5);
         }
         @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
         .balance-mini {
@@ -172,22 +214,22 @@
             letter-spacing: 0.5px;
         }
         .balance-mini-amount {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text-main);
         }
         .header-actions {
             display: flex;
             gap: 6px;
             width: 100%;
-            margin-top: 8px;
+            margin-top: 10px;
         }
         .btn-sm {
             flex: 1;
-            padding: 8px 10px;
-            border-radius: var(--radius-sm);
+            padding: 9px 10px;
+            border-radius: var(--radius-xs);
             font-weight: 600;
-            font-size: 0.72rem;
+            font-size: 0.73rem;
             cursor: pointer;
             border: none;
             transition: all 0.2s;
@@ -195,12 +237,24 @@
             letter-spacing: 0.5px;
             text-align: center;
         }
-        .btn-dep { background: var(--green-bg); color: var(--green-success); }
-        .btn-dep:hover { background: rgba(34,197,94,0.15); }
-        .btn-wit { background: var(--red-bg); color: var(--red-danger); }
-        .btn-wit:hover { background: rgba(239,68,68,0.15); }
-        .btn-out { background: transparent; color: var(--text-muted); border: 1px solid var(--border-light); }
-        .btn-out:hover { border-color: var(--red-danger); color: var(--red-danger); }
+        .btn-dep { 
+            background: var(--success-soft); 
+            color: var(--success);
+            border: 1px solid rgba(16,185,129,0.2);
+        }
+        .btn-dep:hover { background: rgba(16,185,129,0.18); }
+        .btn-wit { 
+            background: var(--danger-soft); 
+            color: var(--danger);
+            border: 1px solid rgba(244,63,94,0.2);
+        }
+        .btn-wit:hover { background: rgba(244,63,94,0.18); }
+        .btn-out { 
+            background: transparent; 
+            color: var(--text-muted); 
+            border: 1px solid var(--border-subtle); 
+        }
+        .btn-out:hover { border-color: var(--danger); color: var(--danger); }
 
         /* ========== COMMUNITY BAR ========== */
         .community-bar {
@@ -212,6 +266,7 @@
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
+            border: 1px solid var(--border-subtle);
         }
         .comm-stats {
             display: flex;
@@ -220,49 +275,54 @@
             color: var(--text-secondary);
             flex-wrap: wrap;
         }
-        .comm-stat { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
-        .comm-dot { width: 5px; height: 5px; border-radius: 50%; }
-        .comm-dot.green { background: var(--green-success); }
-        .comm-dot.blue { background: var(--blue-accent); }
-        .comm-dot.yellow { background: #f59e0b; }
+        .comm-stat { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+        .comm-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .comm-dot.green { background: var(--success); box-shadow: 0 0 5px rgba(16,185,129,0.5); }
+        .comm-dot.blue { background: var(--accent-primary); box-shadow: 0 0 5px rgba(99,102,241,0.5); }
+        .comm-dot.yellow { background: var(--warning); box-shadow: 0 0 5px rgba(245,158,11,0.5); }
         .membership-mini {
             margin-left: auto;
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             color: var(--text-muted);
             white-space: nowrap;
         }
-        .membership-mini strong { color: var(--text-primary); }
+        .membership-mini strong { 
+            color: var(--accent-primary);
+        }
 
         /* ========== GAME TABLE (ELEMENTO PRINCIPAL) ========== */
         .game-table-main {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 20px 12px;
+            padding: 18px 12px;
             margin-bottom: 10px;
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-subtle);
             text-align: center;
             min-height: 160px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            transition: border-color 0.3s;
         }
         .game-table-main.active-game {
-            border-color: var(--blue-accent);
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 20px rgba(99,102,241,0.1);
         }
         .table-felt {
-            background: #0d2818;
+            background: linear-gradient(160deg, #0a1f14 0%, #0d2818 40%, #0a1a10 100%);
             border-radius: var(--radius-md);
-            padding: 16px 10px;
+            padding: 18px 10px;
             width: 100%;
-            border: 3px solid #3d2b1a;
+            border: 3px solid #4a3724;
             position: relative;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
         }
         .table-felt::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.03) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, transparent 70%);
             border-radius: inherit;
             pointer-events: none;
         }
@@ -270,7 +330,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             flex-wrap: wrap;
             position: relative;
             z-index: 1;
@@ -279,12 +339,12 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 7px;
         }
         .card-wrapper {
             perspective: 800px;
-            width: 68px;
-            height: 96px;
+            width: 72px;
+            height: 100px;
         }
         .card-inner {
             width: 100%;
@@ -299,181 +359,227 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 7px;
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 3px 12px rgba(0,0,0,0.35);
         }
         .card-back {
-            background: #1e293b;
-            border: 2px solid #334155;
+            background: var(--card-back-bg);
+            border: 2px solid var(--card-back-border);
+            position: relative;
+            overflow: hidden;
+        }
+        .card-back::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 1.5px solid rgba(168,139,219,0.3);
+            border-radius: 4px;
         }
         .card-back-pattern {
-            font-size: 1.1rem;
-            color: #475569;
+            position: relative;
+            z-index: 1;
+            font-size: 1.3rem;
             font-weight: 700;
+            background: linear-gradient(180deg, rgba(168,139,219,0.6), rgba(139,107,196,0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         .card-front {
-            background: #fff;
+            background: linear-gradient(150deg, #ffffff 0%, #f8fafc 100%);
             color: #0f172a;
             transform: rotateY(180deg);
             border: 2px solid #e2e8f0;
         }
         .card-value {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 800;
         }
         .card-suit {
-            font-size: 1rem;
+            font-size: 1.1rem;
+            margin-top: 2px;
         }
         .card-label {
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             color: var(--text-secondary);
             font-weight: 500;
-            max-width: 75px;
+            max-width: 78px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
             text-align: center;
         }
-        .card-label.winner { color: var(--green-success); font-weight: 700; }
-        .card-label.loser { color: var(--red-danger); }
+        .card-label.winner { 
+            color: var(--success); 
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(16,185,129,0.4);
+        }
+        .card-label.loser { color: var(--danger); }
         .table-empty-msg {
             color: var(--text-muted);
             font-size: 0.8rem;
+            line-height: 1.5;
         }
-        .vs-divider {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--text-muted);
+        .table-empty-msg strong {
+            color: var(--accent-primary);
         }
 
-        /* ========== SEARCH STATUS (dentro de la mesa) ========== */
+        /* ========== SEARCH STATUS ========== */
         .search-inline {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 14px;
+            gap: 16px;
             flex-wrap: wrap;
         }
         .search-player {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
         }
         .search-avatar {
-            width: 48px;
-            height: 48px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background: var(--bg-input);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.3rem;
-            border: 2px solid var(--border-light);
-            transition: border-color 0.3s;
+            font-size: 1.4rem;
+            border: 2.5px solid var(--border-subtle);
+            transition: all 0.3s;
         }
-        .search-avatar.found { border-color: var(--green-success); }
-        .search-avatar.searching { border-color: #f59e0b; animation: pulse-border 1.5s infinite; }
-        @keyframes pulse-border { 0%,100%{border-color:#f59e0b} 50%{border-color:#fbbf24} }
+        .search-avatar.found { 
+            border-color: var(--success); 
+            box-shadow: 0 0 12px rgba(16,185,129,0.2);
+        }
+        .search-avatar.searching { 
+            border-color: var(--warning); 
+            animation: pulse-border 1.5s infinite; 
+        }
+        @keyframes pulse-border { 
+            0%,100%{ border-color: var(--warning); box-shadow: 0 0 8px rgba(245,158,11,0.2); } 
+            50%{ border-color: #fbbf24; box-shadow: 0 0 16px rgba(251,191,36,0.4); } 
+        }
         .search-name {
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             color: var(--text-secondary);
-            max-width: 60px;
+            max-width: 65px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
         .search-progress-inline {
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             color: var(--text-muted);
-            margin-top: 8px;
+            margin-top: 10px;
+            font-weight: 500;
         }
 
         /* ========== CONTROLS ========== */
         .controls-section {
             background: var(--bg-card);
             border-radius: var(--radius-lg);
-            padding: 14px;
+            padding: 15px;
             margin-bottom: 10px;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
         .section-label {
-            font-size: 0.65rem;
+            font-size: 0.68rem;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
             color: var(--text-muted);
-            margin-bottom: 8px;
+            margin-bottom: 9px;
+            font-weight: 600;
         }
         .mode-row {
             display: flex;
-            gap: 6px;
-            margin-bottom: 10px;
+            gap: 7px;
+            margin-bottom: 12px;
         }
         .mode-chip {
             flex: 1;
-            padding: 10px 8px;
+            padding: 11px 8px;
             background: var(--bg-input);
-            border: 2px solid var(--border-light);
+            border: 2px solid var(--border-subtle);
             border-radius: var(--radius-sm);
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.78rem;
+            transition: all 0.25s;
+            font-size: 0.8rem;
             font-weight: 600;
             color: var(--text-secondary);
         }
-        .mode-chip:hover { border-color: var(--blue-accent); }
+        .mode-chip:hover { 
+            border-color: var(--accent-primary);
+            background: var(--bg-card-hover);
+        }
         .mode-chip.selected {
-            border-color: var(--blue-accent);
-            background: rgba(59,130,246,0.08);
-            color: var(--blue-accent);
+            border-color: var(--accent-primary);
+            background: var(--accent-soft);
+            color: var(--accent-primary);
+            box-shadow: 0 0 12px rgba(99,102,241,0.15);
         }
         .bet-row {
             display: flex;
             gap: 5px;
             flex-wrap: wrap;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
         }
         .bet-chip {
             flex: 1;
-            min-width: 45px;
-            padding: 8px 4px;
+            min-width: 48px;
+            padding: 9px 4px;
             background: var(--bg-input);
-            border: 2px solid var(--border-light);
-            border-radius: var(--radius-sm);
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-xs);
             text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s;
             font-weight: 600;
-            font-size: 0.72rem;
+            font-size: 0.74rem;
             color: var(--text-secondary);
         }
-        .bet-chip:hover { border-color: var(--blue-accent); }
+        .bet-chip:hover { 
+            border-color: var(--accent-primary);
+            background: var(--bg-card-hover);
+        }
         .bet-chip.selected {
-            border-color: var(--blue-accent);
-            background: rgba(59,130,246,0.08);
-            color: var(--blue-accent);
+            border-color: var(--accent-primary);
+            background: var(--accent-soft);
+            color: var(--accent-primary);
+            box-shadow: 0 0 10px rgba(99,102,241,0.12);
         }
         .btn-cta {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             border: none;
             border-radius: var(--radius-sm);
-            background: var(--blue-accent);
+            background: var(--accent-primary);
             color: #fff;
             font-weight: 700;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.2px;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.25);
         }
-        .btn-cta:hover:not(:disabled) { background: var(--blue-hover); }
+        .btn-cta:hover:not(:disabled) { 
+            background: var(--accent-hover);
+            box-shadow: 0 6px 20px rgba(99,102,241,0.35);
+            transform: translateY(-1px);
+        }
         .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
-        .btn-cta.canceling { background: var(--red-danger); }
+        .btn-cta.canceling { 
+            background: var(--danger);
+            box-shadow: 0 4px 15px rgba(244,63,94,0.25);
+        }
 
         /* ========== COLLAPSIBLE HISTORY ========== */
         .history-collapsible {
@@ -481,9 +587,10 @@
             border-radius: var(--radius-md);
             overflow: hidden;
             margin-bottom: 10px;
+            border: 1px solid var(--border-subtle);
         }
         .history-header {
-            padding: 12px 16px;
+            padding: 13px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -493,7 +600,7 @@
         }
         .history-header:hover { background: rgba(255,255,255,0.02); }
         .history-title {
-            font-size: 0.7rem;
+            font-size: 0.72rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             color: var(--text-muted);
@@ -513,7 +620,7 @@
         .history-collapsible.open .history-body { max-height: 300px; overflow-y: auto; }
         .history-table {
             width: 100%;
-            font-size: 0.73rem;
+            font-size: 0.74rem;
             border-collapse: collapse;
             padding: 0 16px 12px;
         }
@@ -521,32 +628,32 @@
             text-align: left;
             color: var(--text-muted);
             font-weight: 500;
-            padding: 6px 0;
-            font-size: 0.65rem;
+            padding: 7px 0;
+            font-size: 0.66rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .history-table td {
-            padding: 6px 0;
-            border-bottom: 1px solid var(--border-light);
+            padding: 7px 0;
+            border-bottom: 1px solid var(--border-subtle);
             color: var(--text-secondary);
         }
-        .result-win { color: var(--green-success); font-weight: 600; }
-        .result-lose { color: var(--red-danger); font-weight: 600; }
-        .amount-win { color: var(--green-success); }
-        .amount-lose { color: var(--red-danger); }
+        .result-win { color: var(--success); font-weight: 600; }
+        .result-lose { color: var(--danger); font-weight: 600; }
+        .amount-win { color: var(--success); }
+        .amount-lose { color: var(--danger); }
         .history-empty {
             text-align: center;
             color: var(--text-muted);
-            font-size: 0.7rem;
-            padding: 10px 0;
+            font-size: 0.72rem;
+            padding: 12px 0;
         }
 
         /* ========== MODAL ========== */
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
+            background: rgba(0,0,0,0.88);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -555,120 +662,132 @@
         }
         .modal-content {
             background: var(--bg-card);
-            padding: 22px;
+            padding: 24px;
             border-radius: var(--radius-lg);
             width: 100%;
-            max-width: 360px;
+            max-width: 370px;
             text-align: center;
-            border: 1px solid var(--border-light);
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         .modal-title {
             font-weight: 700;
-            font-size: 1rem;
-            margin-bottom: 10px;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
         }
         .nequi-number {
             background: var(--bg-input);
-            padding: 12px;
+            padding: 13px;
             border-radius: var(--radius-sm);
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
             color: #e11d48;
-            margin: 10px 0;
+            margin: 12px 0;
             letter-spacing: 1px;
-            border: 1px solid #e11d48;
+            border: 1.5px solid #e11d48;
         }
         .btn-wa {
             width: 100%;
-            padding: 12px;
-            background: var(--green-success);
+            padding: 13px;
+            background: var(--success);
             color: #fff;
             border: none;
             border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            transition: all 0.2s;
         }
-        .btn-wa:hover { background: #16a34a; }
+        .btn-wa:hover { background: #059669; }
         .btn-modal-close {
             background: none;
             border: none;
             color: var(--text-muted);
-            margin-top: 8px;
+            margin-top: 10px;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
+            padding: 6px;
         }
+        .btn-modal-close:hover { color: var(--text-main); }
 
         /* ========== ADMIN ========== */
         .admin-panel {
             background: var(--bg-card);
-            border: 1px solid var(--gold-premium);
+            border: 1.5px solid var(--gold);
             border-radius: var(--radius-md);
-            padding: 14px;
+            padding: 15px;
             margin-bottom: 10px;
+            box-shadow: 0 4px 16px rgba(201,168,76,0.08);
         }
         .admin-title {
-            color: var(--gold-premium);
+            color: var(--gold);
             font-weight: 700;
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         .admin-stats {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-bottom: 10px;
+            gap: 7px;
+            margin-bottom: 12px;
         }
         .admin-stat {
             background: var(--bg-input);
-            padding: 8px;
-            border-radius: 6px;
+            padding: 9px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border-subtle);
         }
         .admin-stat-label {
-            font-size: 0.6rem;
+            font-size: 0.62rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .admin-stat-value {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text-main);
             margin-top: 3px;
         }
         .admin-recarga {
             display: flex;
-            gap: 5px;
+            gap: 6px;
         }
         .admin-recarga input {
             flex: 1;
-            padding: 7px;
-            border-radius: 6px;
-            border: 1px solid var(--border-light);
+            padding: 9px 10px;
+            border-radius: var(--radius-xs);
+            border: 1px solid var(--border-subtle);
             background: var(--bg-input);
-            color: var(--text-primary);
-            font-size: 0.75rem;
+            color: var(--text-main);
+            font-size: 0.78rem;
         }
-        .admin-recarga input:focus { outline: none; border-color: var(--blue-accent); }
+        .admin-recarga input:focus { 
+            outline: none; 
+            border-color: var(--accent-primary);
+        }
         .btn-admin-recargar {
-            padding: 7px 12px;
-            background: var(--blue-accent);
+            padding: 9px 14px;
+            background: var(--accent-primary);
             color: #fff;
             border: none;
-            border-radius: 6px;
+            border-radius: var(--radius-xs);
             font-weight: 600;
-            font-size: 0.75rem;
+            font-size: 0.78rem;
             cursor: pointer;
             white-space: nowrap;
+            transition: all 0.2s;
         }
+        .btn-admin-recargar:hover { background: var(--accent-hover); }
 
         @media (max-width: 360px) {
-            .card-wrapper { width: 55px; height: 78px; }
-            .card-value { font-size: 1.1rem; }
-            .card-suit { font-size: 0.85rem; }
+            .card-wrapper { width: 58px; height: 82px; }
+            .card-value { font-size: 1.15rem; }
+            .card-suit { font-size: 0.9rem; }
             .cards-row { gap: 8px; }
         }
     </style>
@@ -694,7 +813,7 @@
 
         <!-- Admin Panel -->
         <div id="adminPanel" class="admin-panel hidden">
-            <div class="admin-title">Panel de Control</div>
+            <div class="admin-title">✦ Panel de Control</div>
             <div class="admin-stats">
                 <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
                 <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
@@ -703,12 +822,12 @@
             </div>
             <div class="admin-recarga">
                 <input type="email" id="adminUserEmail" placeholder="Email del usuario">
-                <input type="number" id="adminMontoRecarga" placeholder="$" min="1000">
+                <input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000">
                 <button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button>
             </div>
         </div>
 
-        <!-- HEADER UNIFICADO: Usuario + Saldo + Acciones -->
+        <!-- HEADER UNIFICADO -->
         <div class="unified-header">
             <div class="avatar" id="userAvatar">D</div>
             <div class="user-info">
@@ -726,7 +845,7 @@
             </div>
         </div>
 
-        <!-- COMMUNITY BAR COMPACTA -->
+        <!-- COMMUNITY BAR -->
         <div class="community-bar">
             <div class="comm-stats">
                 <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
@@ -736,17 +855,16 @@
             <div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div>
         </div>
 
-        <!-- MESA DE JUEGO (ELEMENTO PRINCIPAL) -->
+        <!-- MESA DE JUEGO -->
         <div class="game-table-main" id="gameTableMain">
             <div class="table-felt" id="tableFelt">
-                <!-- Contenido dinámico: mesa vacía, búsqueda o cartas -->
                 <div id="tableContent">
                     <div class="table-empty-msg">Selecciona modalidad y presiona<br><strong>Buscar Partida</strong></div>
                 </div>
             </div>
         </div>
 
-        <!-- CONTROLES: Modalidad + Apuesta + Botón -->
+        <!-- CONTROLES -->
         <div class="controls-section">
             <div class="section-label">Modalidad</div>
             <div class="mode-row">
@@ -783,9 +901,9 @@
     <div id="nequiModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-title">Recargar Saldo</div>
-            <p style="font-size:0.75rem;color:var(--text-muted);">Transfiere a esta cuenta Nequi:</p>
+            <p style="font-size:0.78rem;color:var(--text-muted);">Transfiere a esta cuenta Nequi:</p>
             <div class="nequi-number">📱 3123456789</div>
-            <p style="font-size:0.7rem;color:var(--text-muted);margin-bottom:12px;">Envía el comprobante por WhatsApp</p>
+            <p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:14px;">Envía el comprobante por WhatsApp</p>
             <button id="btnWaConfirm" class="btn-wa">Enviar Comprobante</button>
             <button id="btnModalCerrar" class="btn-modal-close">Cancelar</button>
         </div>
@@ -815,7 +933,6 @@
     const NUMERO_WHATSAPP = "573123456789";
     const MAX_MIEMBROS = 50;
 
-    // DOM refs
     const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
     const tabLogin = document.getElementById('tabLogin'), tabRegister = document.getElementById('tabRegister');
     const btnAction = document.getElementById('btnAction');
@@ -841,22 +958,19 @@
     let esperandoPartida = false, currentMatchId = null;
 
     const pintas = [
-        { icon: '♠', color: '#1a1a1a' }, { icon: '♥', color: '#dc2626' },
-        { icon: '♦', color: '#2563eb' }, { icon: '♣', color: '#16a34a' }
+        { icon: '♠', color: '#1e293b' }, 
+        { icon: '♥', color: '#dc2626' }, 
+        { icon: '♦', color: '#2563eb' }, 
+        { icon: '♣', color: '#059669' }
     ];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
 
-    // History toggle
-    historyHeader.addEventListener('click', () => {
-        historyCollapsible.classList.toggle('open');
-    });
+    historyHeader.addEventListener('click', () => historyCollapsible.classList.toggle('open'));
 
-    // Auth tabs
     tabLogin.addEventListener('click', () => { tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.textContent = 'Ingresar'; });
     tabRegister.addEventListener('click', () => { tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.textContent = 'Registrarse'; });
 
-    // Mode selection
     mode1v1.addEventListener('click', () => {
         if(esperandoPartida) return;
         mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1';
@@ -868,7 +982,6 @@
         updateTablePreview();
     });
 
-    // Bet selection
     betChips.forEach(chip => {
         chip.addEventListener('click', () => {
             if(esperandoPartida) return;
@@ -889,8 +1002,8 @@
                         <div class="card-inner">
                             <div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div>
                             <div class="card-face card-front">
-                                <div class="card-value">?</div>
-                                <div class="card-suit">🂠</div>
+                                <div class="card-value" style="color:#64748b">?</div>
+                                <div class="card-suit" style="color:#64748b">🂠</div>
                             </div>
                         </div>
                     </div>
@@ -901,7 +1014,6 @@
         tableContent.innerHTML = html;
     }
 
-    // Auth observer
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             currentUserId = user.uid;
@@ -912,18 +1024,15 @@
             userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
             updateTablePreview();
 
-            // Presence
             const presenceRef = ref(db, `presencia/${user.uid}`);
             const connectedRef = ref(db, '.info/connected');
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
-                    const data = { email: user.email, username: currentUsername, status: 'online', lastSeen: Date.now() };
-                    set(presenceRef, data);
+                    set(presenceRef, { email: user.email, username: currentUsername, status: 'online', lastSeen: Date.now() });
                     onDisconnect(presenceRef).update({ status: 'offline', lastSeen: Date.now() });
                 }
             });
 
-            // Admin
             if (user.email.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
                 adminPanel.classList.remove('hidden');
                 onValue(ref(db, 'adminData'), (snap) => {
@@ -934,8 +1043,7 @@
                 });
                 onValue(ref(db, 'presencia'), (snap) => {
                     const p = snap.val() || {};
-                    const online = Object.values(p).filter(v => v.status === 'online').length;
-                    document.getElementById('adminOnline').textContent = online;
+                    document.getElementById('adminOnline').textContent = Object.values(p).filter(v => v.status === 'online').length;
                 });
                 btnAdminRecargar.onclick = async () => {
                     const email = adminUserEmail.value.trim().toLowerCase();
@@ -955,13 +1063,11 @@
                 adminPanel.classList.add('hidden');
             }
 
-            // Saldo
             onValue(ref(db, `usuarios/${user.uid}/saldo`), (snap) => {
                 saldoActual = snap.val() || 0;
                 saldoDisplay.textContent = '$' + saldoActual.toLocaleString('es-CO');
             });
 
-            // Historial
             onValue(ref(db, `usuarios/${user.uid}/historial`), (snap) => {
                 const data = snap.val();
                 historialBody.innerHTML = '';
@@ -980,17 +1086,13 @@
                 }
             });
 
-            // Community stats
             onValue(ref(db, 'presencia'), (snap) => {
                 const p = snap.val() || {};
                 const all = Object.values(p);
-                const online = all.filter(v => v.status === 'online').length;
-                const waiting = all.filter(v => v.status === 'waiting').length;
-                const playing = all.filter(v => v.status === 'playing').length;
-                document.getElementById('statOnline').textContent = online;
-                document.getElementById('statWaiting').textContent = waiting;
-                document.getElementById('statPlaying').textContent = playing;
-                document.getElementById('membershipText').textContent = `${online}/${MAX_MIEMBROS}`;
+                document.getElementById('statOnline').textContent = all.filter(v => v.status === 'online').length;
+                document.getElementById('statWaiting').textContent = all.filter(v => v.status === 'waiting').length;
+                document.getElementById('statPlaying').textContent = all.filter(v => v.status === 'playing').length;
+                document.getElementById('membershipText').textContent = `${all.filter(v => v.status === 'online').length}/${MAX_MIEMBROS}`;
             });
 
         } else {
@@ -998,10 +1100,8 @@
         }
     });
 
-    // Auth action
     btnAction.addEventListener('click', async () => {
-        const email = emailInput.value.trim();
-        const pass = passInput.value;
+        const email = emailInput.value.trim(), pass = passInput.value;
         if(!email || !pass) return alert('Completa todos los campos');
         if(pass.length < 6) return alert('Mínimo 6 caracteres');
         btnAction.disabled = true;
@@ -1039,18 +1139,17 @@
         return { peso: vi, texto: nombresCartas[vi], pinta: p };
     }
 
-    function renderSearchUI(jugadoresEncontrados, total) {
+    function renderSearchUI(encontrados, total) {
         let html = '<div class="search-inline">';
         for(let i = 0; i < total; i++) {
-            const encontrado = i < jugadoresEncontrados;
+            const ok = i < encontrados;
             html += `
                 <div class="search-player">
-                    <div class="search-avatar ${encontrado ? 'found' : 'searching'}">${encontrado ? '👤' : '⏳'}</div>
-                    <div class="search-name">${i === 0 ? 'Tú' : (encontrado ? 'Jugador ' + (i+1) : 'Buscando...')}</div>
+                    <div class="search-avatar ${ok ? 'found' : 'searching'}">${ok ? '👤' : '⏳'}</div>
+                    <div class="search-name">${i === 0 ? 'Tú' : (ok ? 'Jugador ' + (i+1) : 'Buscando...')}</div>
                 </div>`;
         }
-        html += '</div>';
-        html += `<div class="search-progress-inline">${jugadoresEncontrados}/${total} jugadores</div>`;
+        html += `</div><div class="search-progress-inline">${encontrados}/${total} jugadores</div>`;
         tableContent.innerHTML = html;
     }
 
@@ -1062,7 +1161,7 @@
                     <div class="card-wrapper" id="cw${i}">
                         <div class="card-inner">
                             <div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div>
-                            <div class="card-face card-front" id="cf${i}">
+                            <div class="card-face card-front">
                                 <div class="card-value" style="color:${j?.carta?.pinta?.color || '#000'}">${j?.carta?.texto || ''}</div>
                                 <div class="card-suit" style="color:${j?.carta?.pinta?.color || '#000'}">${j?.carta?.pinta?.icon || ''}</div>
                             </div>
@@ -1096,14 +1195,12 @@
         btnPlay.textContent = 'Buscando...';
         btnPlay.classList.add('canceling');
         esperandoPartida = true;
-
         await update(ref(db, `presencia/${currentUserId}`), { status: 'waiting' });
         renderSearchUI(1, maxJ);
 
         const result = await runTransaction(lobbyRef, (lobby) => {
-            if(!lobby || lobby.estado === 'finalizado') {
+            if(!lobby || lobby.estado === 'finalizado')
                 return { host: currentUserId, jugadores: [currentUserId], estado: 'esperando', creado: Date.now() };
-            }
             if(lobby.estado === 'esperando' && lobby.jugadores && lobby.jugadores.length < maxJ) {
                 if(!lobby.jugadores.includes(currentUserId)) {
                     lobby.jugadores.push(currentUserId);
@@ -1119,10 +1216,8 @@
 
         const listener = onValue(lobbyRef, async (snap) => {
             const data = snap.val();
-            if(!data || !data.jugadores) { off(lobbyRef, listener); resetSearch(); return; }
-
+            if(!data?.jugadores) { off(lobbyRef, listener); resetSearch(); return; }
             renderSearchUI(data.jugadores.length, maxJ);
-
             if(data.estado === 'jugando' && data.matchId && data.jugadores.length === maxJ) {
                 off(lobbyRef, listener);
                 await update(ref(db, `presencia/${currentUserId}`), { status: 'playing' });
@@ -1132,11 +1227,11 @@
 
         setTimeout(async () => {
             const snap = await get(lobbyRef);
-            if(snap.val() && snap.val().jugadores && snap.val().jugadores.length < maxJ) {
+            if(snap.val()?.jugadores?.length < maxJ) {
                 await set(lobbyRef, null);
                 off(lobbyRef, listener);
                 resetSearch();
-                alert('Tiempo agotado. No se encontraron suficientes jugadores.');
+                alert('Tiempo agotado.');
             }
         }, 45000);
     });
@@ -1153,7 +1248,6 @@
     async function ejecutarPartida(matchId) {
         currentMatchId = matchId;
         btnPlay.textContent = 'Repartiendo...';
-
         const snap = await get(ref(db, `matches/${matchId}`));
         const data = snap.val();
         if(!data?.jugadores) { resetSearch(); return; }
@@ -1161,7 +1255,6 @@
         const jugadores = data.jugadores;
         const miIdx = jugadores.findIndex(j => j.uid === currentUserId);
         const labels = jugadores.map((j, i) => i === miIdx ? 'Tú' : j.username);
-
         renderGameCards(jugadores, labels);
 
         setTimeout(() => {
@@ -1177,7 +1270,6 @@
                     const orden = { '♠':4, '♥':3, '♦':2, '♣':1 };
                     ganador = ganadores.reduce((a,b) => (orden[b.carta.pinta.icon]||0) > (orden[a.carta.pinta.icon]||0) ? b : a);
                 }
-
                 const yoGane = ganador.uid === currentUserId;
                 const comision = apuestaActual * 0.10;
                 const ganancia = (apuestaActual * jugadores.length) - comision;
@@ -1202,14 +1294,12 @@
                 } catch(e) { console.error(e); }
 
                 btnPlay.textContent = yoGane ? '🎉 ¡Ganaste!' : '😔 Perdiste';
-
                 setTimeout(async () => {
                     await set(ref(db, `matches/${matchId}`), null);
                     await set(ref(db, `lobbies/${modoJuego}_${apuestaActual}`), null);
                     await update(ref(db, 'adminData'), { partidas_jugando: increment(-1) });
                     resetSearch();
                 }, 4000);
-
             }, 1200);
         }, 800);
     }
