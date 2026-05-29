@@ -195,7 +195,7 @@ const mode1v1=document.getElementById('mode1v1'),mode3p=document.getElementById(
 let currentUserId=null,currentUsername='',currentAlias='',saldoActual=0,apuestaActual=2000,modoJuego='1v1',esperandoPartida=false,currentMatchId=null,codigoAcceso='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nombresCartas=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MAX_JUGADORES={'1v1':2,'3p':3};
 
-// ===== UTILIDAD ASYNC/AWAIT (Estilo profesional) =====
+// ===== UTILIDAD ASYNC/AWAIT =====
 const esperar=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
 
 // ===== SISTEMA DE BILLETERA CENTRALIZADA =====
@@ -272,12 +272,12 @@ function generarCarta(){const seed=Date.now()%1000;const vi=Math.floor((Math.ran
 function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h}
 function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`});h+='</div>';tableContent.innerHTML=h}
 
-// ===== EMPAREJAMIENTO CON BLOQUEO ABSOLUTO =====
+// ===== EMPAREJAMIENTO CON COBRO ANTICIPADO =====
 btnPlay.addEventListener('click',async()=>{
     if(!currentUserId)return;
     const saldoReal=await cargarSaldo(currentUserId);
     if(saldoReal<=0)return alert('❌ Saldo en $0. Recarga para jugar.');
-    if(saldoReal<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoReal.toLocaleString('es-CO')}, necesitas $${apuestaActual.toLocaleString('es-CO')}`);
+    if(saldoReal<apuestaActual && !esperandoPartida) return alert(`❌ Saldo insuficiente. Tienes $${saldoReal.toLocaleString('es-CO')}, necesitas $${apuestaActual.toLocaleString('es-CO')}`);
 
     // BLOQUEO ABSOLUTO INMEDIATO
     btnPlay.disabled=true;
@@ -285,16 +285,25 @@ btnPlay.addEventListener('click',async()=>{
 
     const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),maxJ=MAX_JUGADORES[modoJuego];
 
+    // --- REEMBOLSO SI EL JUGADOR CANCELA LA BÚSQUEDA ---
     if(esperandoPartida){
-        await set(lobbyRef,null);
-        await update(ref(db,`presencia/${currentUserId}`),{status:'online'});
-        esperandoPartida=false;
-        btnPlay.textContent='Buscar Partida';
-        btnPlay.classList.remove('canceling','cooldown');
-        btnPlay.disabled=false;
-        updatePotDisplay(MAX_JUGADORES[modoJuego]);
-        updateTablePreview();
+        try {
+            await modificarSaldo(currentUserId, apuestaActual, 'Reembolso por cancelar búsqueda');
+        } catch(e) {
+            console.error("Error devolviendo saldo:", e);
+        }
+        await set(lobbyRef,null); // Limpiamos la sala (para evitar quedar atrapados)
+        resetSearch();
         return;
+    }
+
+    // --- COBRO ANTICIPADO AL INICIAR BÚSQUEDA ---
+    try {
+        await modificarSaldo(currentUserId, -apuestaActual, `Entrada a mesa (${modoJuego})`);
+    } catch(e) {
+        btnPlay.disabled = false;
+        btnPlay.classList.remove('canceling');
+        return alert('Error procesando tu saldo inicial.');
     }
 
     try{
@@ -307,14 +316,34 @@ btnPlay.addEventListener('click',async()=>{
 
         const result=await runTransaction(lobbyRef,(lobby)=>{if(!lobby||lobby.estado==='finalizado')return{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()};if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){const yaEsta=lobby.jugadores.some(j=>j.uid===currentUserId);if(!yaEsta){lobby.jugadores.push({uid:currentUserId,alias:currentAlias});if(lobby.jugadores.length===maxJ){lobby.estado='jugando';lobby.cartas={};lobby.jugadores.forEach(j=>{lobby.cartas[j.uid]=generarCarta()});}return lobby}}return lobby});
         const lobbyData=result.snapshot.val();
-        if(!lobbyData){resetSearch();return alert('Error al conectar')}
+        if(!lobbyData){
+            await modificarSaldo(currentUserId, apuestaActual, 'Reembolso por error de sala');
+            resetSearch();
+            return alert('Error al conectar');
+        }
 
         const listener=onValue(lobbyRef,async(snap)=>{const data=snap.val();if(!data||!data.jugadores){off(lobbyRef,listener);resetSearch();return}renderSearchUI(data.jugadores.length,maxJ);updatePotDisplay(data.jugadores.length);if(data.estado==='jugando'&&data.matchId&&data.jugadores.length===maxJ){off(lobbyRef,listener);await update(ref(db,`presencia/${currentUserId}`),{status:'playing'});await ejecutarPartida(data.matchId,data)}else if(data.estado==='jugando'&&!data.matchId&&data.jugadores.length===maxJ){const matchId=push(ref(db,'matches')).key;const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};await set(ref(db,`matches/${matchId}`),matchData);await update(lobbyRef,{matchId:matchId})}});
 
-        setTimeout(async()=>{const snap=await get(lobbyRef);if(snap.val()&&snap.val().jugadores&&snap.val().jugadores.length<maxJ){await set(lobbyRef,null);off(lobbyRef,listener);resetSearch();alert('Tiempo agotado.')}},60000);
+        // --- REEMBOLSO SI SE ACABA EL TIEMPO (60 SEGUNDOS) ---
+        setTimeout(async()=>{
+            const snap=await get(lobbyRef);
+            if(snap.val()&&snap.val().jugadores&&snap.val().jugadores.length<maxJ){
+                // Verificar si sigo en esa sala fallida
+                const me = snap.val().jugadores.find(j => j.uid === currentUserId);
+                if(me) {
+                    await modificarSaldo(currentUserId, apuestaActual, 'Reembolso por tiempo agotado');
+                }
+                await set(lobbyRef,null);
+                off(lobbyRef,listener);
+                resetSearch();
+                alert('Tiempo agotado. Se ha reembolsado tu entrada.');
+            }
+        },60000);
+
     }catch(error){
         console.error('Error en búsqueda:',error);
-        alert('Error de conexión. Tus saldos están a salvo.');
+        await modificarSaldo(currentUserId, apuestaActual, 'Reembolso por error de conexión');
+        alert('Error de conexión. Se ha devuelto tu saldo.');
         resetSearch();
     }
 });
@@ -329,7 +358,7 @@ function resetSearch(){
     update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
 }
 
-// ===== PARTIDA CON COOLDOWN DE SEGURIDAD =====
+// ===== PARTIDA CON REPARTICIÓN SEGURA Y COOLDOWN =====
 async function ejecutarPartida(matchId,lobbyData){
     currentMatchId=matchId;
     btnPlay.textContent='Repartiendo cartas...';
@@ -358,23 +387,38 @@ async function ejecutarPartida(matchId,lobbyData){
 
     const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
     if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a)}
-    const yoGane=ganador.uid===currentUserId,comision=jugadores.length===2?Math.floor(apuestaActual*0.05):Math.floor(apuestaActual*0.10),gananciaNetaReal=(totalPot-apuestaActual)-comision;
+    const yoGane=ganador.uid===currentUserId,comision=jugadores.length===2?Math.floor(apuestaActual*0.05):Math.floor(apuestaActual*0.10);
+    const premioTotal = totalPot - comision;
 
     if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600)}
     jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i]}else if(j.uid===currentUserId)lbl.classList.add('loser')});
 
-    // ACTUALIZAR SALDO
+    // --- REPARTICIÓN SEGURA ---
     try{
-        if(yoGane){await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida');await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:gananciaNetaReal,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)})}
-        else{await modificarSaldo(currentUserId,-apuestaActual,'Perdió partida');await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId})}
+        if(yoGane){
+            // Gana: Se le entrega todo el pozo menos la comisión. (Su entrada ya la pagó, el neto en verde es PremioTotal - Entrada)
+            await modificarSaldo(currentUserId, premioTotal, 'Ganó partida (Pozo)');
+            await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:premioTotal - apuestaActual,timestamp:Date.now(),matchId});
+            // El ganador se encarga de sumar la comisión al Admin
+            await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});
+        } else {
+            // Pierde: No se le descuenta nada de saldo porque ya pagó al iniciar. Solo registramos en el historial.
+            await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});
+        }
     }catch(e){console.error('Error saldo:',e)}
 
     // FASE 4: COOLDOWN DE SEGURIDAD (4 segundos)
     btnPlay.textContent=yoGane?'🎉 ¡Ganaste! - Limpiando mesa...':'😔 Perdiste - Limpiando mesa...';
     await esperar(4000);
 
-    // LIMPIEZA FINAL
-    try{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null)}catch(e){}
+    // --- LIMPIEZA FINAL (Solo el Host la ejecuta para evitar choques) ---
+    try{
+        if (lobbyData.host === currentUserId) {
+            await set(ref(db,`matches/${matchId}`),null);
+            await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);
+        }
+    }catch(e){}
+
     resetSearch();
 }
 
