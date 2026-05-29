@@ -17,50 +17,50 @@
             --text-main: #ffffff;
             --text-muted: #64748b;
             --border-gold: #d9b44a;
-            --border-success: #22c55e;
-            --border-danger: #f43f5e;
+            --felt-green: #0d5e2e;
+            --felt-dark: #0a3d1f;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body { 
-            background: linear-gradient(135deg, #090d16 0%, #0f1629 100%);
+            background: linear-gradient(135deg, #090d16 0%, #0f1629 50%, #1a0f2e 100%);
             color: var(--text-main); 
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh;
-            padding: 15px;
+            padding: 10px;
         }
 
         .app-container { 
             width: 100%; 
-            max-width: 480px; 
+            max-width: 500px; 
             position: relative;
         }
 
         .card { 
             background: rgba(19, 28, 46, 0.95);
             backdrop-filter: blur(10px);
-            padding: 1.5rem; 
-            border-radius: 1.2rem; 
+            padding: 1.2rem; 
+            border-radius: 1rem; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.6), 0 0 20px rgba(217,180,74,0.1); 
-            margin-bottom: 15px;
-            border: 1px solid rgba(217,180,74,0.1);
+            margin-bottom: 12px;
+            border: 1px solid rgba(217,180,74,0.15);
         }
 
         .hidden { display: none !important; }
-        .form-group { margin-bottom: 15px; }
+        .form-group { margin-bottom: 12px; }
         
         input, select { 
             width: 100%; 
-            padding: 14px; 
+            padding: 12px; 
             border-radius: 8px; 
             border: 1px solid #243557; 
             background: var(--bg-input); 
             color: var(--text-main); 
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
         input:focus, select:focus { 
@@ -75,17 +75,17 @@
             background: linear-gradient(135deg, var(--primary-gold), #fbbf24);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            font-size: 2rem;
-            margin-bottom: 20px;
+            font-size: 1.8rem;
+            margin-bottom: 18px;
             font-weight: 800;
             letter-spacing: 2px;
         }
         .auth-tabs { 
             display: flex; 
-            gap: 10px; 
-            margin-bottom: 25px; 
+            gap: 8px; 
+            margin-bottom: 20px; 
             background: var(--bg-input); 
-            padding: 5px; 
+            padding: 4px; 
             border-radius: 8px; 
         }
         .tab-btn { 
@@ -97,7 +97,7 @@
             font-weight: 600; 
             cursor: pointer; 
             border-radius: 6px; 
-            font-size: 0.95rem; 
+            font-size: 0.9rem; 
             transition: all 0.3s ease; 
         }
         .tab-btn.active { 
@@ -111,11 +111,11 @@
             display: flex; 
             justify-content: space-between; 
             align-items: flex-start; 
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         .user-info h3 { 
             margin: 0 0 5px 0; 
-            font-size: 1.3rem; 
+            font-size: 1.2rem; 
             letter-spacing: 0.5px;
             background: linear-gradient(135deg, #ffffff, #cbd5e1);
             -webkit-background-clip: text;
@@ -125,9 +125,9 @@
             background: rgba(244, 63, 94, 0.1); 
             border: 1px solid var(--border-danger); 
             color: var(--pink-jubilado); 
-            padding: 4px 12px; 
+            padding: 4px 10px; 
             border-radius: 6px; 
-            font-size: 0.8rem; 
+            font-size: 0.75rem; 
             cursor: pointer; 
             font-weight: bold;
             transition: all 0.3s ease;
@@ -135,14 +135,14 @@
         .btn-salir:hover { background: rgba(244, 63, 94, 0.2); }
         .saldo-box { text-align: right; }
         .saldo-title { 
-            font-size: 0.8rem; 
+            font-size: 0.75rem; 
             color: var(--text-muted); 
             margin-bottom: 2px; 
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .saldo-val { 
-            font-size: 1.8rem; 
+            font-size: 1.6rem; 
             color: var(--primary-gold); 
             font-weight: bold;
             text-shadow: 0 0 10px rgba(217,180,74,0.3);
@@ -157,10 +157,10 @@
             background: var(--green-recargar); 
             color: white; 
             border: none; 
-            padding: 10px 18px; 
+            padding: 8px 15px; 
             border-radius: 8px; 
             font-weight: bold; 
-            font-size: 0.85rem; 
+            font-size: 0.8rem; 
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -169,10 +169,10 @@
             background: var(--pink-jubilado); 
             color: white; 
             border: none; 
-            padding: 10px 18px; 
+            padding: 8px 15px; 
             border-radius: 8px; 
             font-weight: bold; 
-            font-size: 0.85rem; 
+            font-size: 0.8rem; 
             cursor: pointer;
             transition: all 0.3s ease;
         }
@@ -182,8 +182,8 @@
         .section-title { 
             text-align: center; 
             color: var(--text-muted); 
-            font-size: 0.95rem; 
-            margin-bottom: 12px; 
+            font-size: 0.9rem; 
+            margin-bottom: 10px; 
             font-weight: 500;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -197,15 +197,15 @@
         }
         .mesas-grid::-webkit-scrollbar { display: none; }
         .mesa-btn {
-            flex: 0 0 80px; 
+            flex: 0 0 75px; 
             background: #18253c; 
             border: 2px solid #243557; 
             border-radius: 10px; 
-            padding: 10px 4px; 
+            padding: 8px 4px; 
             color: var(--text-main); 
             text-align: center; 
             cursor: pointer; 
-            font-size: 0.75rem; 
+            font-size: 0.7rem; 
             display: flex; 
             flex-direction: column; 
             justify-content: center; 
@@ -213,7 +213,7 @@
             transition: all 0.3s ease;
         }
         .mesa-btn:hover { border-color: var(--primary-gold); background: #1e3050; }
-        .mesa-btn strong { font-size: 0.95rem; }
+        .mesa-btn strong { font-size: 0.9rem; }
         .mesa-btn.active { 
             background: linear-gradient(135deg, var(--primary-gold), #fbbf24); 
             color: #000000; 
@@ -223,115 +223,212 @@
             transform: scale(1.05);
         }
 
-        /* TAPETE Y CARTAS 3D */
-        .tapete-card { 
-            border: 2px solid var(--border-gold); 
-            background: linear-gradient(135deg, #0f182b, #0a1220);
-            border-radius: 1.2rem; 
-            padding: 2rem 1rem;
-            box-shadow: inset 0 0 50px rgba(217,180,74,0.05);
-        }
-        .game-mat { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            margin-bottom: 5px; 
-        }
-        .carta-box { 
-            text-align: center; 
-            flex: 1;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
+        /* ========== MESA DE PÓKER HORIZONTAL ========== */
+        .poker-table {
+            background: radial-gradient(ellipse at center, var(--felt-green) 0%, var(--felt-dark) 100%);
+            border: 8px solid #5c3d2e;
+            border-radius: 50%;
+            padding: 20px 15px;
+            position: relative;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.6),
+                inset 0 0 60px rgba(0,0,0,0.4),
+                0 0 0 12px #3d2517,
+                0 0 0 16px #2a1a0e;
+            margin: 10px 0;
+            min-height: 200px;
         }
         
-        .carta-container { 
-            width: 100%; 
-            max-width: 85px; 
-            height: 125px; 
-            perspective: 1000px; 
-            margin: 0 auto;
+        .poker-table::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 30%;
+            background: radial-gradient(ellipse, rgba(255,215,0,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
         }
-        .carta-inner { 
-            width: 100%; 
-            height: 100%; 
-            position: relative; 
-            transform-style: preserve-3d; 
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
-        }
-        .carta-container.voltear .carta-inner { transform: rotateY(180deg); }
 
-        .carta-front, .carta-back { 
-            position: absolute; 
-            width: 100%; 
-            height: 100%; 
-            backface-visibility: hidden; 
-            border-radius: 10px; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.5); 
+        .players-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        .carta-back {
-            background: radial-gradient(transparent 50%, rgba(0,0,0,0.4)), #991b1b;
-            background-image: radial-gradient(rgba(217,180,74,0.2) 15%, transparent 16%), 
-                            radial-gradient(rgba(217,180,74,0.2) 15%, transparent 16%);
-            background-size: 12px 12px; 
-            background-position: 0 0, 6px 6px; 
-            border: 3px solid #f8fafc; 
+
+        .player-spot {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 90px;
+            max-width: 150px;
         }
-        .carta-front { 
-            background: linear-gradient(135deg, #ffffff, #f1f5f9); 
-            color: #090d16; 
-            transform: rotateY(180deg); 
-            font-size: 1.6rem; 
-            font-weight: 900; 
-            border: 2px solid #cbd5e1; 
+
+        /* CARTAS REDISEÑADAS */
+        .card-wrapper {
+            perspective: 1000px;
+            width: 90px;
+            height: 60px;
+            cursor: pointer;
         }
-        .carta-front .pinta-mini { 
-            position: absolute; 
-            font-size: 0.9rem; 
-            top: 6px; 
-            left: 8px; 
-            font-weight: bold; 
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
         }
-        .carta-front .pinta-centro { 
-            font-size: 2.4rem; 
-            line-height: 1; 
-            margin-top: 2px; 
+
+        .card-wrapper.flipped .card-inner {
+            transform: rotateY(180deg);
         }
-        .carta-label { 
-            font-size: 0.75rem; 
-            margin-top: 10px; 
-            color: var(--text-muted); 
-            width: 100%; 
-            overflow: hidden; 
-            text-overflow: ellipsis; 
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        /* Dorso de la carta - Diseño premium */
+        .card-back {
+            background: linear-gradient(135deg, #1a0a2e 0%, #2d1b4e 50%, #1a0a2e 100%);
+            border: 2px solid #c9a84c;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 40%, rgba(201,168,76,0.1) 40%, rgba(201,168,76,0.1) 60%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, rgba(201,168,76,0.1) 40%, rgba(201,168,76,0.1) 60%, transparent 60%);
+        }
+
+        .card-back-pattern {
+            position: absolute;
+            inset: 4px;
+            border: 2px solid rgba(201,168,76,0.4);
+            border-radius: 4px;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(201,168,76,0.3) 1px, transparent 1px),
+                radial-gradient(circle at 70% 70%, rgba(201,168,76,0.3) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, rgba(201,168,76,0.4) 2px, transparent 2px);
+            background-size: 15px 15px;
+        }
+
+        .card-back-symbol {
+            position: absolute;
+            font-size: 1.4rem;
+            color: rgba(201,168,76,0.6);
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        /* Frente de la carta */
+        .card-front {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 2px solid #dee2e6;
+            transform: rotateY(180deg);
+            padding: 4px;
+        }
+
+        .card-value {
+            font-size: 1.4rem;
+            font-weight: 900;
+            color: #212529;
+            margin-right: 4px;
+        }
+
+        .card-suit {
+            font-size: 1.2rem;
+        }
+
+        .card-corner-top {
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .card-corner-bottom {
+            position: absolute;
+            bottom: 4px;
+            right: 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+            transform: rotate(180deg);
+        }
+
+        .player-name {
+            font-size: 0.7rem;
+            color: #f8f9fa;
+            text-align: center;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.4);
+            padding: 3px 8px;
+            border-radius: 12px;
+            max-width: 120px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .carta-label.ganador {
-            color: #22c55e !important;
-            font-weight: 800;
+
+        .player-name.winner {
+            background: rgba(34, 197, 94, 0.6);
+            animation: pulse 1s infinite;
         }
-        .carta-label.perdedor {
-            color: #f43f5e !important;
+
+        .player-name.loser {
+            background: rgba(244, 63, 94, 0.6);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
         }
 
         /* BOTONES */
         .btn-buscar { 
             background: linear-gradient(135deg, var(--primary-gold), #fbbf24);
             color: #000000; 
-            font-size: 1.2rem; 
+            font-size: 1.1rem; 
             font-weight: bold; 
             border: none; 
-            padding: 16px; 
+            padding: 14px; 
             border-radius: 12px; 
             width: 100%; 
             cursor: pointer; 
-            margin-top: 15px; 
+            margin-top: 12px; 
             text-transform: uppercase; 
             transition: all 0.3s ease;
             letter-spacing: 1px;
@@ -428,9 +525,9 @@
         .admin-panel { 
             background: linear-gradient(135deg, #1a0f0a, #2d1810); 
             border: 2px solid var(--primary-gold); 
-            margin-bottom: 15px; 
+            margin-bottom: 12px; 
             padding: 15px; 
-            border-radius: 1.2rem; 
+            border-radius: 1rem; 
             text-align: center;
             box-shadow: 0 10px 30px rgba(217,180,74,0.2);
         }
@@ -445,12 +542,12 @@
         .admin-grid { 
             display: grid; 
             grid-template-columns: 1fr 1fr; 
-            gap: 10px; 
-            margin-bottom: 15px; 
+            gap: 8px; 
+            margin-bottom: 12px; 
         }
         .admin-stat { 
             background: rgba(19, 28, 46, 0.8); 
-            padding: 12px; 
+            padding: 10px; 
             border-radius: 8px; 
             border: 1px solid #3d2b1f; 
         }
@@ -463,46 +560,46 @@
         }
         .admin-stat strong { 
             display: block; 
-            font-size: 1.3rem; 
+            font-size: 1.2rem; 
             color: var(--green-recargar); 
             margin-top: 5px; 
             font-weight: 700;
         }
         .admin-stat strong.oro { color: var(--primary-gold); }
         
-        /* ADMIN RECARGA SECTION */
         .admin-recarga-section {
             background: rgba(19, 28, 46, 0.8);
-            padding: 15px;
+            padding: 12px;
             border-radius: 8px;
             border: 1px solid var(--primary-gold);
             margin-top: 10px;
         }
         .admin-recarga-section h4 {
             color: var(--primary-gold);
-            margin: 0 0 10px 0;
-            font-size: 0.95rem;
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
         }
         .admin-recarga-controls {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             align-items: flex-end;
         }
         .admin-recarga-controls input {
             flex: 1;
-            padding: 10px;
-            font-size: 0.9rem;
+            padding: 8px;
+            font-size: 0.85rem;
         }
         .btn-admin-recargar {
             background: var(--blue-admin);
             color: white;
             border: none;
-            padding: 10px 15px;
+            padding: 8px 12px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
             white-space: nowrap;
+            font-size: 0.85rem;
         }
         .btn-admin-recargar:hover {
             background: #2563eb;
@@ -511,42 +608,41 @@
 
         .footer-historial { 
             background: #131c2e; 
-            padding: 14px; 
+            padding: 12px; 
             border-radius: 10px; 
             text-align: center; 
-            font-size: 0.9rem; 
+            font-size: 0.85rem; 
             font-weight: bold; 
             color: var(--text-muted); 
-            margin-top: 15px;
+            margin-top: 12px;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         .historial-lista { 
-            max-height: 110px; 
+            max-height: 100px; 
             overflow-y: auto; 
-            margin-top: 10px; 
+            margin-top: 8px; 
             font-weight: normal; 
             text-transform: none;
         }
         .historial-item { 
             display: flex; 
             justify-content: space-between; 
-            padding: 8px 0; 
+            padding: 7px 0; 
             border-bottom: 1px solid #1d2942; 
-            font-size: 0.8rem; 
+            font-size: 0.78rem; 
             color: #cbd5e1; 
             transition: all 0.3s ease;
         }
         .historial-item:hover { background: rgba(217,180,74,0.05); }
 
-        /* RESPONSIVE */
-        @media (max-width: 480px) {
-            .game-mat {
-                flex-direction: column;
-                gap: 20px;
+        @media (max-width: 400px) {
+            .card-wrapper {
+                width: 75px;
+                height: 52px;
             }
-            .admin-recarga-controls {
-                flex-direction: column;
+            .player-spot {
+                min-width: 70px;
             }
         }
     </style>
@@ -556,7 +652,7 @@
 <div class="app-container">
 
     <div id="authView" class="card auth-box">
-        <h2>SUERTEFÁCIL P2P</h2>
+        <h2>🎰 SUERTEFÁCIL P2P</h2>
         
         <div class="auth-tabs">
             <button id="tabLogin" class="tab-btn active">INICIAR SESIÓN</button>
@@ -646,39 +742,63 @@
             </div>
         </div>
 
-        <div class="tapete-card">
-            <div class="game-mat">
-                <div class="carta-box">
-                    <div class="carta-container" id="containerLocal">
-                        <div class="carta-inner">
-                            <div class="carta-back"></div>
-                            <div class="carta-front" id="cartaLocal"></div>
+        <!-- MESA DE PÓKER HORIZONTAL -->
+        <div class="poker-table">
+            <div class="players-row">
+                <!-- Jugador 1 (Local) -->
+                <div class="player-spot">
+                    <div class="card-wrapper" id="cardWrapper1">
+                        <div class="card-inner">
+                            <div class="card-back">
+                                <div class="card-back-pattern"></div>
+                                <div class="card-back-symbol">♠♥</div>
+                            </div>
+                            <div class="card-front" id="cardFront1">
+                                <div class="card-corner-top" id="cornerTop1"></div>
+                                <div class="card-corner-bottom" id="cornerBottom1"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="carta-label" id="lblLocal">Tú</div>
+                    <div class="player-name" id="playerName1">Tú</div>
                 </div>
-                <div class="carta-box">
-                    <div class="carta-container" id="containerRival1">
-                        <div class="carta-inner">
-                            <div class="carta-back"></div>
-                            <div class="carta-front" id="cartaRival1"></div>
+
+                <!-- Jugador 2 -->
+                <div class="player-spot">
+                    <div class="card-wrapper" id="cardWrapper2">
+                        <div class="card-inner">
+                            <div class="card-back">
+                                <div class="card-back-pattern"></div>
+                                <div class="card-back-symbol">♣♦</div>
+                            </div>
+                            <div class="card-front" id="cardFront2">
+                                <div class="card-corner-top" id="cornerTop2"></div>
+                                <div class="card-corner-bottom" id="cornerBottom2"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="carta-label" id="lblRival1">Jugador 1</div>
+                    <div class="player-name" id="playerName2">Esperando...</div>
                 </div>
-                <div class="carta-box">
-                    <div class="carta-container" id="containerRival2">
-                        <div class="carta-inner">
-                            <div class="carta-back"></div>
-                            <div class="carta-front" id="cartaRival2"></div>
+
+                <!-- Jugador 3 -->
+                <div class="player-spot">
+                    <div class="card-wrapper" id="cardWrapper3">
+                        <div class="card-inner">
+                            <div class="card-back">
+                                <div class="card-back-pattern"></div>
+                                <div class="card-back-symbol">♥♠</div>
+                            </div>
+                            <div class="card-front" id="cardFront3">
+                                <div class="card-corner-top" id="cornerTop3"></div>
+                                <div class="card-corner-bottom" id="cornerBottom3"></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="carta-label" id="lblRival2">Jugador 2</div>
+                    <div class="player-name" id="playerName3">Esperando...</div>
                 </div>
             </div>
         </div>
 
-        <button id="btnPlay" class="btn-buscar">BUSCAR PARTIDA ($2k)</button>
+        <button id="btnPlay" class="btn-buscar">🎮 BUSCAR PARTIDA ($2k)</button>
 
         <div class="footer-historial">
             <span>📊 TUS ÚLTIMAS PARTIDAS</span>
@@ -710,7 +830,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off, set, push, update, increment, onDisconnect, runTransaction, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, set, push, update, increment, onDisconnect, runTransaction, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -743,21 +863,29 @@
     const btnRecargar = document.getElementById('btnRecargar');
     const btnRetirar = document.getElementById('btnRetirar');
     const btnPlay = document.getElementById('btnPlay');
-    const containerLocal = document.getElementById('containerLocal');
-    const containerRival1 = document.getElementById('containerRival1');
-    const containerRival2 = document.getElementById('containerRival2');
-    const cartaLocal = document.getElementById('cartaLocal');
-    const cartaRival1 = document.getElementById('cartaRival1');
-    const cartaRival2 = document.getElementById('cartaRival2');
-    const lblLocal = document.getElementById('lblLocal');
-    const lblRival1 = document.getElementById('lblRival1');
-    const lblRival2 = document.getElementById('lblRival2');
     const historialLista = document.getElementById('historialLista');
     const nequiModal = document.getElementById('nequiModal');
     const btnWaConfirm = document.getElementById('btnWaConfirm');
     const btnModalCerrar = document.getElementById('btnModalCerrar');
     const adminPanel = document.getElementById('adminPanel');
     const mesaBotones = document.querySelectorAll('.mesa-btn');
+    
+    // Elementos de las cartas
+    const cardWrapper1 = document.getElementById('cardWrapper1');
+    const cardWrapper2 = document.getElementById('cardWrapper2');
+    const cardWrapper3 = document.getElementById('cardWrapper3');
+    const cardFront1 = document.getElementById('cardFront1');
+    const cardFront2 = document.getElementById('cardFront2');
+    const cardFront3 = document.getElementById('cardFront3');
+    const cornerTop1 = document.getElementById('cornerTop1');
+    const cornerTop2 = document.getElementById('cornerTop2');
+    const cornerTop3 = document.getElementById('cornerTop3');
+    const cornerBottom1 = document.getElementById('cornerBottom1');
+    const cornerBottom2 = document.getElementById('cornerBottom2');
+    const cornerBottom3 = document.getElementById('cornerBottom3');
+    const playerName1 = document.getElementById('playerName1');
+    const playerName2 = document.getElementById('playerName2');
+    const playerName3 = document.getElementById('playerName3');
     
     // Admin elements
     const adminUserEmail = document.getElementById('adminUserEmail');
@@ -771,10 +899,10 @@
     let currentUserId = null;
 
     const pintas = [
-        { icon: '♠', color: '#090d16' }, 
-        { icon: '♥', color: '#ef4444' }, 
-        { icon: '♦', color: '#3b82f6' }, 
-        { icon: '♣', color: '#22c55e' }
+        { icon: '♠', color: '#1a1a1a' }, 
+        { icon: '♥', color: '#dc2626' }, 
+        { icon: '♦', color: '#2563eb' }, 
+        { icon: '♣', color: '#16a34a' }
     ];
     const nombresCartas = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
@@ -802,7 +930,7 @@
             apuestaActual = parseInt(btn.getAttribute('data-apuesta'));
             textoApuesta = btn.getAttribute('data-label'); 
             mesaSeleccionada = btn.getAttribute('data-mesa');
-            if(!btnPlay.disabled) btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            if(!btnPlay.disabled) btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
         });
     });
 
@@ -815,8 +943,8 @@
             
             const username = user.email.split('@')[0];
             txtUsername.innerText = username; 
-            lblLocal.innerText = 'Tú (' + username + ')';
-            lblLocal.classList.remove('ganador', 'perdedor');
+            playerName1.innerText = 'Tú (' + username + ')';
+            playerName1.classList.remove('winner', 'loser');
 
             // Sistema de presencia online
             const myConnectionRef = ref(db, `usuarios_activos/${user.uid}`);
@@ -850,7 +978,6 @@
                     document.getElementById('adminActivosDisplay').innerText = activos ? Object.keys(activos).length : 0;
                 });
 
-                // Recarga de saldo por admin
                 btnAdminRecargar.addEventListener('click', async () => {
                     const userEmail = adminUserEmail.value.trim().toLowerCase();
                     const monto = parseInt(adminMontoRecarga.value);
@@ -860,16 +987,13 @@
                     }
                     
                     try {
-                        // Buscar usuario por email
                         const usuariosRef = ref(db, 'usuarios');
                         const snapshot = await get(usuariosRef);
                         const usuarios = snapshot.val();
                         
                         let userKey = null;
                         for (const key in usuarios) {
-                            const userRef = ref(db, `usuarios/${key}/email`);
-                            const emailSnap = await get(userRef);
-                            if (emailSnap.val() && emailSnap.val().toLowerCase() === userEmail) {
+                            if (usuarios[key].email && usuarios[key].email.toLowerCase() === userEmail) {
                                 userKey = key;
                                 break;
                             }
@@ -883,7 +1007,6 @@
                             saldo: increment(monto)
                         });
                         
-                        // Registrar en historial del admin
                         await push(ref(db, 'adminData/recargas_realizadas'), {
                             adminId: currentUserId,
                             userId: userKey,
@@ -908,7 +1031,6 @@
                 if(usuariosActivosRef) off(usuariosActivosRef);
             }
 
-            // Referencia al saldo del usuario
             saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
             onValue(saldoRef, (snapshot) => {
                 saldoActual = snapshot.val() !== null ? snapshot.val() : 0;
@@ -920,7 +1042,6 @@
                 }
             });
 
-            // Historial del usuario
             historialRef = ref(db, `usuarios/${user.uid}/historial`);
             onValue(historialRef, (snapshot) => {
                 historialLista.innerHTML = ""; 
@@ -954,7 +1075,6 @@
         }
     });
 
-    // Acción de login/registro
     btnAction.addEventListener('click', async () => {
         const email = emailInput.value.trim(); 
         const pass = passInput.value;
@@ -1004,7 +1124,6 @@
         }
     });
 
-    // Modal de recarga
     btnRecargar.addEventListener('click', () => nequiModal.classList.remove('hidden'));
     btnModalCerrar.addEventListener('click', () => nequiModal.classList.add('hidden'));
     
@@ -1022,29 +1141,30 @@
         }
     });
 
-    // SISTEMA DE JUEGO MULTIJUGADOR (3 jugadores)
     function generarCartaRandom() {
         const valorIdx = Math.floor(Math.random() * nombresCartas.length);
         const pinta = pintas[Math.floor(Math.random() * pintas.length)];
         return { peso: valorIdx, texto: nombresCartas[valorIdx], pinta: pinta };
     }
 
-    function renderCardDOM(elementoDOM, carta) {
+    function renderCardDOM(cornerTop, cornerBottom, carta) {
         if (!carta) {
-            elementoDOM.innerHTML = '';
+            cornerTop.innerHTML = '';
+            cornerBottom.innerHTML = '';
             return;
         }
-        elementoDOM.innerHTML = `
-            <div class="pinta-mini" style="color: ${carta.pinta.color}">${carta.texto}</div>
-            <div style="font-size:1.8rem; margin-top:-10px; color: #090d16;">${carta.texto}</div>
-            <div class="pinta-centro" style="color: ${carta.pinta.color}">${carta.pinta.icon}</div>
+        const cardHTML = `
+            <span style="color:${carta.pinta.color}">${carta.texto}</span>
+            <span style="color:${carta.pinta.color}; font-size:0.6rem;">${carta.pinta.icon}</span>
         `;
+        cornerTop.innerHTML = cardHTML;
+        cornerBottom.innerHTML = cardHTML;
     }
 
     function limpiarEtiquetas() {
-        lblLocal.classList.remove('ganador', 'perdedor');
-        lblRival1.classList.remove('ganador', 'perdedor');
-        lblRival2.classList.remove('ganador', 'perdedor');
+        [playerName1, playerName2, playerName3].forEach(el => {
+            el.classList.remove('winner', 'loser');
+        });
     }
 
     btnPlay.addEventListener('click', async () => {
@@ -1056,11 +1176,10 @@
         
         const lobbyRef = ref(db, `lobbies/${mesaSeleccionada}`);
 
-        // Cancelar búsqueda
         if (esperandoPartida) {
             await set(lobbyRef, null);
             esperandoPartida = false;
-            btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
             btnPlay.classList.remove('cancelando');
             btnPlay.disabled = false;
             return;
@@ -1071,16 +1190,15 @@
         btnPlay.classList.add('cancelando');
         esperandoPartida = true;
 
-        // Resetear cartas
-        [containerLocal, containerRival1, containerRival2].forEach(c => c.classList.remove('voltear'));
+        [cardWrapper1, cardWrapper2, cardWrapper3].forEach(c => c.classList.remove('flipped'));
         limpiarEtiquetas();
-        lblRival1.innerText = "Buscando...";
-        lblRival2.innerText = "Buscando...";
+        playerName2.innerText = "Buscando...";
+        playerName3.innerText = "Buscando...";
+        renderCardDOM(cornerTop2, cornerBottom2, null);
+        renderCardDOM(cornerTop3, cornerBottom3, null);
 
-        // Sistema de sala de espera con transacción
         const result = await runTransaction(lobbyRef, (lobby) => {
             if (!lobby) {
-                // Crear nueva sala
                 return {
                     host: { uid: currentUserId, username: txtUsername.innerText },
                     jugadores: [currentUserId],
@@ -1088,18 +1206,16 @@
                     creado: Date.now()
                 };
             } else if (lobby.estado === 'esperando' && lobby.jugadores && lobby.jugadores.length < 3) {
-                // Unirse a sala existente
                 if (!lobby.jugadores.includes(currentUserId)) {
                     lobby.jugadores.push(currentUserId);
                     
-                    // Si ya hay 3 jugadores, iniciar partida
                     if (lobby.jugadores.length === 3) {
                         lobby.estado = 'jugando';
                     }
                 }
                 return lobby;
             }
-            return lobby; // No modificar si ya está llena o jugando
+            return lobby;
         });
 
         const lobbyData = result.snapshot.val();
@@ -1108,32 +1224,28 @@
             esperandoPartida = false;
             btnPlay.disabled = false;
             btnPlay.classList.remove('cancelando');
-            btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
             return alert("❌ Error al conectar con la sala.");
         }
 
-        // Escuchar cambios en el lobby
         const lobbyListener = onValue(lobbyRef, async (snap) => {
             const data = snap.val();
             
             if (!data || !data.jugadores) {
-                // Lobby eliminado
                 off(lobbyRef, lobbyListener);
                 if (esperandoPartida) {
                     esperandoPartida = false;
                     btnPlay.disabled = false;
                     btnPlay.classList.remove('cancelando');
-                    btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+                    btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
                 }
                 return;
             }
 
-            // Actualizar UI con jugadores conectados
             const jugadores = data.jugadores || [];
-            if (jugadores.length >= 1) lblRival1.innerText = "Jugador 1 listo ✅";
-            if (jugadores.length >= 2) lblRival2.innerText = "Jugador 2 listo ✅";
+            if (jugadores.length >= 1) playerName2.innerText = "Jugador 1 listo ✅";
+            if (jugadores.length >= 2) playerName3.innerText = "Jugador 2 listo ✅";
 
-            // Si la partida está lista para jugar (3 jugadores)
             if (data.estado === 'jugando' && data.matchId && jugadores.length === 3) {
                 off(lobbyRef, lobbyListener);
                 esperandoPartida = false;
@@ -1144,7 +1256,6 @@
             }
         });
 
-        // Si soy el host y no hay suficientes jugadores, configurar timeout
         if (lobbyData.host && lobbyData.host.uid === currentUserId && lobbyData.jugadores.length < 3) {
             setTimeout(async () => {
                 const currentLobby = await get(lobbyRef);
@@ -1155,11 +1266,11 @@
                         esperandoPartida = false;
                         btnPlay.disabled = false;
                         btnPlay.classList.remove('cancelando');
-                        btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+                        btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
                         alert("⏰ Tiempo de espera agotado. No se encontraron suficientes jugadores.");
                     }
                 }
-            }, 30000); // 30 segundos de timeout
+            }, 30000);
         }
     });
 
@@ -1173,49 +1284,41 @@
         
         if(!matchData || !matchData.jugadores) {
             btnPlay.disabled = false;
-            btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
             return alert("❌ Error en la partida.");
         }
 
-        // Encontrar mis datos en la partida
         const jugadores = matchData.jugadores;
         const miPosicion = jugadores.findIndex(j => j.uid === currentUserId);
         
         if (miPosicion === -1) {
             btnPlay.disabled = false;
-            btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+            btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
             return;
         }
 
         const miCarta = jugadores[miPosicion].carta;
-        
-        // Configurar rivales
         const rivales = jugadores.filter(j => j.uid !== currentUserId);
         
-        lblLocal.innerText = `Tú (${jugadores[miPosicion].username})`;
-        lblRival1.innerText = rivales[0] ? rivales[0].username : '';
-        lblRival2.innerText = rivales[1] ? rivales[1].username : '';
+        playerName1.innerText = `Tú (${jugadores[miPosicion].username})`;
+        playerName2.innerText = rivales[0] ? rivales[0].username : '';
+        playerName3.innerText = rivales[1] ? rivales[1].username : '';
 
-        // Renderizar cartas
-        renderCardDOM(cartaLocal, miCarta);
-        if (rivales[0]) renderCardDOM(cartaRival1, rivales[0].carta);
-        if (rivales[1]) renderCardDOM(cartaRival2, rivales[1].carta);
+        renderCardDOM(cornerTop1, cornerBottom1, miCarta);
+        if (rivales[0]) renderCardDOM(cornerTop2, cornerBottom2, rivales[0].carta);
+        if (rivales[1]) renderCardDOM(cornerTop3, cornerBottom3, rivales[1].carta);
 
-        // Animación de volteo
         setTimeout(() => {
             btnPlay.innerText = "🎯 ¡REVELANDO CARTAS!";
-            [containerLocal, containerRival1, containerRival2].forEach(c => c.classList.add('voltear'));
+            [cardWrapper1, cardWrapper2, cardWrapper3].forEach(c => c.classList.add('flipped'));
             
-            // Determinar ganador
             setTimeout(async () => {
                 const pesos = jugadores.map(j => j.carta.peso);
                 const maxPeso = Math.max(...pesos);
                 const ganadores = jugadores.filter(j => j.carta.peso === maxPeso);
                 
-                // Si hay empate, gana el de mayor valor numérico de carta
                 let ganadorFinal = ganadores[0];
                 if (ganadores.length > 1) {
-                    // Desempate por valor de pinta (♠ > ♥ > ♦ > ♣)
                     const ordenPintas = { '♠': 4, '♥': 3, '♦': 2, '♣': 1 };
                     ganadorFinal = ganadores.reduce((prev, curr) => {
                         return (ordenPintas[curr.carta.pinta.icon] || 0) > (ordenPintas[prev.carta.pinta.icon] || 0) ? curr : prev;
@@ -1224,28 +1327,27 @@
 
                 const yoGane = ganadorFinal.uid === currentUserId;
                 const comision = apuestaActual * 0.10;
-                const gananciaBruta = apuestaActual * 3; // 3 jugadores
+                const gananciaBruta = apuestaActual * 3;
                 const gananciaNeta = gananciaBruta - comision;
 
-                // Actualizar UI
                 limpiarEtiquetas();
                 if (yoGane) {
-                    lblLocal.classList.add('ganador');
-                    lblRival1.classList.add('perdedor');
-                    lblRival2.classList.add('perdedor');
-                    lblLocal.innerText = `🏆 GANADOR (+$${gananciaNeta.toLocaleString()})`;
+                    playerName1.classList.add('winner');
+                    playerName2.classList.add('loser');
+                    playerName3.classList.add('loser');
+                    playerName1.innerText = `🏆 GANADOR (+$${gananciaNeta.toLocaleString()})`;
                 } else {
-                    lblLocal.classList.add('perdedor');
-                    // Marcar al ganador
+                    playerName1.classList.add('loser');
                     if (rivales[0] && rivales[0].uid === ganadorFinal.uid) {
-                        lblRival1.classList.add('ganador');
+                        playerName2.classList.add('winner');
+                        playerName2.innerText = `🏆 ${playerName2.innerText}`;
                     }
                     if (rivales[1] && rivales[1].uid === ganadorFinal.uid) {
-                        lblRival2.classList.add('ganador');
+                        playerName3.classList.add('winner');
+                        playerName3.innerText = `🏆 ${playerName3.innerText}`;
                     }
                 }
 
-                // Actualizar saldo en Firebase
                 try {
                     if (yoGane) {
                         await update(ref(db, `usuarios/${currentUserId}`), { 
@@ -1271,7 +1373,6 @@
                         });
                     }
 
-                    // Actualizar estadísticas admin (solo el ganador lo hace para evitar duplicados)
                     if (yoGane) {
                         await update(ref(db, 'adminData'), {
                             total_comisiones: increment(comision),
@@ -1280,7 +1381,6 @@
                         });
                     }
 
-                    // Limpiar datos de la partida después de un tiempo
                     setTimeout(async () => {
                         await set(ref(db, `matches/${matchId}`), null);
                         await set(ref(db, `lobbies/${mesaSeleccionada}`), null);
@@ -1294,22 +1394,20 @@
                 
                 setTimeout(() => {
                     btnPlay.disabled = false;
-                    btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
+                    btnPlay.innerText = `🎮 BUSCAR PARTIDA (${textoApuesta})`;
                     currentMatchId = null;
                     
-                    // Resetear cartas
-                    [containerLocal, containerRival1, containerRival2].forEach(c => c.classList.remove('voltear'));
+                    [cardWrapper1, cardWrapper2, cardWrapper3].forEach(c => c.classList.remove('flipped'));
                     limpiarEtiquetas();
-                    lblLocal.innerText = 'Tú';
-                    lblRival1.innerText = 'Jugador 1';
-                    lblRival2.innerText = 'Jugador 2';
+                    playerName1.innerText = 'Tú';
+                    playerName2.innerText = 'Jugador 1';
+                    playerName3.innerText = 'Jugador 2';
                 }, 3000);
 
             }, 1500);
         }, 1000);
     }
 
-    // Limpiar al cerrar
     window.addEventListener('beforeunload', () => {
         if (currentUserId) {
             set(ref(db, `usuarios_activos/${currentUserId}`), null);
