@@ -194,18 +194,12 @@ const mode1v1=document.getElementById('mode1v1'),mode3p=document.getElementById(
 let currentUserId=null,currentUsername='',currentAlias='',saldoActual=0,apuestaActual=2000,modoJuego='1v1',esperandoPartida=false,currentMatchId=null,codigoAcceso='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nombresCartas=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MAX_JUGADORES={'1v1':2,'3p':3};
 
-// ===== SISTEMA DE BILLETERA CENTRALIZADA (Como BetPlay/PokerStars) =====
-// El saldo SOLO se modifica a través de estas 2 funciones. Nada más toca el saldo.
+// ===== SISTEMA DE BILLETERA CENTRALIZADA =====
 async function cargarSaldo(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0}
 async function modificarSaldo(uid,monto,concepto){
     const saldoRef=ref(db,`usuarios/${uid}/saldo`);
-    await runTransaction(saldoRef,(s)=>{
-        const nuevo=(s||0)+monto;
-        if(nuevo<0)throw new Error('Saldo insuficiente');
-        return nuevo;
-    });
-    // Registrar auditoría
-    await push(ref(db,`auditoria/${uid}`),{monto,concepto,timestamp:Date.now(),saldoResultante:await cargarSaldo(uid)});
+    await runTransaction(saldoRef,(s)=>{const nuevo=(s||0)+monto;if(nuevo<0)throw new Error('Saldo insuficiente');return nuevo});
+    await push(ref(db,`auditoria/${uid}`),{monto,concepto,timestamp:Date.now()});
 }
 
 // ===== TABS =====
@@ -254,18 +248,15 @@ onAuthStateChanged(auth,async(user)=>{
             onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0});
             onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length});
             const cfg=(await get(ref(db,'configuracion'))).val()||{};configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
-            // RECARGA ADMIN (único punto que modifica saldo manualmente)
             btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);adminUserEmail.value='';adminMontoRecarga.value=''}catch(error){alert('❌ Error: '+error.message)}};
         }else{adminPanel.classList.add('hidden')}
 
-        // LEER SALDO (solo lectura, nunca modifica)
         onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('low','zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!'}else if(saldoActual<apuestaActual){saldoDisplay.classList.add('low')}});
         onValue(ref(db,`usuarios/${user.uid}/historial`),snap=>{historialBody.innerHTML='';const d=snap.val();if(d){Object.values(d).reverse().slice(0,10).forEach(i=>{const w=i.resultado==='GANÓ';historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`})}else historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>'});
         onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS});
     }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');verificarAcceso()}
 });
 
-// ===== AUTH ACTION =====
 btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias');btnAction.disabled=true;try{if(tabLogin.classList.contains('active'))await signInWithEmailAndPassword(auth,em,pw);else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});alert('¡Bienvenido a Royal High, '+alias+'!')}}catch(e){alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'))}btnAction.disabled=false});
 btnLogout.addEventListener('click',()=>signOut(auth));
 btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
@@ -277,7 +268,7 @@ function generarCarta(){const seed=Date.now()%1000;const vi=Math.floor((Math.ran
 function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h}
 function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`});h+='</div>';tableContent.innerHTML=h}
 
-// ===== EMPAREJAMIENTO (NO TOCA SALDO) =====
+// ===== EMPAREJAMIENTO =====
 btnPlay.addEventListener('click',async()=>{
     if(!currentUserId)return;
     const saldoReal=await cargarSaldo(currentUserId);
@@ -295,7 +286,7 @@ btnPlay.addEventListener('click',async()=>{
 
 function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{})}
 
-// ===== PARTIDA - ÚNICO PUNTO QUE MODIFICA SALDO =====
+// ===== PARTIDA CON ESCUDO Y MATEMÁTICA REAL =====
 async function ejecutarPartida(matchId,lobbyData){
     currentMatchId=matchId;btnPlay.textContent='Repartiendo...';
     const matchSnap=await get(ref(db,`matches/${matchId}`));let matchData=matchSnap.val();
@@ -304,17 +295,24 @@ async function ejecutarPartida(matchId,lobbyData){
     const totalPot=apuestaActual*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores,labels);
     setTimeout(()=>{btnPlay.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
         setTimeout(async()=>{
+            // 🚨 ESCUDO CONTRA FANTASMAS
+            const miIdxVerificar=jugadores.findIndex(j=>j.uid===currentUserId);
+            if(miIdxVerificar===-1){console.warn('Espectador detectado. No se altera el saldo.');resetSearch();return}
+
             const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
             if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a)}
-            const yoGane=ganador.uid===currentUserId,comision=jugadores.length===2?Math.floor(apuestaActual*0.05):Math.floor(apuestaActual*0.10),ganancia=totalPot-comision;
+            const yoGane=ganador.uid===currentUserId,comision=jugadores.length===2?Math.floor(apuestaActual*0.05):Math.floor(apuestaActual*0.10);
+            
+            // 🚨 MATEMÁTICA REAL: Ganancia = (Pozo - Tu apuesta) - Comisión
+            const gananciaNetaReal=(totalPot-apuestaActual)-comision;
+
             if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600)}
             jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i]}else if(j.uid===currentUserId)lbl.classList.add('loser')});
 
-            // ÚNICO PUNTO QUE MODIFICA EL SALDO
             try{
                 if(yoGane){
-                    await modificarSaldo(currentUserId,ganancia,'Ganó partida');
-                    await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});
+                    await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida');
+                    await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:gananciaNetaReal,timestamp:Date.now(),matchId});
                     await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});
                 }else{
                     await modificarSaldo(currentUserId,-apuestaActual,'Perdió partida');
