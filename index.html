@@ -55,55 +55,32 @@
         .app-container { width: 100%; max-width: 460px; }
         .hidden { display: none !important; }
 
-        /* ========== RECUPERAR CONTRASEÑA ========== */
         .recovery-screen {
-            background: var(--bg-card);
-            padding: 2.5rem 1.8rem;
-            border-radius: var(--radius-xl);
-            text-align: center;
-            margin-top: 40px;
-            border: 1px solid var(--border-subtle);
+            background: var(--bg-card); padding: 2.5rem 1.8rem; border-radius: var(--radius-xl);
+            text-align: center; margin-top: 40px; border: 1px solid var(--border-subtle);
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
         .recovery-icon { font-size: 2.5rem; margin-bottom: 1rem; }
         .recovery-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
         .recovery-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4; }
         .recovery-success { color: var(--success); font-size: 0.8rem; margin-bottom: 10px; min-height: 20px; }
-        .btn-back {
-            background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted);
-            padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600;
-            font-size: 0.8rem; cursor: pointer; transition: all 0.2s; margin-top: 8px;
-        }
+        .btn-back { background: transparent; border: 1px solid var(--border-subtle); color: var(--text-muted); padding: 10px 20px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; margin-top: 8px; }
         .btn-back:hover { border-color: var(--text-muted); color: var(--text-main); }
 
-        /* ========== CODIGO DE ACCESO ========== */
         .access-screen {
-            background: var(--bg-card);
-            padding: 2.5rem 1.8rem;
-            border-radius: var(--radius-xl);
-            text-align: center;
-            margin-top: 40px;
-            border: 1px solid var(--gold-border);
+            background: var(--bg-card); padding: 2.5rem 1.8rem; border-radius: var(--radius-xl);
+            text-align: center; margin-top: 40px; border: 1px solid var(--gold-border);
             box-shadow: 0 8px 32px rgba(0,0,0,0.5);
         }
         .access-icon { font-size: 3rem; margin-bottom: 1rem; }
         .access-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-main); }
         .access-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.4; }
-        .access-input {
-            width: 100%; padding: 14px; border-radius: var(--radius-sm);
-            border: 1px solid var(--border-subtle); background: var(--bg-input);
-            color: var(--text-main); font-size: 1.2rem; text-align: center;
-            letter-spacing: 8px; margin-bottom: 12px; transition: all 0.2s;
-        }
+        .access-input { width: 100%; padding: 14px; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); background: var(--bg-input); color: var(--text-main); font-size: 1.2rem; text-align: center; letter-spacing: 8px; margin-bottom: 12px; transition: all 0.2s; }
         .access-input:focus { outline: none; border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.15); }
         .access-error { color: var(--danger); font-size: 0.75rem; margin-bottom: 8px; min-height: 20px; }
         .access-info { font-size: 0.7rem; color: var(--text-muted); margin-top: 14px; }
         .access-info span { color: var(--gold); font-weight: 600; }
-        .jornada-status {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 6px 14px; border-radius: 20px; font-size: 0.72rem;
-            font-weight: 600; margin-bottom: 16px;
-        }
+        .jornada-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; margin-bottom: 16px; }
         .jornada-status.active { background: rgba(22,163,74,0.12); color: var(--success); border: 1px solid rgba(22,163,74,0.3); }
         .jornada-status.inactive { background: rgba(220,38,38,0.12); color: var(--danger); border: 1px solid rgba(220,38,38,0.3); }
         .jornada-dot { width: 7px; height: 7px; border-radius: 50%; }
@@ -111,7 +88,6 @@
         .jornada-status.inactive .jornada-dot { background: var(--danger); }
         @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-        /* ========== AUTH SCREEN ========== */
         .auth-screen {
             background: var(--bg-card); padding: 2.2rem 1.5rem; border-radius: var(--radius-xl);
             text-align: center; margin-top: 30px; border: 1px solid var(--border-subtle);
@@ -129,13 +105,9 @@
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-gold { background: var(--gold); color: #0B1121; }
         .btn-gold:hover { background: #b8963a; box-shadow: 0 4px 20px rgba(201,168,76,0.3); }
-        .forgot-link {
-            display: block; margin-top: 14px; font-size: 0.72rem; color: var(--text-muted);
-            cursor: pointer; transition: color 0.2s; background: none; border: none; text-decoration: underline;
-        }
+        .forgot-link { display: block; margin-top: 14px; font-size: 0.72rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; background: none; border: none; text-decoration: underline; }
         .forgot-link:hover { color: var(--primary); }
 
-        /* ========== HEADER UNIFICADO ========== */
         .unified-header {
             background: var(--bg-card); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px;
             display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border: 1px solid var(--border-subtle); box-shadow: 0 4px 16px rgba(0,0,0,0.3);
@@ -157,7 +129,6 @@
         .btn-out { background: transparent; color: var(--text-muted); border: 1px solid var(--border-subtle); }
         .btn-out:hover { border-color: var(--danger); color: var(--danger); }
 
-        /* ========== COMMUNITY BAR ========== */
         .community-bar {
             background: var(--bg-card); border-radius: var(--radius-md); padding: 10px 14px; margin-bottom: 10px;
             display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid var(--border-subtle);
@@ -171,7 +142,6 @@
         .membership-mini { margin-left: auto; font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; }
         .membership-mini strong { color: var(--primary); }
 
-        /* ========== POZO ========== */
         .pot-container {
             background: var(--bg-card); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 10px;
             text-align: center; border: 1px solid var(--gold-border);
@@ -181,7 +151,6 @@
         .pot-amount.pot-won { animation: pot-pulse 0.5s ease-out; }
         @keyframes pot-pulse { 0%{transform:scale(1)} 50%{transform:scale(1.15); color:#e8c97a} 100%{transform:scale(1)} }
 
-        /* ========== GAME TABLE ========== */
         .game-table-main {
             background: var(--bg-card); border-radius: var(--radius-lg); padding: 18px 12px; margin-bottom: 10px;
             border: 1px solid var(--border-subtle); text-align: center; min-height: 150px;
@@ -210,7 +179,6 @@
         .table-empty-msg { color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; }
         .table-empty-msg strong { color: var(--primary); }
 
-        /* ========== SEARCH ========== */
         .search-inline { display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; }
         .search-player { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .search-avatar { width: 50px; height: 50px; border-radius: 50%; background: var(--bg-input); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border: 2.5px solid var(--border-subtle); transition: all 0.3s; }
@@ -220,7 +188,6 @@
         .search-name { font-size: 0.68rem; color: var(--text-secondary); max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .search-progress-inline { font-size: 0.72rem; color: var(--text-muted); margin-top: 10px; font-weight: 500; }
 
-        /* ========== CONTROLS ========== */
         .controls-section {
             background: var(--bg-card); border-radius: var(--radius-lg); padding: 15px; margin-bottom: 10px;
             border: 1px solid var(--border-subtle); box-shadow: 0 4px 16px rgba(0,0,0,0.3);
@@ -239,7 +206,6 @@
         .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
         .btn-cta.canceling { background: var(--danger); color: #fff; }
 
-        /* ========== HISTORY ========== */
         .history-collapsible { background: var(--bg-card); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 10px; border: 1px solid var(--border-subtle); }
         .history-header { padding: 13px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
         .history-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); font-weight: 600; }
@@ -256,16 +222,15 @@
         .amount-lose { color: var(--danger); }
         .history-empty { text-align: center; color: var(--text-muted); font-size: 0.72rem; padding: 12px 0; }
 
-        /* ========== MODAL ========== */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; justify-content: center; align-items: center; z-index: 100; padding: 16px; }
         .modal-content { background: var(--bg-card); padding: 24px; border-radius: var(--radius-lg); width: 100%; max-width: 370px; text-align: center; border: 1px solid var(--gold-border); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
         .modal-title { font-weight: 700; font-size: 1.05rem; color: var(--text-main); margin-bottom: 12px; }
-        .nequi-number { background: var(--bg-input); padding: 13px; border-radius: var(--radius-sm); font-size: 1.25rem; font-weight: 700; color: #E11D48; margin: 12px 0; letter-spacing: 1px; border: 1.5px solid #E11D48; }
+        .nequi-number { background: var(--bg-input); padding: 13px; border-radius: var(--radius-sm); font-size: 1.25rem; font-weight: 700; color: #E11D48; margin: 12px 0; letter-spacing: 1px; border: 1.5px solid #E11D48; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .nequi-logo { background: #E11D48; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: 900; font-size: 0.75rem; }
         .btn-wa { width: 100%; padding: 13px; background: var(--success); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 0.88rem; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px; }
         .btn-wa:hover { background: #15803D; }
         .btn-modal-close { background: none; border: none; color: var(--text-muted); margin-top: 10px; cursor: pointer; font-size: 0.78rem; padding: 6px; }
 
-        /* ========== ADMIN ========== */
         .admin-panel { background: var(--bg-card); border: 1.5px solid var(--gold); border-radius: var(--radius-md); padding: 15px; margin-bottom: 10px; }
         .admin-title { color: var(--gold); font-weight: 700; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
         .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 12px; }
@@ -303,94 +268,68 @@
 
 <div class="app-container">
 
-    <!-- PANTALLA DE RECUPERACIÓN DE CONTRASEÑA -->
     <div id="recoveryView" class="recovery-screen hidden">
         <div class="recovery-icon">📧</div>
         <div class="recovery-title">Recuperar Contraseña</div>
-        <div class="recovery-subtitle">Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.</div>
-        <input type="email" id="recoveryEmail" class="auth-input" placeholder="Correo electrónico" autocomplete="email">
+        <div class="recovery-subtitle">Ingresa tu correo y te enviaremos un enlace.</div>
+        <input type="email" id="recoveryEmail" class="auth-input" placeholder="Correo electrónico">
         <div class="recovery-success" id="recoveryMsg"></div>
         <button id="btnRecovery" class="btn-primary">Enviar enlace</button>
-        <button id="btnBackToLogin" class="btn-back">← Volver al inicio de sesión</button>
+        <button id="btnBackToLogin" class="btn-back">← Volver al inicio</button>
     </div>
 
-    <!-- PANTALLA DE ACCESO (CÓDIGO) - SOLO USUARIOS -->
     <div id="accessView" class="access-screen hidden">
         <div class="access-icon">🔐</div>
         <div class="access-title">Código de Acceso</div>
-        <div class="access-subtitle">Ingresa el código de la jornada para continuar</div>
-        <div class="jornada-status" id="jornadaStatus">
-            <span class="jornada-dot"></span>
-            <span id="jornadaStatusText">Verificando...</span>
-        </div>
-        <input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4" autocomplete="off" inputmode="numeric" pattern="[0-9]*">
+        <div class="access-subtitle">Ingresa el código de la jornada</div>
+        <div class="jornada-status" id="jornadaStatus"><span class="jornada-dot"></span><span id="jornadaStatusText">Verificando...</span></div>
+        <input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4" inputmode="numeric">
         <div class="access-error" id="accessError"></div>
         <button id="btnAccess" class="btn-primary btn-gold">Ingresar</button>
-        <div class="access-info">
-            Horario: <span id="accessSchedule">--:-- a --:--</span>
-        </div>
+        <div class="access-info">Horario: <span id="accessSchedule">--:--</span></div>
     </div>
 
-    <!-- AUTH SCREEN -->
     <div id="authView" class="auth-screen">
         <div class="auth-logo">Suerte<span>Fácil</span></div>
         <div class="auth-tabs">
             <button id="tabLogin" class="auth-tab active">Iniciar sesión</button>
             <button id="tabRegister" class="auth-tab">Registrarse</button>
         </div>
-        <input type="email" id="email" class="auth-input" placeholder="Correo electrónico" autocomplete="email">
-        <input type="password" id="pass" class="auth-input" placeholder="Contraseña" autocomplete="current-password">
+        <input type="email" id="email" class="auth-input" placeholder="Correo electrónico">
+        <input type="password" id="pass" class="auth-input" placeholder="Contraseña">
         <button id="btnAction" class="btn-primary">Ingresar</button>
         <button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button>
     </div>
 
-    <!-- GAME VIEW -->
     <div id="gameView" class="hidden">
-
-        <!-- ADMIN PANEL -->
         <div id="adminPanel" class="admin-panel hidden">
             <div class="admin-title">✦ Panel de Control</div>
             <div class="admin-stats">
                 <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
                 <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div>
-                    <button class="admin-stat-reset" id="btnResetComision" title="Reiniciar a cero">↺</button>
-                </div>
-                <div class="admin-stat">
-                    <div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div>
-                    <button class="admin-stat-reset" id="btnResetMovido" title="Reiniciar a cero">↺</button>
-                </div>
+                <div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div><button class="admin-stat-reset" id="btnResetComision">↺</button></div>
+                <div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div><button class="admin-stat-reset" id="btnResetMovido">↺</button></div>
             </div>
             <div class="admin-recarga">
                 <input type="email" id="adminUserEmail" placeholder="Email" style="max-width:150px;">
                 <input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:90px;">
                 <button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button>
             </div>
-            <div class="admin-reset-row">
-                <button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos a $0</button>
-            </div>
+            <div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos a $0</button></div>
             <div class="admin-config">
-                <div class="admin-config-title">⚙️ Configuración de Jornada</div>
-                <div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4" placeholder="4927"></div>
-                <div class="config-row"><label>Inicio:</label><input type="time" id="configHoraInicio" value="20:00"></div>
-                <div class="config-row"><label>Fin:</label><input type="time" id="configHoraFin" value="22:00"></div>
+                <div class="admin-config-title">⚙️ Jornada</div>
+                <div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4"></div>
+                <div class="config-row"><label>Inicio:</label><input type="time" id="configHoraInicio"></div>
+                <div class="config-row"><label>Fin:</label><input type="time" id="configHoraFin"></div>
                 <div class="config-row"><label>Activa:</label><input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;"></div>
                 <button id="btnConfigSave" class="btn-config-save">💾 Guardar</button>
             </div>
         </div>
 
-        <!-- HEADER -->
         <div class="unified-header">
             <div class="avatar" id="userAvatar">D</div>
-            <div class="user-info">
-                <div class="user-name" id="txtUsername">Usuario</div>
-                <div class="user-status"><span class="status-dot"></span> En línea</div>
-            </div>
-            <div class="balance-mini">
-                <div class="balance-mini-label">Saldo</div>
-                <div class="balance-mini-amount" id="saldoDisplay">$0</div>
-            </div>
+            <div class="user-info"><div class="user-name" id="txtUsername">Usuario</div><div class="user-status"><span class="status-dot"></span>En línea</div></div>
+            <div class="balance-mini"><div class="balance-mini-label">Saldo</div><div class="balance-mini-amount" id="saldoDisplay">$0</div></div>
             <div class="header-actions">
                 <button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button>
                 <button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button>
@@ -398,28 +337,19 @@
             </div>
         </div>
 
-        <!-- COMMUNITY -->
         <div class="community-bar">
             <div class="comm-stats">
-                <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
-                <div class="comm-stat"><span class="comm-dot blue"></span> <span id="statPlaying">0</span> jugando</div>
-                <div class="comm-stat"><span class="comm-dot amber"></span> <span id="statWaiting">0</span> esperando</div>
+                <div class="comm-stat"><span class="comm-dot green"></span><span id="statOnline">0</span> en línea</div>
+                <div class="comm-stat"><span class="comm-dot blue"></span><span id="statPlaying">0</span> jugando</div>
+                <div class="comm-stat"><span class="comm-dot amber"></span><span id="statWaiting">0</span> esperando</div>
             </div>
             <div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div>
         </div>
 
-        <!-- POZO -->
-        <div class="pot-container">
-            <div class="pot-label">Pozo acumulado</div>
-            <div class="pot-amount" id="potAmount">$0</div>
-        </div>
+        <div class="pot-container"><div class="pot-label">Pozo acumulado</div><div class="pot-amount" id="potAmount">$0</div></div>
 
-        <!-- MESA -->
-        <div class="game-table-main" id="gameTableMain">
-            <div class="table-felt"><div id="tableContent"><div class="table-empty-msg">Selecciona modalidad y presiona<br><strong>Buscar Partida</strong></div></div></div>
-        </div>
+        <div class="game-table-main"><div class="table-felt"><div id="tableContent"><div class="table-empty-msg">Selecciona modalidad<br><strong>Buscar Partida</strong></div></div></div></div>
 
-        <!-- CONTROLES -->
         <div class="controls-section">
             <div class="section-label">Modalidad</div>
             <div class="mode-row">
@@ -427,7 +357,7 @@
                 <div class="mode-chip" id="mode3p" data-mode="3p">👥 3 Jugadores</div>
             </div>
             <div class="section-label">Apuesta</div>
-            <div class="bet-row" id="betRow">
+            <div class="bet-row">
                 <div class="bet-chip selected" data-apuesta="2000">$2K</div>
                 <div class="bet-chip" data-apuesta="4000">$4K</div>
                 <div class="bet-chip" data-apuesta="8000">$8K</div>
@@ -437,21 +367,18 @@
             <button id="btnPlay" class="btn-cta">Buscar Partida</button>
         </div>
 
-        <!-- HISTORIAL -->
-        <div class="history-collapsible" id="historyCollapsible">
-            <div class="history-header" id="historyHeader"><span class="history-title">📊 Historial de partidas</span><span class="history-arrow">▼</span></div>
+        <div class="history-collapsible">
+            <div class="history-header"><span class="history-title">📊 Historial</span><span class="history-arrow">▼</span></div>
             <div class="history-body"><table class="history-table"><thead><tr><th>Resultado</th><th>Mesa</th><th>Monto</th></tr></thead><tbody id="historialBody"></tbody></table></div>
         </div>
     </div>
 
-    <!-- MODAL NEQUI -->
     <div id="nequiModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-title">Recargar Saldo</div>
-            <p style="font-size:0.78rem;color:var(--text-muted);">Transfiere a esta cuenta Nequi:</p>
-            <div class="nequi-number">📱 3123456789</div>
-            <p style="font-size:0.72rem;color:var(--text-muted);margin-bottom:14px;">Envía el comprobante por WhatsApp</p>
-            <button id="btnWaConfirm" class="btn-wa">Enviar Comprobante</button>
+            <p style="font-size:0.78rem;color:var(--text-muted);">Transfiere a esta cuenta:</p>
+            <div class="nequi-number"><span class="nequi-logo">NEQUI</span> 3219401352</div>
+            <button id="btnWaConfirm" class="btn-wa">📱 Enviar Comprobante</button>
             <button id="btnModalCerrar" class="btn-modal-close">Cancelar</button>
         </div>
     </div>
@@ -477,370 +404,209 @@
     const db = getDatabase(app);
 
     const CORREO_ADMIN = "dimarviafara07@gmail.com";
-    const NUMERO_WHATSAPP = "573123456789";
+    const WHATSAPP = "573219401352";
     const MAX_MIEMBROS = 50;
 
-    // Vistas
-    const recoveryView = document.getElementById('recoveryView');
-    const accessView = document.getElementById('accessView');
-    const authView = document.getElementById('authView');
-    const gameView = document.getElementById('gameView');
-
-    // Recovery
-    const recoveryEmail = document.getElementById('recoveryEmail');
-    const recoveryMsg = document.getElementById('recoveryMsg');
-    const btnRecovery = document.getElementById('btnRecovery');
-    const btnBackToLogin = document.getElementById('btnBackToLogin');
-
-    // Access
-    const accessCode = document.getElementById('accessCode');
-    const accessError = document.getElementById('accessError');
-    const btnAccess = document.getElementById('btnAccess');
-    const jornadaStatus = document.getElementById('jornadaStatus');
-    const jornadaStatusText = document.getElementById('jornadaStatusText');
-    const accessSchedule = document.getElementById('accessSchedule');
-
-    // Auth
-    const tabLogin = document.getElementById('tabLogin');
-    const tabRegister = document.getElementById('tabRegister');
-    const btnAction = document.getElementById('btnAction');
-    const emailInput = document.getElementById('email');
-    const passInput = document.getElementById('pass');
+    const recoveryView = document.getElementById('recoveryView'), accessView = document.getElementById('accessView');
+    const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
+    const recoveryEmail = document.getElementById('recoveryEmail'), recoveryMsg = document.getElementById('recoveryMsg');
+    const btnRecovery = document.getElementById('btnRecovery'), btnBackToLogin = document.getElementById('btnBackToLogin');
+    const accessCode = document.getElementById('accessCode'), accessError = document.getElementById('accessError');
+    const btnAccess = document.getElementById('btnAccess'), jornadaStatus = document.getElementById('jornadaStatus');
+    const jornadaStatusText = document.getElementById('jornadaStatusText'), accessSchedule = document.getElementById('accessSchedule');
+    const tabLogin = document.getElementById('tabLogin'), tabRegister = document.getElementById('tabRegister');
+    const btnAction = document.getElementById('btnAction'), emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
     const btnForgotPassword = document.getElementById('btnForgotPassword');
-
-    // Game
-    const txtUsername = document.getElementById('txtUsername');
-    const userAvatar = document.getElementById('userAvatar');
-    const saldoDisplay = document.getElementById('saldoDisplay');
-    const btnLogout = document.getElementById('btnLogout');
-    const btnRecargar = document.getElementById('btnRecargar');
-    const btnRetirar = document.getElementById('btnRetirar');
-    const btnPlay = document.getElementById('btnPlay');
-    const tableContent = document.getElementById('tableContent');
-    const potAmount = document.getElementById('potAmount');
-    const historialBody = document.getElementById('historialBody');
-    const nequiModal = document.getElementById('nequiModal');
-    const btnWaConfirm = document.getElementById('btnWaConfirm');
+    const txtUsername = document.getElementById('txtUsername'), userAvatar = document.getElementById('userAvatar');
+    const saldoDisplay = document.getElementById('saldoDisplay'), btnLogout = document.getElementById('btnLogout');
+    const btnRecargar = document.getElementById('btnRecargar'), btnRetirar = document.getElementById('btnRetirar');
+    const btnPlay = document.getElementById('btnPlay'), tableContent = document.getElementById('tableContent');
+    const potAmount = document.getElementById('potAmount'), historialBody = document.getElementById('historialBody');
+    const nequiModal = document.getElementById('nequiModal'), btnWaConfirm = document.getElementById('btnWaConfirm');
     const btnModalCerrar = document.getElementById('btnModalCerrar');
-
-    // Admin
-    const adminPanel = document.getElementById('adminPanel');
-    const adminUserEmail = document.getElementById('adminUserEmail');
-    const adminMontoRecarga = document.getElementById('adminMontoRecarga');
-    const btnAdminRecargar = document.getElementById('btnAdminRecargar');
-    const configCodigo = document.getElementById('configCodigo');
-    const configHoraInicio = document.getElementById('configHoraInicio');
-    const configHoraFin = document.getElementById('configHoraFin');
-    const configJornadaActiva = document.getElementById('configJornadaActiva');
-    const btnConfigSave = document.getElementById('btnConfigSave');
-    const btnResetComision = document.getElementById('btnResetComision');
-    const btnResetMovido = document.getElementById('btnResetMovido');
-    const btnResetAll = document.getElementById('btnResetAll');
-
-    // Controles
-    const mode1v1 = document.getElementById('mode1v1');
-    const mode3p = document.getElementById('mode3p');
+    const adminPanel = document.getElementById('adminPanel'), adminUserEmail = document.getElementById('adminUserEmail');
+    const adminMontoRecarga = document.getElementById('adminMontoRecarga'), btnAdminRecargar = document.getElementById('btnAdminRecargar');
+    const configCodigo = document.getElementById('configCodigo'), configHoraInicio = document.getElementById('configHoraInicio');
+    const configHoraFin = document.getElementById('configHoraFin'), configJornadaActiva = document.getElementById('configJornadaActiva');
+    const btnConfigSave = document.getElementById('btnConfigSave'), btnResetComision = document.getElementById('btnResetComision');
+    const btnResetMovido = document.getElementById('btnResetMovido'), btnResetAll = document.getElementById('btnResetAll');
+    const mode1v1 = document.getElementById('mode1v1'), mode3p = document.getElementById('mode3p');
     const betChips = document.querySelectorAll('.bet-chip');
-    const historyCollapsible = document.getElementById('historyCollapsible');
-    const historyHeader = document.getElementById('historyHeader');
+    const historyCollapsible = document.querySelector('.history-collapsible');
+    const historyHeader = document.querySelector('.history-header');
 
-    let currentUserId = null, currentUsername = '';
-    let saldoActual = 0, apuestaActual = 2000, modoJuego = '1v1';
-    let esperandoPartida = false, currentMatchId = null;
-    let codigoAcceso = '';
+    let currentUserId = null, currentUsername = '', saldoActual = 0, apuestaActual = 2000, modoJuego = '1v1';
+    let esperandoPartida = false, currentMatchId = null, codigoAcceso = '';
 
-    const pintas = [
-        { icon: '♠', color: '#1E293B' }, { icon: '♥', color: '#DC2626' },
-        { icon: '♦', color: '#2563EB' }, { icon: '♣', color: '#16A34A' }
-    ];
+    const pintas = [{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
-    const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
+    const MAX_JUGADORES = {'1v1':2,'3p':3};
 
-    // ==================== RECUPERACIÓN DE CONTRASEÑA ====================
-    btnForgotPassword.addEventListener('click', () => {
-        authView.classList.add('hidden');
-        recoveryView.classList.remove('hidden');
-        recoveryEmail.value = emailInput.value;
+    btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
+    btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
+    btnRecovery.addEventListener('click',async()=>{
+        const e=recoveryEmail.value.trim();
+        if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return;}
+        btnRecovery.disabled=true;btnRecovery.textContent='Enviando...';
+        try{await sendPasswordResetEmail(auth,e);recoveryMsg.textContent='✅ Correo enviado.';recoveryEmail.value='';}
+        catch(err){recoveryMsg.textContent=err.code==='auth/user-not-found'?'❌ No existe':'❌ Error';}
+        btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';
     });
 
-    btnBackToLogin.addEventListener('click', () => {
-        recoveryView.classList.add('hidden');
-        authView.classList.remove('hidden');
-        recoveryMsg.textContent = '';
-    });
-
-    btnRecovery.addEventListener('click', async () => {
-        const email = recoveryEmail.value.trim();
-        if (!email) {
-            recoveryMsg.textContent = '❌ Ingresa tu correo electrónico';
-            return;
-        }
-        btnRecovery.disabled = true;
-        btnRecovery.textContent = 'Enviando...';
-        try {
-            await sendPasswordResetEmail(auth, email);
-            recoveryMsg.textContent = '✅ Correo enviado. Revisa tu bandeja de entrada.';
-            recoveryEmail.value = '';
-        } catch (error) {
-            let msg = 'Error al enviar el correo.';
-            if (error.code === 'auth/user-not-found') msg = '❌ No existe una cuenta con ese correo.';
-            if (error.code === 'auth/invalid-email') msg = '❌ Correo electrónico inválido.';
-            recoveryMsg.textContent = msg;
-        }
-        btnRecovery.disabled = false;
-        btnRecovery.textContent = 'Enviar enlace';
-    });
-
-    // ==================== VERIFICACIÓN DE ACCESO ====================
-    async function verificarAcceso() {
-        try {
-            const configSnap = await get(ref(db, 'configuracion'));
-            const config = configSnap.val() || {};
-            codigoAcceso = config.codigo_acceso || '4927';
-            const jornadaActiva = config.jornada_activa !== false;
-            const horaInicio = config.hora_inicio || '20:00';
-            const horaFin = config.hora_fin || '22:00';
-            accessSchedule.textContent = `${horaInicio} a ${horaFin}`;
-            const ahora = new Date();
-            const horaActual = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
-            if (jornadaActiva && horaActual >= horaInicio && horaActual <= horaFin) {
-                jornadaStatus.className = 'jornada-status active';
-                jornadaStatusText.textContent = 'Jornada activa';
-            } else {
-                jornadaStatus.className = 'jornada-status inactive';
-                jornadaStatusText.textContent = 'Fuera de horario';
-            }
-        } catch (e) {
-            codigoAcceso = '4927';
-        }
+    async function verificarAcceso(){
+        try{
+            const cfg=(await get(ref(db,'configuracion'))).val()||{};
+            codigoAcceso=cfg.codigo_acceso||'4927';
+            const activa=cfg.jornada_activa!==false, hi=cfg.hora_inicio||'20:00', hf=cfg.hora_fin||'22:00';
+            accessSchedule.textContent=`${hi} a ${hf}`;
+            const ahora=new Date(), ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');
+            jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';
+            jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';
+        }catch(e){codigoAcceso='4927';}
     }
 
-    btnAccess.addEventListener('click', async () => {
-        const code = accessCode.value.trim();
-        if (!code || code.length !== 4) { accessError.textContent = 'Ingresa un código de 4 dígitos'; return; }
-        if (code === codigoAcceso) {
-            accessError.textContent = '';
-            accessView.classList.add('hidden');
-            gameView.classList.remove('hidden');
-        } else {
-            accessError.textContent = 'Código incorrecto';
-            accessCode.value = '';
-            accessCode.focus();
-        }
+    btnAccess.addEventListener('click',async()=>{
+        const c=accessCode.value.trim();
+        if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return;}
+        if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');}
+        else{accessError.textContent='Código incorrecto';accessCode.value='';accessCode.focus();}
+    });
+    accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
+
+    async function resetContador(c){if(confirm(`¿Reiniciar ${c}?`))await update(ref(db,'adminData'),{[c]:0});}
+    btnResetComision.addEventListener('click',()=>resetContador('total_comisiones'));
+    btnResetMovido.addEventListener('click',()=>resetContador('dinero_movido'));
+    btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo');}});
+
+    btnConfigSave.addEventListener('click',async()=>{
+        await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});
+        codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');
     });
 
-    accessCode.addEventListener('keypress', (e) => { if (e.key === 'Enter') btnAccess.click(); });
+    function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO');}
+    historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
+    tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');btnAction.textContent='Ingresar';});
+    tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');btnAction.textContent='Registrarse';});
+    mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
+    mode3p.addEventListener('click',()=>{if(esperandoPartida)return;mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
+    betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego]);});});
 
-    // ==================== RESET CONTADORES ====================
-    async function resetContador(campo) {
-        if (!confirm(`¿Reiniciar ${campo} a $0?`)) return;
-        await update(ref(db, 'adminData'), { [campo]: 0 });
-    }
-    btnResetComision.addEventListener('click', () => resetContador('total_comisiones'));
-    btnResetMovido.addEventListener('click', () => resetContador('dinero_movido'));
-    btnResetAll.addEventListener('click', async () => {
-        if (!confirm('¿Reiniciar TODOS los contadores?')) return;
-        await set(ref(db, 'adminData'), { total_comisiones: 0, dinero_movido: 0, partidas_jugando: 0, partidas_jugadas: 0 });
-        alert('Contadores reiniciados');
-    });
-
-    // ==================== CONFIG ====================
-    btnConfigSave.addEventListener('click', async () => {
-        await set(ref(db, 'configuracion'), {
-            codigo_acceso: configCodigo.value.trim() || '4927',
-            jornada_activa: configJornadaActiva.checked,
-            hora_inicio: configHoraInicio.value || '20:00',
-            hora_fin: configHoraFin.value || '22:00'
-        });
-        codigoAcceso = configCodigo.value.trim() || '4927';
-        alert('✅ Configuración guardada');
-    });
-
-    // ==================== RESTO ====================
-    function updatePotDisplay(count) {
-        if(potAmount) potAmount.textContent = '$' + (apuestaActual * count).toLocaleString('es-CO');
+    function updateTablePreview(){
+        if(esperandoPartida)return;
+        const m=MAX_JUGADORES[modoJuego];let h='<div class="cards-row">';
+        for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div class="card-suit" style="color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;
+        tableContent.innerHTML=h+'</div>';
     }
 
-    historyHeader.addEventListener('click', () => historyCollapsible.classList.toggle('open'));
-    tabLogin.addEventListener('click', () => { tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.textContent = 'Ingresar'; });
-    tabRegister.addEventListener('click', () => { tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.textContent = 'Registrarse'; });
+    updatePotDisplay(2);
 
-    mode1v1.addEventListener('click', () => {
-        if(esperandoPartida) return;
-        mode1v1.classList.add('selected'); mode3p.classList.remove('selected'); modoJuego = '1v1';
-        updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview();
-    });
-    mode3p.addEventListener('click', () => {
-        if(esperandoPartida) return;
-        mode3p.classList.add('selected'); mode1v1.classList.remove('selected'); modoJuego = '3p';
-        updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview();
-    });
-
-    betChips.forEach(chip => {
-        chip.addEventListener('click', () => {
-            if(esperandoPartida) return;
-            betChips.forEach(c => c.classList.remove('selected'));
-            chip.classList.add('selected');
-            apuestaActual = parseInt(chip.dataset.apuesta);
-            updatePotDisplay(MAX_JUGADORES[modoJuego]);
-        });
-    });
-
-    function updateTablePreview() {
-        if(esperandoPartida) return;
-        const maxJ = MAX_JUGADORES[modoJuego];
-        let html = '<div class="cards-row">';
-        for(let i = 0; i < maxJ; i++) {
-            html += `<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div class="card-suit" style="color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;
-        }
-        html += '</div>';
-        tableContent.innerHTML = html;
-    }
-
-    updatePotDisplay(MAX_JUGADORES[modoJuego]);
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            currentUserId = user.uid;
-            currentUsername = user.email.split('@')[0];
-            
-            const isAdmin = user.email.toLowerCase() === CORREO_ADMIN.toLowerCase();
-            
-            authView.classList.add('hidden');
-            recoveryView.classList.add('hidden');
-            accessView.classList.add('hidden');
-            
-            if (isAdmin) {
-                // Admin: directo al juego
-                gameView.classList.remove('hidden');
-            } else {
-                // Usuario normal: verificar código
-                await verificarAcceso();
-                accessView.classList.remove('hidden');
-            }
-            
-            txtUsername.textContent = currentUsername;
-            userAvatar.textContent = currentUsername.charAt(0).toUpperCase();
-            updateTablePreview();
-
-            const presenceRef = ref(db, `presencia/${user.uid}`);
-            onValue(ref(db, '.info/connected'), (snap) => {
-                if (snap.val() === true) {
-                    set(presenceRef, { email: user.email, username: currentUsername, status: 'online', lastSeen: Date.now() });
-                    onDisconnect(presenceRef).update({ status: 'offline', lastSeen: Date.now() });
-                }
-            });
-
-            if (isAdmin) {
+    onAuthStateChanged(auth,async(user)=>{
+        if(user){
+            currentUserId=user.uid;currentUsername=user.email.split('@')[0];
+            const isAdmin=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
+            authView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');
+            if(isAdmin){gameView.classList.remove('hidden');}else{await verificarAcceso();accessView.classList.remove('hidden');}
+            txtUsername.textContent=currentUsername;userAvatar.textContent=currentUsername.charAt(0).toUpperCase();updateTablePreview();
+            const pr=ref(db,`presencia/${user.uid}`);
+            onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
+            if(isAdmin){
                 adminPanel.classList.remove('hidden');
-                onValue(ref(db, 'adminData'), (snap) => {
-                    const d = snap.val() || {};
-                    document.getElementById('adminComision').textContent = '$' + (d.total_comisiones || 0).toLocaleString('es-CO');
-                    document.getElementById('adminMovido').textContent = '$' + (d.dinero_movido || 0).toLocaleString('es-CO');
-                    document.getElementById('adminPlaying').textContent = d.partidas_jugando || 0;
-                });
-                onValue(ref(db, 'presencia'), (snap) => {
-                    document.getElementById('adminOnline').textContent = Object.values(snap.val()||{}).filter(v=>v.status==='online').length;
-                });
-                const cfg = (await get(ref(db, 'configuracion'))).val() || {};
-                configCodigo.value = cfg.codigo_acceso || '4927';
-                configHoraInicio.value = cfg.hora_inicio || '20:00';
-                configHoraFin.value = cfg.hora_fin || '22:00';
-                configJornadaActiva.checked = cfg.jornada_activa !== false;
-                btnAdminRecargar.onclick = async () => {
-                    const email = adminUserEmail.value.trim().toLowerCase(), monto = parseInt(adminMontoRecarga.value);
-                    if(!email||!monto||monto<1000) return alert('Datos inválidos');
-                    const users = (await get(ref(db,'usuarios'))).val()||{};
-                    let uid = null;
-                    for(const k in users){ if(users[k].email?.toLowerCase()===email){ uid=k; break; } }
-                    if(!uid) return alert('Usuario no encontrado');
-                    await update(ref(db,`usuarios/${uid}`),{saldo:increment(monto)});
-                    await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uid,email,monto,timestamp:Date.now()});
-                    alert('Recarga exitosa'); adminUserEmail.value=''; adminMontoRecarga.value='';
+                onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});
+                onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});
+                const cfg=(await get(ref(db,'configuracion'))).val()||{};
+                configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
+                btnAdminRecargar.onclick=async()=>{
+                    const em=adminUserEmail.value.trim().toLowerCase(),mt=parseInt(adminMontoRecarga.value);
+                    if(!em||!mt||mt<1000)return alert('Datos inválidos');
+                    const users=(await get(ref(db,'usuarios'))).val()||{};let uid=null;
+                    for(const k in users){if(users[k].email?.toLowerCase()===em){uid=k;break;}}
+                    if(!uid)return alert('Usuario no encontrado');
+                    await update(ref(db,`usuarios/${uid}`),{saldo:increment(mt)});
+                    await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uid,email:em,monto:mt,timestamp:Date.now()});
+                    alert('Recarga exitosa');adminUserEmail.value='';adminMontoRecarga.value='';
                 };
-            } else { adminPanel.classList.add('hidden'); }
-
-            onValue(ref(db,`usuarios/${user.uid}/saldo`),(snap)=>{ saldoActual=snap.val()||0; saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO'); });
-            onValue(ref(db,`usuarios/${user.uid}/historial`),(snap)=>{
-                historialBody.innerHTML='';
-                const data=snap.val();
-                if(data){ Object.values(data).reverse().slice(0,10).forEach(item=>{ const w=item.resultado==='GANÓ'; historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${item.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${item.monto.toLocaleString('es-CO')}</td></tr>`; }); }
-                else { historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas aún</td></tr>'; }
+            }else{adminPanel.classList.add('hidden');}
+            onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');});
+            onValue(ref(db,`usuarios/${user.uid}/historial`),snap=>{
+                historialBody.innerHTML='';const d=snap.val();
+                if(d){Object.values(d).reverse().slice(0,10).forEach(i=>{const w=i.resultado==='GANÓ';historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});}
+                else historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';
             });
-            onValue(ref(db,'presencia'),(snap)=>{ const a=Object.values(snap.val()||{}); document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length; document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length; document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length; document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS; });
-        } else {
-            gameView.classList.add('hidden');
-            recoveryView.classList.add('hidden');
-            accessView.classList.add('hidden');
-            authView.classList.remove('hidden');
-            verificarAcceso();
+            onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
+        }else{
+            gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');verificarAcceso();
         }
     });
 
-    btnAction.addEventListener('click', async () => {
-        const email=emailInput.value.trim(), pass=passInput.value;
-        if(!email||!pass) return alert('Completa todos los campos');
-        if(pass.length<6) return alert('Mínimo 6 caracteres');
+    btnAction.addEventListener('click',async()=>{
+        const em=emailInput.value.trim(),pw=passInput.value;
+        if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
         btnAction.disabled=true;
-        try {
-            if(tabLogin.classList.contains('active')) await signInWithEmailAndPassword(auth,email,pass);
-            else { const res=await createUserWithEmailAndPassword(auth,email,pass); await set(ref(db,`usuarios/${res.user.uid}`),{email,saldo:0,fechaRegistro:Date.now()}); alert('¡Registro exitoso!'); }
-        } catch(e){ alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos')); }
+        try{
+            if(tabLogin.classList.contains('active'))await signInWithEmailAndPassword(auth,em,pw);
+            else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,saldo:0,fechaRegistro:Date.now()});alert('¡Registro exitoso!');}
+        }catch(e){alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'));}
         btnAction.disabled=false;
     });
 
     btnLogout.addEventListener('click',()=>signOut(auth));
     btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
     btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
-    btnWaConfirm.addEventListener('click',()=>{ window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Adjunto comprobante de recarga.`)}`,'_blank'); nequiModal.classList.add('hidden'); });
-    btnRetirar.addEventListener('click',()=>{ if(saldoActual<=0) return alert('Sin saldo'); if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`)) window.open(`https://wa.me/${NUMERO_WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi: `)}`,'_blank'); });
-
-    function generarCarta(){ const vi=Math.floor(Math.random()*nombresCartas.length); return {peso:vi,texto:nombresCartas[vi],pinta:pintas[Math.floor(Math.random()*pintas.length)]}; }
-    function renderSearchUI(e,t){ let h='<div class="search-inline">'; for(let i=0;i<t;i++){ const o=i<e; h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`; } h+=`</div><div class="search-progress-inline">${e}/${t} jugadores</div>`; tableContent.innerHTML=h; }
-    function renderGameCards(j,l){ let h='<div class="cards-row">'; j.forEach((p,i)=>{ h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`; }); h+='</div>'; tableContent.innerHTML=h; }
-
-    btnPlay.addEventListener('click', async () => {
-        if(!currentUserId) return;
-        if(saldoActual<apuestaActual) return alert('Saldo insuficiente');
-        const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`), maxJ=MAX_JUGADORES[modoJuego];
-        if(esperandoPartida){ await set(lobbyRef,null); await update(ref(db,`presencia/${currentUserId}`),{status:'online'}); esperandoPartida=false; btnPlay.textContent='Buscar Partida'; btnPlay.classList.remove('canceling'); updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview(); return; }
-        btnPlay.disabled=true; btnPlay.textContent='Buscando...'; btnPlay.classList.add('canceling'); esperandoPartida=true;
-        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting'}); renderSearchUI(1,maxJ); updatePotDisplay(1);
-        const result=await runTransaction(lobbyRef,(lobby)=>{ if(!lobby||lobby.estado==='finalizado') return {host:currentUserId,jugadores:[currentUserId],estado:'esperando',creado:Date.now()}; if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){ if(!lobby.jugadores.includes(currentUserId)){ lobby.jugadores.push(currentUserId); if(lobby.jugadores.length===maxJ) lobby.estado='jugando'; } return lobby; } return lobby; });
-        if(!result.snapshot.val()){ resetSearch(); return alert('Error al conectar'); }
-        const listener=onValue(lobbyRef,async(snap)=>{ const d=snap.val(); if(!d?.jugadores){ off(lobbyRef,listener); resetSearch(); return; } renderSearchUI(d.jugadores.length,maxJ); updatePotDisplay(d.jugadores.length); if(d.estado==='jugando'&&d.matchId&&d.jugadores.length===maxJ){ off(lobbyRef,listener); await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}); await ejecutarPartida(d.matchId); } });
-        setTimeout(async()=>{ if((await get(lobbyRef)).val()?.jugadores?.length<maxJ){ await set(lobbyRef,null); off(lobbyRef,listener); resetSearch(); alert('Tiempo agotado.'); } },45000);
+    btnWaConfirm.addEventListener('click',()=>{
+        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Solicito recarga en SuerteFácil. Adjunto comprobante.`)}`,'_blank');
+        nequiModal.classList.add('hidden');
+    });
+    btnRetirar.addEventListener('click',()=>{
+        if(saldoActual<=0)return alert('Sin saldo');
+        if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi:`)}`,'_blank');
     });
 
-    function resetSearch(){ esperandoPartida=false; btnPlay.disabled=false; btnPlay.textContent='Buscar Partida'; btnPlay.classList.remove('canceling'); updatePotDisplay(MAX_JUGADORES[modoJuego]); updateTablePreview(); update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{}); }
+    function generarCarta(){return{peso:Math.floor(Math.random()*nombresCartas.length),texto:nombresCartas[Math.floor(Math.random()*nombresCartas.length)],pinta:pintas[Math.floor(Math.random()*pintas.length)]};}
+    function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;}
+    function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`;});h+='</div>';tableContent.innerHTML=h;}
+
+    btnPlay.addEventListener('click',async()=>{
+        if(!currentUserId)return;if(saldoActual<apuestaActual)return alert('Saldo insuficiente');
+        const lr=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),mj=MAX_JUGADORES[modoJuego];
+        if(esperandoPartida){await set(lr,null);await update(ref(db,`presencia/${currentUserId}`),{status:'online'});esperandoPartida=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(mj);updateTablePreview();return;}
+        btnPlay.disabled=true;btnPlay.textContent='Buscando...';btnPlay.classList.add('canceling');esperandoPartida=true;
+        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting'});renderSearchUI(1,mj);updatePotDisplay(1);
+        const result=await runTransaction(lr,lobby=>{if(!lobby||lobby.estado==='finalizado')return{host:currentUserId,jugadores:[currentUserId],estado:'esperando',creado:Date.now()};if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<mj){if(!lobby.jugadores.includes(currentUserId)){lobby.jugadores.push(currentUserId);if(lobby.jugadores.length===mj)lobby.estado='jugando';}return lobby;}return lobby;});
+        if(!result.snapshot.val()){resetSearch();return alert('Error');}
+        const listener=onValue(lr,async snap=>{const d=snap.val();if(!d?.jugadores){off(lr,listener);resetSearch();return;}renderSearchUI(d.jugadores.length,mj);updatePotDisplay(d.jugadores.length);if(d.estado==='jugando'&&d.matchId&&d.jugadores.length===mj){off(lr,listener);await update(ref(db,`presencia/${currentUserId}`),{status:'playing'});await ejecutarPartida(d.matchId);}});
+        setTimeout(async()=>{if((await get(lr)).val()?.jugadores?.length<mj){await set(lr,null);off(lr,listener);resetSearch();alert('Tiempo agotado');}},45000);
+    });
+
+    function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});}
 
     async function ejecutarPartida(matchId){
-        currentMatchId=matchId; btnPlay.textContent='Repartiendo...';
+        currentMatchId=matchId;btnPlay.textContent='Repartiendo...';
         const data=(await get(ref(db,`matches/${matchId}`))).val();
-        if(!data?.jugadores){ resetSearch(); return; }
-        const jugadores=data.jugadores, miIdx=jugadores.findIndex(j=>j.uid===currentUserId), labels=jugadores.map((j,i)=>i===miIdx?'Tú':j.username);
-        const totalPot=apuestaActual*jugadores.length;
-        updatePotDisplay(jugadores.length);
-        renderGameCards(jugadores,labels);
-        setTimeout(()=>{ btnPlay.textContent='Revelando...'; document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+        if(!data?.jugadores){resetSearch();return;}
+        const jugadores=data.jugadores,miIdx=jugadores.findIndex(j=>j.uid===currentUserId),labels=jugadores.map((j,i)=>i===miIdx?'Tú':j.username);
+        const totalPot=apuestaActual*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores,labels);
+        setTimeout(()=>{btnPlay.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
             setTimeout(async()=>{
-                const pesos=jugadores.map(j=>j.carta.peso), maxP=Math.max(...pesos);
+                const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);
                 let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
-                if(jugadores.filter(j=>j.carta.peso===maxP).length>1){ const o={'♠':4,'♥':3,'♦':2,'♣':1}; ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a); }
-                const yoGane=ganador.uid===currentUserId, comision=apuestaActual*0.10, ganancia=totalPot-comision;
-                if(yoGane&&potAmount){ potAmount.classList.add('pot-won'); setTimeout(()=>potAmount.classList.remove('pot-won'),600); }
-                jugadores.forEach((j,i)=>{ const lbl=document.getElementById('cl'+i); if(!lbl) return; lbl.classList.remove('winner','loser'); if(j.uid===ganador.uid){ lbl.classList.add('winner'); lbl.textContent='🏆 '+labels[i]; } else if(j.uid===currentUserId) lbl.classList.add('loser'); });
+                if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a);}
+                const yoGane=ganador.uid===currentUserId;
+                // 🆚 1vs1 = 5% | 👥 3 jugadores = 10%
+                const comision = jugadores.length === 2 ? apuestaActual * 0.05 : apuestaActual * 0.10;
+                const ganancia=totalPot-comision;
+                if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
+                jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
                 try{
-                    if(yoGane){ await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId}); await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}); }
-                    else { await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)}); await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId}); }
-                } catch(e){}
+                    if(yoGane){await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});}
+                    else{await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});}
+                }catch(e){}
                 btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
-                setTimeout(async()=>{ await set(ref(db,`matches/${matchId}`),null); await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null); await update(ref(db,'adminData'),{partidas_jugando:increment(-1)}); resetSearch(); },4000);
+                setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);await update(ref(db,'adminData'),{partidas_jugando:increment(-1)});resetSearch();},4000);
             },1200);
         },800);
     }
 
-    window.addEventListener('beforeunload',()=>{ if(currentUserId) set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}); });
+    window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()});});
 </script>
 </body>
 </html>
