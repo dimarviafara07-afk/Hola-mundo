@@ -119,7 +119,10 @@
         .status-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: pulse-dot 2s infinite; box-shadow: 0 0 6px rgba(22,163,74,0.5); }
         .balance-mini { text-align: right; }
         .balance-mini-label { font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .balance-mini-amount { font-size: 1.15rem; font-weight: 700; color: var(--gold); }
+        .balance-mini-amount { font-size: 1.15rem; font-weight: 700; color: var(--gold); transition: color 0.3s; }
+        .balance-mini-amount.low { color: #f59e0b; }
+        .balance-mini-amount.zero { color: #ef4444; animation: blink 1s infinite; }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
         .header-actions { display: flex; gap: 6px; width: 100%; margin-top: 10px; }
         .btn-sm { flex: 1; padding: 9px 10px; border-radius: var(--radius-xs); font-weight: 600; font-size: 0.73rem; cursor: pointer; border: none; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
         .btn-dep { background: var(--success-soft); color: var(--success); border: 1px solid rgba(22,163,74,0.25); }
@@ -152,16 +155,16 @@
         @keyframes pot-pulse { 0%{transform:scale(1)} 50%{transform:scale(1.15); color:#e8c97a} 100%{transform:scale(1)} }
 
         .game-table-main {
-            background: var(--bg-card); border-radius: var(--radius-lg); padding: 18px 12px; margin-bottom: 10px;
-            border: 1px solid var(--border-subtle); text-align: center; min-height: 150px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.3s;
+            background: var(--bg-card); border-radius: var(--radius-lg); padding: 10px; margin-bottom: 10px;
+            border: 1px solid var(--border-subtle); text-align: center; transition: all 0.3s;
         }
         .table-felt {
             background: linear-gradient(160deg, #0A1F14 0%, #0D2818 40%, #091A10 100%);
-            border-radius: var(--radius-md); padding: 16px 10px; width: 100%; border: 3px solid #4A3724;
+            border-radius: var(--radius-md); padding: 20px 10px; width: 100%; border: 3px solid #4A3724;
             position: relative; box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
+            min-height: 160px; display: flex; align-items: center; justify-content: center;
         }
-        .cards-row { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .cards-row { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; position: relative; z-index: 1; }
         .card-slot { display: flex; flex-direction: column; align-items: center; gap: 7px; }
         .card-wrapper { perspective: 800px; width: 72px; height: 100px; }
         .card-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
@@ -296,6 +299,7 @@
             <button id="tabRegister" class="auth-tab">Registrarse</button>
         </div>
         <input type="email" id="email" class="auth-input" placeholder="Correo electrónico">
+        <input type="text" id="aliasInput" class="auth-input hidden" placeholder="Alias (nombre visible)" maxlength="15">
         <input type="password" id="pass" class="auth-input" placeholder="Contraseña">
         <button id="btnAction" class="btn-primary">Ingresar</button>
         <button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button>
@@ -415,7 +419,8 @@
     const btnAccess = document.getElementById('btnAccess'), jornadaStatus = document.getElementById('jornadaStatus');
     const jornadaStatusText = document.getElementById('jornadaStatusText'), accessSchedule = document.getElementById('accessSchedule');
     const tabLogin = document.getElementById('tabLogin'), tabRegister = document.getElementById('tabRegister');
-    const btnAction = document.getElementById('btnAction'), emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
+    const btnAction = document.getElementById('btnAction'), emailInput = document.getElementById('email');
+    const aliasInput = document.getElementById('aliasInput'), passInput = document.getElementById('pass');
     const btnForgotPassword = document.getElementById('btnForgotPassword');
     const txtUsername = document.getElementById('txtUsername'), userAvatar = document.getElementById('userAvatar');
     const saldoDisplay = document.getElementById('saldoDisplay'), btnLogout = document.getElementById('btnLogout');
@@ -435,14 +440,18 @@
     const historyCollapsible = document.querySelector('.history-collapsible');
     const historyHeader = document.querySelector('.history-header');
 
-    let currentUserId = null, currentUsername = '', saldoActual = 0, apuestaActual = 2000, modoJuego = '1v1';
-    let esperandoPartida = false, currentMatchId = null, codigoAcceso = '';
+    let currentUserId = null, currentUsername = '', currentAlias = '', saldoActual = 0;
+    let apuestaActual = 2000, modoJuego = '1v1', esperandoPartida = false, currentMatchId = null, codigoAcceso = '';
 
     const pintas = [{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = {'1v1':2,'3p':3};
 
-    // RECUPERACIÓN
+    // ===== TABS =====
+    tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
+    tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
+
+    // ===== RECUPERACIÓN =====
     btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
     btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
     btnRecovery.addEventListener('click',async()=>{
@@ -454,7 +463,7 @@
         btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';
     });
 
-    // ACCESO
+    // ===== ACCESO =====
     async function verificarAcceso(){
         try{
             const cfg=(await get(ref(db,'configuracion'))).val()||{};
@@ -474,23 +483,21 @@
     });
     accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
-    // RESET
+    // ===== RESET =====
     async function resetContador(c){if(confirm(`¿Reiniciar ${c}?`))await update(ref(db,'adminData'),{[c]:0});}
     btnResetComision.addEventListener('click',()=>resetContador('total_comisiones'));
     btnResetMovido.addEventListener('click',()=>resetContador('dinero_movido'));
     btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo');}});
 
-    // CONFIG
+    // ===== CONFIG =====
     btnConfigSave.addEventListener('click',async()=>{
         await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});
         codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');
     });
 
-    // UTILS
+    // ===== UTILS =====
     function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO');}
     historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
-    tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');btnAction.textContent='Ingresar';});
-    tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');btnAction.textContent='Registrarse';});
     mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
     mode3p.addEventListener('click',()=>{if(esperandoPartida)return;mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
     betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego]);});});
@@ -507,13 +514,17 @@
     // ===== AUTH STATE =====
     onAuthStateChanged(auth,async(user)=>{
         if(user){
-            currentUserId=user.uid;currentUsername=user.email.split('@')[0];
+            currentUserId=user.uid;
+            const userSnap=await get(ref(db,`usuarios/${user.uid}`));
+            const userData=userSnap.val()||{};
+            currentUsername=user.email.split('@')[0];
+            currentAlias=userData.alias||currentUsername;
             const isAdmin=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
             authView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');
             if(isAdmin){gameView.classList.remove('hidden');}else{await verificarAcceso();accessView.classList.remove('hidden');}
-            txtUsername.textContent=currentUsername;userAvatar.textContent=currentUsername.charAt(0).toUpperCase();updateTablePreview();
+            txtUsername.textContent=currentAlias;userAvatar.textContent=currentAlias.charAt(0).toUpperCase();updateTablePreview();
             const pr=ref(db,`presencia/${user.uid}`);
-            onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
+            onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,alias:currentAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
             if(isAdmin){
                 adminPanel.classList.remove('hidden');
                 onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});
@@ -531,7 +542,16 @@
                     alert('Recarga exitosa');adminUserEmail.value='';adminMontoRecarga.value='';
                 };
             }else{adminPanel.classList.add('hidden');}
-            onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');});
+
+            // Saldo con alerta visual
+            onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{
+                saldoActual=snap.val()||0;
+                saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');
+                saldoDisplay.classList.remove('low','zero');
+                if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!';}
+                else if(saldoActual<apuestaActual){saldoDisplay.classList.add('low');}
+            });
+
             onValue(ref(db,`usuarios/${user.uid}/historial`),snap=>{
                 historialBody.innerHTML='';const d=snap.val();
                 if(d){Object.values(d).reverse().slice(0,10).forEach(i=>{const w=i.resultado==='GANÓ';historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${w?'✅ Ganó':'❌ Perdió'}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});}
@@ -543,14 +563,15 @@
         }
     });
 
-    // AUTH ACTION
+    // ===== AUTH ACTION =====
     btnAction.addEventListener('click',async()=>{
-        const em=emailInput.value.trim(),pw=passInput.value;
-        if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
+        const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;
+        if(!em||!pw)return alert('Completa todos los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
+        if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias para jugar');
         btnAction.disabled=true;
         try{
             if(tabLogin.classList.contains('active'))await signInWithEmailAndPassword(auth,em,pw);
-            else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,saldo:0,fechaRegistro:Date.now()});alert('¡Registro exitoso!');}
+            else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});alert('¡Registro exitoso! Bienvenido a Royal High, '+alias+'!');}
         }catch(e){alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'));}
         btnAction.disabled=false;
     });
@@ -559,7 +580,7 @@
     btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
     btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
     btnWaConfirm.addEventListener('click',()=>{
-        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');
+        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');
         nequiModal.classList.add('hidden');
     });
     btnRetirar.addEventListener('click',()=>{
@@ -567,226 +588,79 @@
         if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank');
     });
 
-    function generarCarta(){return{peso:Math.floor(Math.random()*nombresCartas.length),texto:nombresCartas[Math.floor(Math.random()*nombresCartas.length)],pinta:pintas[Math.floor(Math.random()*pintas.length)]};}
+    // ===== CARTAS CON ALEATORIEDAD MEJORADA =====
+    function generarCarta(){
+        const seed=Date.now()%1000;
+        const vi=Math.floor((Math.random()*seed+Math.random()*1000)%nombresCartas.length);
+        const pi=Math.floor((Math.random()*seed+Math.random()*1000)%pintas.length);
+        return{peso:vi,texto:nombresCartas[vi],pinta:pintas[pi]};
+    }
+
     function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;}
     function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`;});h+='</div>';tableContent.innerHTML=h;}
 
-    // ===== SISTEMA DE EMPAREJAMIENTO CORREGIDO =====
-    btnPlay.addEventListener('click', async () => {
-        if (!currentUserId) return;
-        if (saldoActual < apuestaActual) return alert('Saldo insuficiente');
-        
-        const lobbyRef = ref(db, `lobbies/${modoJuego}_${apuestaActual}`);
-        const maxJ = MAX_JUGADORES[modoJuego];
-        
-        if (esperandoPartida) {
-            await set(lobbyRef, null);
-            await update(ref(db, `presencia/${currentUserId}`), { status: 'online' });
-            esperandoPartida = false;
-            btnPlay.textContent = 'Buscar Partida';
-            btnPlay.classList.remove('canceling');
-            btnPlay.disabled = false;
-            updatePotDisplay(MAX_JUGADORES[modoJuego]);
-            updateTablePreview();
-            return;
-        }
-        
-        btnPlay.disabled = true;
-        btnPlay.textContent = 'Buscando...';
-        btnPlay.classList.add('canceling');
-        esperandoPartida = true;
-        
-        await update(ref(db, `presencia/${currentUserId}`), { status: 'waiting' });
-        renderSearchUI(1, maxJ);
-        updatePotDisplay(1);
-        
-        const result = await runTransaction(lobbyRef, (lobby) => {
-            if (!lobby || lobby.estado === 'finalizado') {
-                return {
-                    host: currentUserId,
-                    jugadores: [currentUserId],
-                    estado: 'esperando',
-                    creado: Date.now()
-                };
-            }
-            
-            if (lobby.estado === 'esperando' && lobby.jugadores && lobby.jugadores.length < maxJ) {
-                if (!lobby.jugadores.includes(currentUserId)) {
-                    lobby.jugadores.push(currentUserId);
-                    
-                    if (lobby.jugadores.length === maxJ) {
-                        lobby.estado = 'jugando';
-                        lobby.cartas = {};
-                        lobby.jugadores.forEach(uid => {
-                            lobby.cartas[uid] = generarCarta();
-                        });
-                    }
-                    return lobby;
-                }
-            }
-            
-            return lobby;
+    // ===== EMPAREJAMIENTO CON BLOQUEO DE SALDO =====
+    btnPlay.addEventListener('click',async()=>{
+        if(!currentUserId)return;
+        if(saldoActual<=0)return alert('❌ Tu saldo está en $0. Recarga para seguir jugando.');
+        if(saldoActual<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoActual.toLocaleString('es-CO')} pero necesitas $${apuestaActual.toLocaleString('es-CO')}`);
+        const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),maxJ=MAX_JUGADORES[modoJuego];
+        if(esperandoPartida){await set(lobbyRef,null);await update(ref(db,`presencia/${currentUserId}`),{status:'online'});esperandoPartida=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');btnPlay.disabled=false;updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();return;}
+        btnPlay.disabled=true;btnPlay.textContent='Buscando...';btnPlay.classList.add('canceling');esperandoPartida=true;
+        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias});renderSearchUI(1,maxJ);updatePotDisplay(1);
+        const result=await runTransaction(lobbyRef,(lobby)=>{
+            if(!lobby||lobby.estado==='finalizado')return{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()};
+            if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){
+                const yaEsta=lobby.jugadores.some(j=>j.uid===currentUserId);
+                if(!yaEsta){lobby.jugadores.push({uid:currentUserId,alias:currentAlias});if(lobby.jugadores.length===maxJ){lobby.estado='jugando';lobby.cartas={};lobby.jugadores.forEach(j=>{lobby.cartas[j.uid]=generarCarta();});}return lobby;}
+            }return lobby;
         });
-        
-        const lobbyData = result.snapshot.val();
-        
-        if (!lobbyData) {
-            resetSearch();
-            return alert('Error al conectar con la sala');
-        }
-        
-        const listener = onValue(lobbyRef, async (snap) => {
-            const data = snap.val();
-            
-            if (!data || !data.jugadores) {
-                off(lobbyRef, listener);
-                resetSearch();
-                return;
-            }
-            
-            renderSearchUI(data.jugadores.length, maxJ);
-            updatePotDisplay(data.jugadores.length);
-            
-            if (data.estado === 'jugando' && data.matchId && data.jugadores.length === maxJ) {
-                off(lobbyRef, listener);
-                await update(ref(db, `presencia/${currentUserId}`), { status: 'playing' });
-                await ejecutarPartida(data.matchId, data);
-            }
-            else if (data.estado === 'jugando' && !data.matchId && data.jugadores.length === maxJ) {
-                const matchId = push(ref(db, 'matches')).key;
-                const matchData = {
-                    jugadores: data.jugadores.map(uid => ({
-                        uid: uid,
-                        username: uid === currentUserId ? currentUsername : 'Jugador',
-                        carta: data.cartas ? data.cartas[uid] : generarCarta()
-                    })),
-                    apuesta: apuestaActual,
-                    modalidad: modoJuego,
-                    creado: Date.now()
-                };
-                
-                await set(ref(db, `matches/${matchId}`), matchData);
-                await update(lobbyRef, { matchId: matchId });
+        const lobbyData=result.snapshot.val();
+        if(!lobbyData){resetSearch();return alert('Error al conectar');}
+        const listener=onValue(lobbyRef,async(snap)=>{
+            const data=snap.val();
+            if(!data||!data.jugadores){off(lobbyRef,listener);resetSearch();return;}
+            renderSearchUI(data.jugadores.length,maxJ);updatePotDisplay(data.jugadores.length);
+            if(data.estado==='jugando'&&data.matchId&&data.jugadores.length===maxJ){off(lobbyRef,listener);await update(ref(db,`presencia/${currentUserId}`),{status:'playing'});await ejecutarPartida(data.matchId,data);}
+            else if(data.estado==='jugando'&&!data.matchId&&data.jugadores.length===maxJ){
+                const matchId=push(ref(db,'matches')).key;
+                const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};
+                await set(ref(db,`matches/${matchId}`),matchData);await update(lobbyRef,{matchId:matchId});
             }
         });
-        
-        setTimeout(async () => {
-            const snap = await get(lobbyRef);
-            if (snap.val() && snap.val().jugadores && snap.val().jugadores.length < maxJ) {
-                await set(lobbyRef, null);
-                off(lobbyRef, listener);
-                resetSearch();
-                alert('Tiempo agotado. No se encontraron suficientes jugadores.');
-            }
-        }, 60000);
+        setTimeout(async()=>{const snap=await get(lobbyRef);if(snap.val()&&snap.val().jugadores&&snap.val().jugadores.length<maxJ){await set(lobbyRef,null);off(lobbyRef,listener);resetSearch();alert('Tiempo agotado.');}},60000);
     });
 
-    function resetSearch() {
-        esperandoPartida = false;
-        btnPlay.disabled = false;
-        btnPlay.textContent = 'Buscar Partida';
-        btnPlay.classList.remove('canceling');
-        updatePotDisplay(MAX_JUGADORES[modoJuego]);
-        updateTablePreview();
-        update(ref(db, `presencia/${currentUserId}`), { status: 'online' }).catch(() => {});
-    }
+    function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});}
 
-    async function ejecutarPartida(matchId, lobbyData) {
-        currentMatchId = matchId;
-        btnPlay.textContent = 'Repartiendo...';
-        
-        const matchSnap = await get(ref(db, `matches/${matchId}`));
-        let matchData = matchSnap.val();
-        
-        if (!matchData || !matchData.jugadores) {
-            const jugadores = (lobbyData.jugadores || []).map((uid, i) => ({
-                uid: uid,
-                username: uid === currentUserId ? currentUsername : ('Jugador ' + (i + 1)),
-                carta: lobbyData.cartas ? lobbyData.cartas[uid] : generarCarta()
-            }));
-            matchData = { jugadores, apuesta: apuestaActual, modalidad: modoJuego };
-            await set(ref(db, `matches/${matchId}`), matchData);
+    async function ejecutarPartida(matchId,lobbyData){
+        currentMatchId=matchId;btnPlay.textContent='Repartiendo...';
+        const matchSnap=await get(ref(db,`matches/${matchId}`));let matchData=matchSnap.val();
+        if(!matchData||!matchData.jugadores){
+            const jugadores=(lobbyData.jugadores||[]).map((j,i)=>({uid:j.uid,alias:j.alias||('Jugador '+(i+1)),carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()}));
+            matchData={jugadores,apuesta:apuestaActual,modalidad:modoJuego};await set(ref(db,`matches/${matchId}`),matchData);
         }
-        
-        const jugadores = matchData.jugadores;
-        const miIdx = jugadores.findIndex(j => j.uid === currentUserId);
-        const labels = jugadores.map((j, i) => i === miIdx ? 'Tú' : (j.username || 'Jugador ' + (i + 1)));
-        
-        const totalPot = apuestaActual * jugadores.length;
-        updatePotDisplay(jugadores.length);
-        renderGameCards(jugadores, labels);
-        
-        setTimeout(() => {
-            btnPlay.textContent = 'Revelando...';
-            document.querySelectorAll('.card-wrapper').forEach(cw => cw.classList.add('flipped'));
-            
-            setTimeout(async () => {
-                const pesos = jugadores.map(j => j.carta.peso);
-                const maxP = Math.max(...pesos);
-                let ganador = jugadores.filter(j => j.carta.peso === maxP)[0];
-                
-                if (jugadores.filter(j => j.carta.peso === maxP).length > 1) {
-                    const o = { '♠': 4, '♥': 3, '♦': 2, '♣': 1 };
-                    ganador = jugadores.filter(j => j.carta.peso === maxP).reduce((a, b) => 
-                        (o[b.carta.pinta.icon] || 0) > (o[a.carta.pinta.icon] || 0) ? b : a
-                    );
-                }
-                
-                const yoGane = ganador.uid === currentUserId;
-                const comision = jugadores.length === 2 ? apuestaActual * 0.05 : apuestaActual * 0.10;
-                const ganancia = totalPot - comision;
-                
-                if (yoGane && potAmount) {
-                    potAmount.classList.add('pot-won');
-                    setTimeout(() => potAmount.classList.remove('pot-won'), 600);
-                }
-                
-                jugadores.forEach((j, i) => {
-                    const lbl = document.getElementById('cl' + i);
-                    if (!lbl) return;
-                    lbl.classList.remove('winner', 'loser');
-                    if (j.uid === ganador.uid) {
-                        lbl.classList.add('winner');
-                        lbl.textContent = '🏆 ' + labels[i];
-                    } else if (j.uid === currentUserId) {
-                        lbl.classList.add('loser');
-                    }
-                });
-                
-                try {
-                    if (yoGane) {
-                        await update(ref(db, `usuarios/${currentUserId}`), { saldo: increment(ganancia) });
-                        await push(ref(db, `usuarios/${currentUserId}/historial`), {
-                            mesa: 'N1', resultado: 'GANÓ', monto: ganancia,
-                            timestamp: Date.now(), matchId
-                        });
-                        await update(ref(db, 'adminData'), {
-                            total_comisiones: increment(comision),
-                            dinero_movido: increment(totalPot),
-                            partidas_jugando: increment(1)
-                        });
-                    } else {
-                        await update(ref(db, `usuarios/${currentUserId}`), { saldo: increment(-apuestaActual) });
-                        await push(ref(db, `usuarios/${currentUserId}/historial`), {
-                            mesa: 'N1', resultado: 'PERDIÓ', monto: apuestaActual,
-                            timestamp: Date.now(), matchId
-                        });
-                    }
-                } catch (e) {
-                    console.error('Error actualizando Firebase:', e);
-                }
-                
-                btnPlay.textContent = yoGane ? '🎉 ¡Ganaste!' : '😔 Perdiste';
-                
-                setTimeout(async () => {
-                    await set(ref(db, `matches/${matchId}`), null);
-                    await set(ref(db, `lobbies/${modoJuego}_${apuestaActual}`), null);
-                    await update(ref(db, 'adminData'), { partidas_jugando: increment(-1) });
-                    resetSearch();
-                }, 4000);
-                
-            }, 1200);
-        }, 800);
+        const jugadores=matchData.jugadores,miIdx=jugadores.findIndex(j=>j.uid===currentUserId);
+        const labels=jugadores.map((j,i)=>i===miIdx?'Tú':(j.alias||'Jugador '+(i+1)));
+        const totalPot=apuestaActual*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores,labels);
+        setTimeout(()=>{btnPlay.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+            setTimeout(async()=>{
+                const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);
+                let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
+                if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a);}
+                const yoGane=ganador.uid===currentUserId;
+                const comision=jugadores.length===2?apuestaActual*0.05:apuestaActual*0.10;
+                const ganancia=totalPot-comision;
+                if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
+                jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
+                try{
+                    if(yoGane){await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});}
+                    else{await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});}
+                }catch(e){}
+                btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
+                setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);await update(ref(db,'adminData'),{partidas_jugando:increment(-1)});resetSearch();},4000);
+            },1200);
+        },800);
     }
 
     window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()});});
