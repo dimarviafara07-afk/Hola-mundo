@@ -55,7 +55,7 @@
         }
         input:focus { outline: none; border-color: var(--primary-gold); }
 
-        /* PANTALLA DE ACCESO ELEGANTE */
+        /* PANTALLA DE ACCESO */
         .auth-box { text-align: center; }
         .auth-tabs { display: flex; gap: 10px; margin-bottom: 25px; background: var(--bg-input); padding: 5px; border-radius: 8px; }
         .tab-btn { flex: 1; padding: 10px; background: transparent; border: none; color: var(--text-muted); font-weight: bold; cursor: pointer; border-radius: 6px; font-size: 0.95rem; transition: all 0.2s; }
@@ -82,37 +82,24 @@
         .mesa-btn strong { font-size: 0.95rem; }
         .mesa-btn.active { background: var(--primary-gold); color: #000000; border-color: var(--primary-gold); font-weight: bold; }
 
-        /* TAPETE Y CARTAS EN 3D DE LUJO */
+        /* TAPETE Y CARTAS 3D */
         .tapete-card { border: 2px solid var(--border-gold); background: #0f182b; border-radius: 1.2rem; padding: 2rem 1rem; }
         .game-mat { display: flex; justify-content: space-around; margin-bottom: 5px; }
         .carta-box { text-align: center; width: 28%; display: flex; flex-direction: column; align-items: center; }
         
-        /* Contenedor 3D del flip */
-        .carta-container {
-            width: 100%; max-width: 78px; height: 114px; perspective: 1000px;
-        }
-        .carta-inner {
-            width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        .carta-container { width: 100%; max-width: 78px; height: 114px; perspective: 1000px; }
+        .carta-inner { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .carta-container.voltear .carta-inner { transform: rotateY(180deg); }
 
-        /* Caras de las cartas */
-        .carta-front, .carta-back {
-            position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
-        /* Boca abajo (Reverso de Casino) */
+        .carta-front, .carta-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.4); }
         .carta-back {
             background: radial-gradient(transparent 50%, rgba(0,0,0,0.4)), #991b1b;
             background-image: radial-gradient(rgba(217,180,74,0.15) 15%, transparent 16%), radial-gradient(rgba(217,180,74,0.15) 15%, transparent 16%);
             background-size: 12px 12px; background-position: 0 0, 6px 6px; border: 3px solid #f8fafc; box-sizing: border-box;
         }
-        /* Boca arriba (Diseño Elegante) */
-        .carta-front {
-            background: #ffffff; color: #090d16; transform: rotateY(180deg); font-size: 1.6rem; font-weight: 900; box-sizing: border-box; border: 1px solid #cbd5e1;
-        }
+        .carta-front { background: #ffffff; color: #090d16; transform: rotateY(180deg); font-size: 1.6rem; font-weight: 900; box-sizing: border-box; border: 1px solid #cbd5e1; }
         .carta-front .pinta-mini { position: absolute; font-size: 0.9rem; top: 4px; left: 6px; font-weight: bold; }
         .carta-front .pinta-centro { font-size: 2.2rem; line-height: 1; margin-top: 2px; }
-        
         .carta-label { font-size: 0.8rem; margin-top: 10px; color: var(--text-muted); width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* BOTONES */
@@ -129,6 +116,11 @@
         .nequi-num { font-size: 1.8rem; color: #da1c5c; font-weight: bold; background: var(--bg-input); padding: 10px; border-radius: 8px; margin: 15px 0; letter-spacing: 1px; border: 1px solid #da1c5c; display:flex; justify-content:center; align-items:center; gap:8px; }
         .btn-wa-confirm { background: var(--green-recargar); color: white; padding: 14px; width: 100%; border: none; border-radius: 8px; font-weight: bold; font-size: 1rem; cursor: pointer; text-transform: uppercase; }
         .btn-modal-cerrar { background: transparent; color: var(--text-muted); border: none; margin-top: 12px; cursor: pointer; font-size: 0.85rem; }
+
+        /* DISEÑO EXCLUSIVO PANEL ADMIN */
+        .admin-panel { background: #1f1107; border: 2px solid var(--primary-gold); margin-bottom: 15px; padding: 15px; border-radius: 1.2rem; text-align: center; }
+        .admin-title { color: var(--primary-gold); margin: 0 0 5px 0; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .admin-val { font-size: 2rem; color: var(--green-recargar); font-weight: 900; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -149,7 +141,15 @@
         <button type="button" id="btnAction" class="btn-buscar" style="margin-top:10px;">INGRESAR</button>
     </div>
 
-    <div id="gameView" class="card hidden" style="background:transparent; padding:0; box-shadow:none;">
+    <div id="gameView" class="hidden" style="background:transparent; padding:0; box-shadow:none;">
+        
+        <div id="adminPanel" class="admin-panel hidden">
+            <h3 class="admin-title">👑 Panel de Administrador</h3>
+            <div style="color: #cbd5e1; font-size: 0.85rem;">Comisiones Acumuladas (10% por mesa)</div>
+            <div id="adminComisionDisplay" class="admin-val">$0</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Las comisiones se guardan automáticamente en la nube.</div>
+        </div>
+
         <div class="card">
             <div class="user-header">
                 <div class="user-info">
@@ -222,25 +222,21 @@
         <div class="modal-content">
             <h3 style="margin-top:0; color:var(--text-main);">Recargar Saldo</h3>
             <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:5px;">Envía tu recarga a esta cuenta Nequi:</p>
-            
             <div class="nequi-num">
                 <span style="font-size:1rem; background:#da1c5c; color:white; padding:2px 6px; border-radius:4px; font-weight:900;">N</span>
                 3123456789
             </div>
-            
             <p style="font-size:0.85rem; color:#cbd5e1; margin-bottom:20px; padding:0 10px;">Luego de transferir, haz clic abajo para reportar y enviar tu comprobante.</p>
-            <button id="btnWaConfirm" class="btn-wa-confirm">Enviar Comprobante</button>
-            <br>
+            <button id="btnWaConfirm" class="btn-wa-confirm">Enviar Comprobante</button><br>
             <button id="btnModalCerrar" class="btn-modal-cerrar">Cancelar</button>
         </div>
     </div>
-
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-    import { getDatabase, ref, onValue, off, set, push } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+    import { getDatabase, ref, onValue, off, set, push, update, increment } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",
@@ -256,7 +252,13 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // DOM Elementos
+    // ==========================================
+    // ⚠️ CONFIGURACIÓN DE ADMINISTRADOR ⚠️
+    // ==========================================
+    const CORREO_ADMIN = "tu_correo_admin@gmail.com"; // PON AQUÍ TU CORREO EXACTO
+    const NUMERO_WHATSAPP_ADMIN = "573123456789"; 
+    // ==========================================
+
     const authView = document.getElementById('authView'), gameView = document.getElementById('gameView');
     const emailInput = document.getElementById('email'), passInput = document.getElementById('pass');
     const txtUsername = document.getElementById('txtUsername'), saldoDisplay = document.getElementById('saldoDisplay');
@@ -266,32 +268,18 @@
     const cartaLocal = document.getElementById('cartaLocal'), cartaRival1 = document.getElementById('cartaRival1'), cartaRival2 = document.getElementById('cartaRival2');
     const lblLocal = document.getElementById('lblLocal'), lblRival1 = document.getElementById('lblRival1'), lblRival2 = document.getElementById('lblRival2'), historialLista = document.getElementById('historialLista');
     const nequiModal = document.getElementById('nequiModal'), btnWaConfirm = document.getElementById('btnWaConfirm'), btnModalCerrar = document.getElementById('btnModalCerrar');
+    const adminPanel = document.getElementById('adminPanel'), adminComisionDisplay = document.getElementById('adminComisionDisplay');
     const mesaBotones = document.querySelectorAll('.mesa-btn');
 
-    let saldoRef = null, historialRef = null;
+    let saldoRef = null, historialRef = null, adminComisionRef = null;
     let saldoActual = 0, apuestaActual = 2000, textoApuesta = "$2k", mesaSeleccionada = "N1", modoActual = "login";
 
-    // NÚMERO DESTINO DE WHATSAPP PARA RECARGAS Y RETIROS
-    const NUMERO_WHATSAPP_ADMIN = "573123456789"; 
-
-    // PINTAS Y VALORES CASINO
-    const pintas = [
-        { icon: '♠', color: '#090d16' }, 
-        { icon: '♥', color: '#ef4444' }, 
-        { icon: '♦', color: '#3b82f6' }, 
-        { icon: '♣', color: '#22c55e' }  
-    ];
+    const pintas = [{ icon: '♠', color: '#090d16' }, { icon: '♥', color: '#ef4444' }, { icon: '♦', color: '#3b82f6' }, { icon: '♣', color: '#22c55e' }];
     const nombresCartas = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
-    // INTERCAMBIADOR DE PESTAÑAS (LOGIN / REGISTRO)
-    tabLogin.addEventListener('click', () => {
-        modoActual = "login"; tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.innerText = "INGRESAR";
-    });
-    tabRegister.addEventListener('click', () => {
-        modoActual = "register"; tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.innerText = "REGISTRARSE";
-    });
+    tabLogin.addEventListener('click', () => { modoActual = "login"; tabLogin.classList.add('active'); tabRegister.classList.remove('active'); btnAction.innerText = "INGRESAR"; });
+    tabRegister.addEventListener('click', () => { modoActual = "register"; tabRegister.classList.add('active'); tabLogin.classList.remove('active'); btnAction.innerText = "REGISTRARSE"; });
 
-    // SELECTOR DE APUESTAS
     mesaBotones.forEach(btn => {
         btn.addEventListener('click', () => {
             mesaBotones.forEach(b => b.classList.remove('active')); btn.classList.add('active');
@@ -301,12 +289,24 @@
         });
     });
 
-    // OBSERVAR CAMBIO DE PESTAÑA AUTOMÁTICO SEGÚN SESIÓN
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             authView.classList.add('hidden'); gameView.classList.remove('hidden');
             const username = user.email.split('@')[0];
             txtUsername.innerText = username; lblLocal.innerText = username;
+
+            // SI EL USUARIO ES EL ADMINISTRADOR: MOSTRAR PANEL
+            if (user.email.toLowerCase() === CORREO_ADMIN.toLowerCase()) {
+                adminPanel.classList.remove('hidden');
+                adminComisionRef = ref(db, 'adminData/total_comisiones');
+                onValue(adminComisionRef, (snapshot) => {
+                    const comisionAcumulada = snapshot.val() || 0;
+                    adminComisionDisplay.innerText = `$${comisionAcumulada.toLocaleString('es-CO')}`;
+                });
+            } else {
+                adminPanel.classList.add('hidden');
+                if(adminComisionRef) off(adminComisionRef);
+            }
 
             saldoRef = ref(db, `usuarios/${user.uid}/saldo`);
             onValue(saldoRef, (snapshot) => {
@@ -327,42 +327,36 @@
             });
         } else {
             authView.classList.remove('hidden'); gameView.classList.add('hidden');
-            if (saldoRef) off(saldoRef); if (historialRef) off(historialRef);
+            if (saldoRef) off(saldoRef); if (historialRef) off(historialRef); if(adminComisionRef) off(adminComisionRef);
         }
     });
 
-    // EJECUTAR INGRESO O REGISTRO DIRECTO
     btnAction.addEventListener('click', async () => {
         const email = emailInput.value.trim(); const pass = passInput.value;
         if(!email || !pass) return alert("Rellena todos los campos.");
 
         if(modoActual === "login") {
             btnAction.innerText = "AUTENTICANDO...";
-            try { await signInWithEmailAndPassword(auth, email, pass); } 
-            catch(e) { btnAction.innerText = "INGRESAR"; alert("Error: Datos inválidos o sin red."); }
+            try { await signInWithEmailAndPassword(auth, email, pass); } catch(e) { btnAction.innerText = "INGRESAR"; alert("Error: Datos inválidos o sin red."); }
         } else {
             btnAction.innerText = "CREANDO CUENTA...";
             try {
                 const res = await createUserWithEmailAndPassword(auth, email, pass);
-                await set(ref(db, `usuarios/${res.user.uid}/saldo`), 0);
-                alert("¡Te has registrado con éxito!");
+                await set(ref(db, `usuarios/${res.user.uid}/saldo`), 0); alert("¡Te has registrado con éxito!");
             } catch(e) { btnAction.innerText = "REGISTRARSE"; alert("Fallo al registrar: Revisa que la clave tenga 6 caracteres mínimos."); }
         }
     });
 
     btnOut.addEventListener('click', () => signOut(auth));
 
-    // MANEJO DE MODAL NEQUI Y REDIRECCIÓN POSTERIOR (RECARGA)
     btnRecargar.addEventListener('click', () => nequiModal.classList.remove('hidden'));
     btnModalCerrar.addEventListener('click', () => nequiModal.classList.add('hidden'));
     
     btnWaConfirm.addEventListener('click', () => {
         const msg = `Hola, mi usuario es *${txtUsername.innerText}*. Ya realicé la transferencia a tu Nequi para la recarga en SuerteFácil. Aquí te adjunto mi comprobante de pago.`;
-        window.open(`https://wa.me/${NUMERO_WHATSAPP_ADMIN}?text=${encodeURIComponent(msg)}`, '_blank');
-        nequiModal.classList.add('hidden');
+        window.open(`https://wa.me/${NUMERO_WHATSAPP_ADMIN}?text=${encodeURIComponent(msg)}`, '_blank'); nequiModal.classList.add('hidden');
     });
 
-    // SISTEMA DE RETIRO POR WHATSAPP
     btnRetirar.addEventListener('click', () => {
         if(saldoActual <= 0) return alert("Aún no tienes saldo disponible para retirar.");
         const confirmar = confirm(`¿Deseas solicitar el retiro de tu saldo actual ($${saldoActual.toLocaleString('es-CO')})? Te enviaremos a WhatsApp para hablar con el administrador.`);
@@ -372,63 +366,46 @@
         }
     });
 
-    // RENDER DE CARTAS PROFESIONALES
     function armarEstructuraCarta(elementoDOM) {
         const valorIdx = Math.floor(Math.random() * nombresCartas.length);
-        const pinta = pintas[Math.floor(Math.random() * pintas.length)];
-        const texto = nombresCartas[valorIdx];
-
-        elementoDOM.innerHTML = `
-            <div class="pinta-mini" style="color: ${pinta.color}">${texto}</div>
-            <div style="font-size:1.3rem; margin-top:-15px;">${texto}</div>
-            <div class="pinta-centro" style="color: ${pinta.color}">${pinta.icon}</div>
-        `;
+        const pinta = pintas[Math.floor(Math.random() * pintas.length)]; const texto = nombresCartas[valorIdx];
+        elementoDOM.innerHTML = `<div class="pinta-mini" style="color: ${pinta.color}">${texto}</div><div style="font-size:1.3rem; margin-top:-15px;">${texto}</div><div class="pinta-centro" style="color: ${pinta.color}">${pinta.icon}</div>`;
         return valorIdx;
     }
 
-    // LÓGICA DE JUEGO BLINDADA CONTRA VISTAZOS DE CARTAS VIEJAS
     btnPlay.addEventListener('click', async () => {
         if (saldoActual < apuestaActual) return alert(`Saldo insuficiente para la mesa ${mesaSeleccionada}. Por favor, haz una recarga.`);
-        
         btnPlay.disabled = true; btnPlay.innerText = "REPARTIENDO CARTAS...";
         
-        // 1. VOLTEAMOS LAS CARTAS BOCA ABAJO INMEDIATAMENTE
         [containerLocal, containerRival1, containerRival2].forEach(c => c.classList.remove('voltear'));
         
-        // 2. ESPERAMOS A QUE TERMINEN DE VOLTEARSE HACIA ABAJO (600ms) PARA CAMBIAR LOS VALORES
         setTimeout(() => {
-            const pesoL = armarEstructuraCarta(cartaLocal);
-            const pesoR1 = armarEstructuraCarta(cartaRival1);
-            const pesoR2 = armarEstructuraCarta(cartaRival2);
+            const pesoL = armarEstructuraCarta(cartaLocal); const pesoR1 = armarEstructuraCarta(cartaRival1); const pesoR2 = armarEstructuraCarta(cartaRival2);
 
-            // 3. SE REVELAN A LOS 2 SEGUNDOS EXACTOS
-            setTimeout(() => {
+            setTimeout(async () => {
                 btnPlay.innerText = "¡REVELANDO JUGADAS!";
-                
                 [containerLocal, containerRival1, containerRival2].forEach(c => c.classList.add('voltear'));
 
                 const pesoMaxRival = Math.max(pesoR1, pesoR2);
                 let gano = pesoL > pesoMaxRival;
-
                 saldoActual = gano ? (saldoActual + (apuestaActual * 2)) : (saldoActual - apuestaActual);
                 saldoDisplay.innerText = `$${saldoActual.toLocaleString('es-CO')}`;
 
                 const user = auth.currentUser;
                 if(user) {
-                    set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual);
-                    push(ref(db, `usuarios/${user.uid}/historial`), {
-                        mesa: mesaSeleccionada, resultado: gano ? "GANÓ" : "PERDIÓ", monto: apuestaActual
-                    });
+                    try {
+                        // 1. Guardar saldo y registro del usuario
+                        await set(ref(db, `usuarios/${user.uid}/saldo`), saldoActual);
+                        await push(ref(db, `usuarios/${user.uid}/historial`), { mesa: mesaSeleccionada, resultado: gano ? "GANÓ" : "PERDIÓ", monto: apuestaActual });
+                        
+                        // 2. SUMAR COMISIÓN A LA NUBE GLOBAL (10% DEL VALOR DE LA MESA)
+                        const comisionDeLaCasa = apuestaActual * 0.10;
+                        await update(ref(db, 'adminData'), { total_comisiones: increment(comisionDeLaCasa) });
+                    } catch(error) { console.error("Error actualizando datos de partida:", error); }
                 }
 
-                // Habilitamos el botón después de 1 segundo para que vean el resultado antes de volver a jugar
-                setTimeout(() => {
-                    btnPlay.disabled = false; 
-                    btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`;
-                }, 1000);
-
-            }, 1400); // (600ms + 1400ms = 2000ms = 2 segundos exactos en total)
-
+                setTimeout(() => { btnPlay.disabled = false; btnPlay.innerText = `BUSCAR PARTIDA (${textoApuesta})`; }, 1000);
+            }, 1400); 
         }, 600);
     });
 </script>
