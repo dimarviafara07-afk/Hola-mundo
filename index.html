@@ -447,11 +447,9 @@
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = {'1v1':2,'3p':3};
 
-    // ===== TABS =====
     tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
     tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
 
-    // ===== RECUPERACIÓN =====
     btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
     btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
     btnRecovery.addEventListener('click',async()=>{
@@ -463,7 +461,6 @@
         btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';
     });
 
-    // ===== ACCESO =====
     async function verificarAcceso(){
         try{
             const cfg=(await get(ref(db,'configuracion'))).val()||{};
@@ -483,19 +480,16 @@
     });
     accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
-    // ===== RESET =====
     async function resetContador(c){if(confirm(`¿Reiniciar ${c}?`))await update(ref(db,'adminData'),{[c]:0});}
     btnResetComision.addEventListener('click',()=>resetContador('total_comisiones'));
     btnResetMovido.addEventListener('click',()=>resetContador('dinero_movido'));
     btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo');}});
 
-    // ===== CONFIG =====
     btnConfigSave.addEventListener('click',async()=>{
         await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});
         codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');
     });
 
-    // ===== UTILS =====
     function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO');}
     historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
     mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
@@ -511,7 +505,6 @@
 
     updatePotDisplay(2);
 
-    // ===== AUTH STATE =====
     onAuthStateChanged(auth,async(user)=>{
         if(user){
             currentUserId=user.uid;
@@ -533,49 +526,24 @@
                 const cfg=(await get(ref(db,'configuracion'))).val()||{};
                 configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
 
-                // ===== RECARGA CORREGIDA =====
-                btnAdminRecargar.onclick = async () => {
-                    const emailBuscar = adminUserEmail.value.trim().toLowerCase();
-                    const monto = parseInt(adminMontoRecarga.value);
-
-                    if (!emailBuscar || !monto || monto < 1000) {
-                        return alert('❌ Ingresa un email válido y un monto mínimo de $1.000');
-                    }
-
-                    try {
-                        const usersSnapshot = await get(ref(db, 'usuarios'));
-                        const users = usersSnapshot.val() || {};
-                        let uidEncontrado = null;
-                        let emailEncontrado = '';
-
-                        for (const uid in users) {
-                            const userData = users[uid];
-                            if (userData.email && userData.email.toLowerCase() === emailBuscar) {
-                                uidEncontrado = uid;
-                                emailEncontrado = userData.email;
-                                break;
-                            }
-                        }
-
-                        if (!uidEncontrado) {
-                            return alert('❌ Usuario no encontrado. Verifica el email: ' + emailBuscar);
-                        }
-
-                        await update(ref(db, `usuarios/${uidEncontrado}`), { saldo: increment(monto) });
-                        await push(ref(db, 'adminData/recargas'), { adminId: currentUserId, userId: uidEncontrado, email: emailEncontrado, monto: monto, timestamp: Date.now() });
-
+                btnAdminRecargar.onclick=async()=>{
+                    const emailBuscar=adminUserEmail.value.trim().toLowerCase();
+                    const monto=parseInt(adminMontoRecarga.value);
+                    if(!emailBuscar||!monto||monto<1000)return alert('❌ Ingresa un email válido y un monto mínimo de $1.000');
+                    try{
+                        const usersSnapshot=await get(ref(db,'usuarios'));
+                        const users=usersSnapshot.val()||{};
+                        let uidEncontrado=null,emailEncontrado='';
+                        for(const uid in users){const userData=users[uid];if(userData.email&&userData.email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=userData.email;break;}}
+                        if(!uidEncontrado)return alert('❌ Usuario no encontrado. Verifica el email: '+emailBuscar);
+                        await update(ref(db,`usuarios/${uidEncontrado}`),{saldo:increment(monto)});
+                        await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto:monto,timestamp:Date.now()});
                         alert(`✅ ¡Recarga exitosa!\n$${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);
-                        adminUserEmail.value = '';
-                        adminMontoRecarga.value = '';
-
-                    } catch (error) {
-                        console.error('Error en recarga:', error);
-                        alert('❌ Error al recargar: ' + error.message);
-                    }
+                        adminUserEmail.value='';adminMontoRecarga.value='';
+                    }catch(error){console.error('Error en recarga:',error);alert('❌ Error al recargar: '+error.message);}
                 };
             }else{adminPanel.classList.add('hidden');}
 
-            // Saldo con alerta visual
             onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{
                 saldoActual=snap.val()||0;
                 saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');
@@ -595,7 +563,6 @@
         }
     });
 
-    // ===== AUTH ACTION =====
     btnAction.addEventListener('click',async()=>{
         const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;
         if(!em||!pw)return alert('Completa todos los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
@@ -630,7 +597,6 @@
     function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;}
     function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`;});h+='</div>';tableContent.innerHTML=h;}
 
-    // ===== EMPAREJAMIENTO =====
     btnPlay.addEventListener('click',async()=>{
         if(!currentUserId)return;
         if(saldoActual<=0)return alert('❌ Tu saldo está en $0. Recarga para seguir jugando.');
@@ -670,9 +636,18 @@
                 const yoGane=ganador.uid===currentUserId,comision=jugadores.length===2?apuestaActual*0.05:apuestaActual*0.10,ganancia=totalPot-comision;
                 if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
                 jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
+
+                // ===== TRANSACCIÓN ATÓMICA PARA EVITAR SALTOS =====
+                const saldoRef=ref(db,`usuarios/${currentUserId}/saldo`);
+                await runTransaction(saldoRef,(saldoActualDB)=>{
+                    if(saldoActualDB===null)saldoActualDB=0;
+                    if(yoGane)return saldoActualDB+ganancia;
+                    else{const nuevoSaldo=saldoActualDB-apuestaActual;return Math.max(0,nuevoSaldo);}
+                });
+
                 try{
-                    if(yoGane){await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});}
-                    else{await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});}
+                    if(yoGane){await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});}
+                    else{await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});}
                 }catch(e){}
                 btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
                 setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);await update(ref(db,'adminData'),{partidas_jugando:increment(-1)});resetSearch();},4000);
