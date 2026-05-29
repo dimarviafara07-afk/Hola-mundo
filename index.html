@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SuerteFácil P2P</title>
+    <title>Royal High P2P</title>
     <style>
         :root {
             --bg-app: #0B1121;
@@ -94,7 +94,7 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
         .auth-logo { font-size: 1.7rem; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 1.8rem; color: var(--text-main); }
-        .auth-logo span { color: var(--primary); }
+        .auth-logo span { color: var(--gold); }
         .auth-tabs { display: flex; background: var(--bg-input); border-radius: var(--radius-sm); padding: 3px; margin-bottom: 1.3rem; border: 1px solid var(--border-subtle); }
         .auth-tab { flex: 1; padding: 11px; border: none; background: transparent; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; cursor: pointer; border-radius: 7px; transition: all 0.25s; }
         .auth-tab.active { background: var(--primary); color: #fff; font-weight: 700; }
@@ -112,7 +112,7 @@
             background: var(--bg-card); border-radius: var(--radius-lg); padding: 14px 16px; margin-bottom: 10px;
             display: flex; align-items: center; gap: 12px; flex-wrap: wrap; border: 1px solid var(--border-subtle); box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), #3B82F6); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: #fff; flex-shrink: 0; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--gold), #e8c97a); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; color: #0B1121; flex-shrink: 0; }
         .user-info { flex: 1; min-width: 0; }
         .user-name { font-weight: 600; font-size: 0.9rem; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .user-status { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 5px; }
@@ -290,7 +290,7 @@
     </div>
 
     <div id="authView" class="auth-screen">
-        <div class="auth-logo">Suerte<span>Fácil</span></div>
+        <div class="auth-logo">Royal<span>High</span></div>
         <div class="auth-tabs">
             <button id="tabLogin" class="auth-tab active">Iniciar sesión</button>
             <button id="tabRegister" class="auth-tab">Registrarse</button>
@@ -327,7 +327,7 @@
         </div>
 
         <div class="unified-header">
-            <div class="avatar" id="userAvatar">D</div>
+            <div class="avatar" id="userAvatar">R</div>
             <div class="user-info"><div class="user-name" id="txtUsername">Usuario</div><div class="user-status"><span class="status-dot"></span>En línea</div></div>
             <div class="balance-mini"><div class="balance-mini-label">Saldo</div><div class="balance-mini-amount" id="saldoDisplay">$0</div></div>
             <div class="header-actions">
@@ -553,12 +553,12 @@
     btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
     btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
     btnWaConfirm.addEventListener('click',()=>{
-        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Solicito recarga en SuerteFácil. Adjunto comprobante.`)}`,'_blank');
+        window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentUsername}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');
         nequiModal.classList.add('hidden');
     });
     btnRetirar.addEventListener('click',()=>{
         if(saldoActual<=0)return alert('Sin saldo');
-        if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi:`)}`,'_blank');
+        if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank');
     });
 
     function generarCarta(){return{peso:Math.floor(Math.random()*nombresCartas.length),texto:nombresCartas[Math.floor(Math.random()*nombresCartas.length)],pinta:pintas[Math.floor(Math.random()*pintas.length)]};}
@@ -591,8 +591,7 @@
                 let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
                 if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a);}
                 const yoGane=ganador.uid===currentUserId;
-                // 🆚 1vs1 = 5% | 👥 3 jugadores = 10%
-                const comision = jugadores.length === 2 ? apuestaActual * 0.05 : apuestaActual * 0.10;
+                const comision=jugadores.length===2?apuestaActual*0.05:apuestaActual*0.10;
                 const ganancia=totalPot-comision;
                 if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
                 jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
