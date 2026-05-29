@@ -6,54 +6,49 @@
     <title>SuerteFácil P2P</title>
     <style>
         :root {
-            /* Fondos - Negro/Carbón elegante */
-            --bg-app: #050505;
-            --bg-card: #0d0d0d;
-            --bg-card-hover: #141414;
-            --bg-input: #0a0a0a;
-            
-            /* Acento - Amarillo ámbar premium */
-            --accent: #e6b800;
-            --accent-hover: #cca300;
-            --accent-soft: rgba(230,184,0,0.08);
-            --accent-border: rgba(230,184,0,0.2);
-            --accent-glow: rgba(230,184,0,0.25);
-            
-            /* Dorado premium (para detalles) */
-            --gold: #d4a853;
-            --gold-hover: #c49640;
-            --gold-soft: rgba(212,168,83,0.08);
-            --gold-border: rgba(212,168,83,0.2);
-            
-            /* Estados */
-            --success: #e6b800;
-            --success-soft: rgba(230,184,0,0.08);
-            --success-border: rgba(230,184,0,0.2);
-            --danger: #ff6b6b;
-            --danger-soft: rgba(255,107,107,0.08);
-            --danger-border: rgba(255,107,107,0.2);
-            --warning: #f59e0b;
-            
-            /* Texto */
-            --text-main: #fafafa;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            
-            /* Bordes */
-            --border-subtle: #262626;
-            --border-active: #e6b800;
-            
-            /* Radios */
+            /* ------- FONDOS ------- */
+            --bg-app: #0B1121;
+            --bg-card: #111B2E;
+            --bg-card-hover: #162240;
+            --bg-input: #0F1A2C;
+
+            /* ------- ACCIÓN PRINCIPAL (AZUL) ------- */
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --primary-soft: rgba(37, 99, 235, 0.15);
+            --primary-border: #3B82F6;
+
+            /* ------- ESTADOS ------- */
+            --success: #16A34A;
+            --success-soft: rgba(22, 163, 74, 0.15);
+            --danger: #DC2626;
+            --danger-soft: rgba(220, 38, 38, 0.15);
+            --warning: #F59E0B;
+
+            /* ------- TEXTO ------- */
+            --text-main: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --text-muted: #475569;
+
+            /* ------- BORDES ------- */
+            --border-subtle: #1E293B;
+
+            /* ------- DORADO (detalles premium) ------- */
+            --gold: #c9a84c;
+            --gold-soft: rgba(201,168,76,0.1);
+            --gold-border: rgba(201,168,76,0.25);
+
+            /* ------- RADIOS ------- */
             --radius-xs: 6px;
             --radius-sm: 10px;
             --radius-md: 14px;
             --radius-lg: 18px;
             --radius-xl: 22px;
-            
-            /* Cartas - dorso */
-            --card-back-bg: linear-gradient(145deg, #0a0a0a 0%, #161616 50%, #0a0a0a 100%);
-            --card-back-border: #d4a853;
-            --card-back-pattern: rgba(212,168,83,0.2);
+
+            /* ------- CARTAS ------- */
+            --card-back-bg: linear-gradient(145deg, #0F1A2C 0%, #162240 50%, #0F1A2C 100%);
+            --card-back-border: #c9a84c;
+            --card-back-pattern: rgba(201,168,76,0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -81,7 +76,7 @@
             text-align: center;
             margin-top: 30px;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
         }
         .auth-logo {
             font-size: 1.7rem;
@@ -90,10 +85,7 @@
             margin-bottom: 1.8rem;
             color: var(--text-main);
         }
-        .auth-logo span { 
-            color: var(--accent);
-            text-shadow: 0 0 20px var(--accent-glow);
-        }
+        .auth-logo span { color: var(--primary); }
         .auth-tabs {
             display: flex;
             background: var(--bg-input);
@@ -115,8 +107,8 @@
             transition: all 0.25s;
         }
         .auth-tab.active { 
-            background: var(--accent); 
-            color: #050505;
+            background: var(--primary); 
+            color: #fff;
             font-weight: 700;
         }
         .auth-input {
@@ -132,16 +124,16 @@
         }
         .auth-input:focus { 
             outline: none; 
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(230,184,0,0.1);
+            border-color: var(--primary-border);
+            box-shadow: 0 0 0 3px var(--primary-soft);
         }
         .btn-primary {
             width: 100%;
             padding: 14px;
             border: none;
             border-radius: var(--radius-sm);
-            background: var(--accent);
-            color: #050505;
+            background: var(--primary);
+            color: #fff;
             font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
@@ -150,8 +142,8 @@
             letter-spacing: 0.5px;
         }
         .btn-primary:hover { 
-            background: var(--accent-hover);
-            box-shadow: 0 4px 20px var(--accent-glow);
+            background: var(--primary-hover);
+            box-shadow: 0 4px 20px rgba(37,99,235,0.3);
         }
         .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
@@ -166,21 +158,20 @@
             gap: 12px;
             flex-wrap: wrap;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
         .avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #f0c800);
+            background: linear-gradient(135deg, var(--primary), #3B82F6);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
             font-size: 1rem;
-            color: #050505;
+            color: #fff;
             flex-shrink: 0;
-            box-shadow: 0 0 15px var(--accent-glow);
         }
         .user-info { flex: 1; min-width: 0; }
         .user-name {
@@ -204,7 +195,7 @@
             border-radius: 50%;
             background: var(--success);
             animation: pulse-dot 2s infinite;
-            box-shadow: 0 0 6px var(--accent-glow);
+            box-shadow: 0 0 6px rgba(22,163,74,0.5);
         }
         @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
         .balance-mini { text-align: right; }
@@ -241,15 +232,15 @@
         .btn-dep { 
             background: var(--success-soft); 
             color: var(--success);
-            border: 1px solid var(--success-border);
+            border: 1px solid rgba(22,163,74,0.25);
         }
-        .btn-dep:hover { background: rgba(230,184,0,0.15); }
+        .btn-dep:hover { background: rgba(22,163,74,0.25); }
         .btn-wit { 
             background: var(--danger-soft); 
             color: var(--danger);
-            border: 1px solid var(--danger-border);
+            border: 1px solid rgba(220,38,38,0.25);
         }
-        .btn-wit:hover { background: rgba(255,107,107,0.15); }
+        .btn-wit:hover { background: rgba(220,38,38,0.25); }
         .btn-out { 
             background: transparent; 
             color: var(--text-muted); 
@@ -278,16 +269,16 @@
         }
         .comm-stat { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
         .comm-dot { width: 6px; height: 6px; border-radius: 50%; }
-        .comm-dot.yellow { background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); }
-        .comm-dot.gold { background: var(--gold); box-shadow: 0 0 6px rgba(212,168,83,0.4); }
-        .comm-dot.amber { background: var(--warning); box-shadow: 0 0 6px rgba(245,158,11,0.4); }
+        .comm-dot.green { background: var(--success); box-shadow: 0 0 6px rgba(22,163,74,0.5); }
+        .comm-dot.blue { background: var(--primary); box-shadow: 0 0 6px rgba(37,99,235,0.5); }
+        .comm-dot.amber { background: var(--warning); box-shadow: 0 0 6px rgba(245,158,11,0.5); }
         .membership-mini {
             margin-left: auto;
             font-size: 0.68rem;
             color: var(--text-muted);
             white-space: nowrap;
         }
-        .membership-mini strong { color: var(--gold); }
+        .membership-mini strong { color: var(--primary); }
 
         /* ========== GAME TABLE ========== */
         .game-table-main {
@@ -305,23 +296,23 @@
             transition: all 0.3s;
         }
         .game-table-main.active-game {
-            border-color: var(--accent);
-            box-shadow: 0 0 25px rgba(230,184,0,0.08);
+            border-color: var(--primary-border);
+            box-shadow: 0 0 25px rgba(37,99,235,0.08);
         }
         .table-felt {
-            background: linear-gradient(160deg, #0a1a14 0%, #0d2218 40%, #091410 100%);
+            background: linear-gradient(160deg, #0A1F14 0%, #0D2818 40%, #091A10 100%);
             border-radius: var(--radius-md);
             padding: 18px 10px;
             width: 100%;
-            border: 3px solid #3d2b1a;
+            border: 3px solid #4A3724;
             position: relative;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.3);
         }
         .table-felt::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at center, rgba(255,255,255,0.015) 0%, transparent 70%);
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.02) 0%, transparent 70%);
             border-radius: inherit;
             pointer-events: none;
         }
@@ -363,7 +354,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.35);
         }
         .card-back {
             background: var(--card-back-bg);
@@ -375,7 +366,7 @@
             content: '';
             position: absolute;
             inset: 5px;
-            border: 1.5px solid rgba(212,168,83,0.25);
+            border: 1.5px solid rgba(201,168,76,0.25);
             border-radius: 4px;
         }
         .card-back-pattern {
@@ -383,13 +374,13 @@
             z-index: 1;
             font-size: 1.3rem;
             font-weight: 700;
-            color: rgba(212,168,83,0.4);
+            color: rgba(201,168,76,0.4);
         }
         .card-front {
-            background: linear-gradient(150deg, #fafafa 0%, #f0f0f0 100%);
-            color: #0a0a0a;
+            background: linear-gradient(150deg, #ffffff 0%, #F8FAFC 100%);
+            color: #0F172A;
             transform: rotateY(180deg);
-            border: 2px solid #d4d4d4;
+            border: 2px solid #E2E8F0;
         }
         .card-value { font-size: 1.4rem; font-weight: 800; }
         .card-suit { font-size: 1.1rem; margin-top: 2px; }
@@ -404,9 +395,9 @@
             text-align: center;
         }
         .card-label.winner { 
-            color: var(--accent); 
+            color: var(--success); 
             font-weight: 700;
-            text-shadow: 0 0 10px var(--accent-glow);
+            text-shadow: 0 0 8px rgba(22,163,74,0.4);
         }
         .card-label.loser { color: var(--danger); }
         .table-empty-msg {
@@ -414,7 +405,7 @@
             font-size: 0.8rem;
             line-height: 1.5;
         }
-        .table-empty-msg strong { color: var(--accent); }
+        .table-empty-msg strong { color: var(--primary); }
 
         /* ========== SEARCH STATUS ========== */
         .search-inline {
@@ -443,8 +434,8 @@
             transition: all 0.3s;
         }
         .search-avatar.found { 
-            border-color: var(--accent); 
-            box-shadow: 0 0 14px var(--accent-glow);
+            border-color: var(--success); 
+            box-shadow: 0 0 14px rgba(22,163,74,0.2);
         }
         .search-avatar.searching { 
             border-color: var(--warning); 
@@ -452,7 +443,7 @@
         }
         @keyframes pulse-border { 
             0%,100%{ border-color: var(--warning); box-shadow: 0 0 8px rgba(245,158,11,0.2); } 
-            50%{ border-color: #fbbf24; box-shadow: 0 0 18px rgba(251,191,36,0.4); } 
+            50%{ border-color: #FBBF24; box-shadow: 0 0 18px rgba(251,191,36,0.4); } 
         }
         .search-name {
             font-size: 0.68rem;
@@ -476,7 +467,7 @@
             padding: 15px;
             margin-bottom: 10px;
             border: 1px solid var(--border-subtle);
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
         }
         .section-label {
             font-size: 0.68rem;
@@ -501,14 +492,14 @@
             color: var(--text-secondary);
         }
         .mode-chip:hover { 
-            border-color: var(--accent);
+            border-color: var(--primary-border);
             background: var(--bg-card-hover);
         }
         .mode-chip.selected {
-            border-color: var(--accent);
-            background: var(--accent-soft);
-            color: var(--accent);
-            box-shadow: 0 0 14px rgba(230,184,0,0.1);
+            border-color: var(--primary);
+            background: var(--primary-soft);
+            color: var(--primary);
+            box-shadow: 0 0 14px rgba(37,99,235,0.1);
         }
         .bet-row { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
         .bet-chip {
@@ -526,22 +517,22 @@
             color: var(--text-secondary);
         }
         .bet-chip:hover { 
-            border-color: var(--accent);
+            border-color: var(--primary-border);
             background: var(--bg-card-hover);
         }
         .bet-chip.selected {
-            border-color: var(--accent);
-            background: var(--accent-soft);
-            color: var(--accent);
-            box-shadow: 0 0 10px rgba(230,184,0,0.1);
+            border-color: var(--primary);
+            background: var(--primary-soft);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(37,99,235,0.1);
         }
         .btn-cta {
             width: 100%;
             padding: 15px;
             border: none;
             border-radius: var(--radius-sm);
-            background: var(--accent);
-            color: #050505;
+            background: var(--primary);
+            color: #fff;
             font-weight: 700;
             font-size: 0.95rem;
             cursor: pointer;
@@ -550,8 +541,8 @@
             letter-spacing: 1.2px;
         }
         .btn-cta:hover:not(:disabled) { 
-            background: var(--accent-hover);
-            box-shadow: 0 6px 25px var(--accent-glow);
+            background: var(--primary-hover);
+            box-shadow: 0 6px 25px rgba(37,99,235,0.35);
             transform: translateY(-1px);
         }
         .btn-cta:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -617,9 +608,9 @@
             border-bottom: 1px solid var(--border-subtle);
             color: var(--text-secondary);
         }
-        .result-win { color: var(--accent); font-weight: 600; }
+        .result-win { color: var(--success); font-weight: 600; }
         .result-lose { color: var(--danger); font-weight: 600; }
-        .amount-win { color: var(--accent); }
+        .amount-win { color: var(--success); }
         .amount-lose { color: var(--danger); }
         .history-empty {
             text-align: center;
@@ -632,7 +623,7 @@
         .modal-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.88);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -647,7 +638,7 @@
             max-width: 370px;
             text-align: center;
             border: 1px solid var(--gold-border);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
         }
         .modal-title {
             font-weight: 700;
@@ -661,16 +652,16 @@
             border-radius: var(--radius-sm);
             font-size: 1.25rem;
             font-weight: 700;
-            color: #e11d48;
+            color: #E11D48;
             margin: 12px 0;
             letter-spacing: 1px;
-            border: 1.5px solid #e11d48;
+            border: 1.5px solid #E11D48;
         }
         .btn-wa {
             width: 100%;
             padding: 13px;
-            background: var(--accent);
-            color: #050505;
+            background: var(--success);
+            color: #fff;
             border: none;
             border-radius: var(--radius-sm);
             font-weight: 700;
@@ -680,7 +671,7 @@
             letter-spacing: 0.5px;
             transition: all 0.2s;
         }
-        .btn-wa:hover { background: var(--accent-hover); }
+        .btn-wa:hover { background: #15803D; }
         .btn-modal-close {
             background: none;
             border: none;
@@ -699,7 +690,7 @@
             border-radius: var(--radius-md);
             padding: 15px;
             margin-bottom: 10px;
-            box-shadow: 0 4px 16px rgba(212,168,83,0.06);
+            box-shadow: 0 4px 16px rgba(201,168,76,0.06);
         }
         .admin-title {
             color: var(--gold);
@@ -745,12 +736,12 @@
         }
         .admin-recarga input:focus { 
             outline: none; 
-            border-color: var(--accent);
+            border-color: var(--primary-border);
         }
         .btn-admin-recargar {
             padding: 9px 14px;
-            background: var(--gold);
-            color: #050505;
+            background: var(--primary);
+            color: #fff;
             border: none;
             border-radius: var(--radius-xs);
             font-weight: 700;
@@ -759,7 +750,7 @@
             white-space: nowrap;
             transition: all 0.2s;
         }
-        .btn-admin-recargar:hover { background: var(--gold-hover); }
+        .btn-admin-recargar:hover { background: var(--primary-hover); }
 
         @media (max-width: 360px) {
             .card-wrapper { width: 58px; height: 82px; }
@@ -773,6 +764,7 @@
 
 <div class="app-container">
 
+    <!-- AUTH SCREEN -->
     <div id="authView" class="auth-screen">
         <div class="auth-logo">Suerte<span>Fácil</span></div>
         <div class="auth-tabs">
@@ -784,8 +776,10 @@
         <button id="btnAction" class="btn-primary">Ingresar</button>
     </div>
 
+    <!-- GAME VIEW -->
     <div id="gameView" class="hidden">
 
+        <!-- ADMIN PANEL -->
         <div id="adminPanel" class="admin-panel hidden">
             <div class="admin-title">✦ Panel de Control</div>
             <div class="admin-stats">
@@ -801,6 +795,7 @@
             </div>
         </div>
 
+        <!-- HEADER UNIFICADO -->
         <div class="unified-header">
             <div class="avatar" id="userAvatar">D</div>
             <div class="user-info">
@@ -818,15 +813,17 @@
             </div>
         </div>
 
+        <!-- COMMUNITY BAR -->
         <div class="community-bar">
             <div class="comm-stats">
-                <div class="comm-stat"><span class="comm-dot yellow"></span> <span id="statOnline">0</span> en línea</div>
-                <div class="comm-stat"><span class="comm-dot gold"></span> <span id="statPlaying">0</span> jugando</div>
+                <div class="comm-stat"><span class="comm-dot green"></span> <span id="statOnline">0</span> en línea</div>
+                <div class="comm-stat"><span class="comm-dot blue"></span> <span id="statPlaying">0</span> jugando</div>
                 <div class="comm-stat"><span class="comm-dot amber"></span> <span id="statWaiting">0</span> esperando</div>
             </div>
             <div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div>
         </div>
 
+        <!-- MESA DE JUEGO -->
         <div class="game-table-main" id="gameTableMain">
             <div class="table-felt" id="tableFelt">
                 <div id="tableContent">
@@ -835,6 +832,7 @@
             </div>
         </div>
 
+        <!-- CONTROLES -->
         <div class="controls-section">
             <div class="section-label">Modalidad</div>
             <div class="mode-row">
@@ -852,6 +850,7 @@
             <button id="btnPlay" class="btn-cta">Buscar Partida</button>
         </div>
 
+        <!-- HISTORIAL -->
         <div class="history-collapsible" id="historyCollapsible">
             <div class="history-header" id="historyHeader">
                 <span class="history-title">📊 Historial de partidas</span>
@@ -866,6 +865,7 @@
         </div>
     </div>
 
+    <!-- MODAL NEQUI -->
     <div id="nequiModal" class="modal-overlay hidden">
         <div class="modal-content">
             <div class="modal-title">Recargar Saldo</div>
@@ -926,10 +926,10 @@
     let esperandoPartida = false, currentMatchId = null;
 
     const pintas = [
-        { icon: '♠', color: '#171717' }, 
-        { icon: '♥', color: '#dc2626' }, 
-        { icon: '♦', color: '#6366f1' }, 
-        { icon: '♣', color: '#059669' }
+        { icon: '♠', color: '#1E293B' }, 
+        { icon: '♥', color: '#DC2626' }, 
+        { icon: '♦', color: '#2563EB' }, 
+        { icon: '♣', color: '#16A34A' }
     ];
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = { '1v1': 2, '3p': 3 };
@@ -961,7 +961,7 @@
         const maxJ = MAX_JUGADORES[modoJuego];
         let html = '<div class="cards-row">';
         for(let i = 0; i < maxJ; i++) {
-            html += `<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:#737373">?</div><div class="card-suit" style="color:#737373">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;
+            html += `<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div class="card-suit" style="color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;
         }
         html += '</div>';
         tableContent.innerHTML = html;
