@@ -526,21 +526,23 @@
                 const cfg=(await get(ref(db,'configuracion'))).val()||{};
                 configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
 
+                // ===== RECARGA CON TRANSACCIÓN ATÓMICA =====
                 btnAdminRecargar.onclick=async()=>{
                     const emailBuscar=adminUserEmail.value.trim().toLowerCase();
                     const monto=parseInt(adminMontoRecarga.value);
-                    if(!emailBuscar||!monto||monto<1000)return alert('❌ Ingresa un email válido y un monto mínimo de $1.000');
+                    if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');
                     try{
                         const usersSnapshot=await get(ref(db,'usuarios'));
                         const users=usersSnapshot.val()||{};
                         let uidEncontrado=null,emailEncontrado='';
-                        for(const uid in users){const userData=users[uid];if(userData.email&&userData.email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=userData.email;break;}}
-                        if(!uidEncontrado)return alert('❌ Usuario no encontrado. Verifica el email: '+emailBuscar);
-                        await update(ref(db,`usuarios/${uidEncontrado}`),{saldo:increment(monto)});
+                        for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break;}}
+                        if(!uidEncontrado)return alert('❌ Usuario no encontrado');
+                        const saldoRef=ref(db,`usuarios/${uidEncontrado}/saldo`);
+                        await runTransaction(saldoRef,(saldoActual)=>{return(saldoActual||0)+monto;});
                         await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto:monto,timestamp:Date.now()});
-                        alert(`✅ ¡Recarga exitosa!\n$${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);
+                        alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);
                         adminUserEmail.value='';adminMontoRecarga.value='';
-                    }catch(error){console.error('Error en recarga:',error);alert('❌ Error al recargar: '+error.message);}
+                    }catch(error){alert('❌ Error: '+error.message);}
                 };
             }else{adminPanel.classList.add('hidden');}
 
@@ -565,12 +567,12 @@
 
     btnAction.addEventListener('click',async()=>{
         const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;
-        if(!em||!pw)return alert('Completa todos los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
-        if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias para jugar');
+        if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
+        if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias');
         btnAction.disabled=true;
         try{
             if(tabLogin.classList.contains('active'))await signInWithEmailAndPassword(auth,em,pw);
-            else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});alert('¡Registro exitoso! Bienvenido a Royal High, '+alias+'!');}
+            else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});alert('¡Bienvenido a Royal High, '+alias+'!');}
         }catch(e){alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'));}
         btnAction.disabled=false;
     });
@@ -599,8 +601,8 @@
 
     btnPlay.addEventListener('click',async()=>{
         if(!currentUserId)return;
-        if(saldoActual<=0)return alert('❌ Tu saldo está en $0. Recarga para seguir jugando.');
-        if(saldoActual<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoActual.toLocaleString('es-CO')} pero necesitas $${apuestaActual.toLocaleString('es-CO')}`);
+        if(saldoActual<=0)return alert('❌ Saldo en $0. Recarga para jugar.');
+        if(saldoActual<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoActual.toLocaleString('es-CO')}, necesitas $${apuestaActual.toLocaleString('es-CO')}`);
         const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),maxJ=MAX_JUGADORES[modoJuego];
         if(esperandoPartida){await set(lobbyRef,null);await update(ref(db,`presencia/${currentUserId}`),{status:'online'});esperandoPartida=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');btnPlay.disabled=false;updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();return;}
         btnPlay.disabled=true;btnPlay.textContent='Buscando...';btnPlay.classList.add('canceling');esperandoPartida=true;
@@ -623,6 +625,7 @@
 
     function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});}
 
+    // ===== PARTIDA CON TRANSACCIÓN ATÓMICA (NO MODIFICA OTROS SALDOS) =====
     async function ejecutarPartida(matchId,lobbyData){
         currentMatchId=matchId;btnPlay.textContent='Repartiendo...';
         const matchSnap=await get(ref(db,`matches/${matchId}`));let matchData=matchSnap.val();
@@ -637,20 +640,22 @@
                 if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
                 jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
 
-                // ===== TRANSACCIÓN ATÓMICA PARA EVITAR SALTOS =====
+                // TRANSACCIÓN ATÓMICA - Solo modifica el saldo del usuario actual
                 const saldoRef=ref(db,`usuarios/${currentUserId}/saldo`);
                 await runTransaction(saldoRef,(saldoActualDB)=>{
                     if(saldoActualDB===null)saldoActualDB=0;
                     if(yoGane)return saldoActualDB+ganancia;
-                    else{const nuevoSaldo=saldoActualDB-apuestaActual;return Math.max(0,nuevoSaldo);}
+                    else return Math.max(0,saldoActualDB-apuestaActual);
                 });
 
-                try{
-                    if(yoGane){await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});}
-                    else{await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});}
-                }catch(e){}
+                // Historial (no modifica saldo)
+                await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:yoGane?'GANÓ':'PERDIÓ',monto:yoGane?ganancia:apuestaActual,timestamp:Date.now(),matchId,oponentes:jugadores.filter(j=>j.uid!==currentUserId).map(j=>j.alias)});
+
+                // AdminData (solo estadísticas, no toca saldos)
+                if(yoGane){await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot)});}
+
                 btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
-                setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);await update(ref(db,'adminData'),{partidas_jugando:increment(-1)});resetSearch();},4000);
+                setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);resetSearch();},4000);
             },1200);
         },800);
     }
