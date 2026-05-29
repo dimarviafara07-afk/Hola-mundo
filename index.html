@@ -442,6 +442,7 @@
     const nombresCartas = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"];
     const MAX_JUGADORES = {'1v1':2,'3p':3};
 
+    // RECUPERACIÓN
     btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
     btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
     btnRecovery.addEventListener('click',async()=>{
@@ -453,6 +454,7 @@
         btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';
     });
 
+    // ACCESO
     async function verificarAcceso(){
         try{
             const cfg=(await get(ref(db,'configuracion'))).val()||{};
@@ -464,7 +466,6 @@
             jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';
         }catch(e){codigoAcceso='4927';}
     }
-
     btnAccess.addEventListener('click',async()=>{
         const c=accessCode.value.trim();
         if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return;}
@@ -473,16 +474,19 @@
     });
     accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
+    // RESET
     async function resetContador(c){if(confirm(`¿Reiniciar ${c}?`))await update(ref(db,'adminData'),{[c]:0});}
     btnResetComision.addEventListener('click',()=>resetContador('total_comisiones'));
     btnResetMovido.addEventListener('click',()=>resetContador('dinero_movido'));
     btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo');}});
 
+    // CONFIG
     btnConfigSave.addEventListener('click',async()=>{
         await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});
         codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');
     });
 
+    // UTILS
     function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO');}
     historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
     tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');btnAction.textContent='Ingresar';});
@@ -500,6 +504,7 @@
 
     updatePotDisplay(2);
 
+    // ===== AUTH STATE =====
     onAuthStateChanged(auth,async(user)=>{
         if(user){
             currentUserId=user.uid;currentUsername=user.email.split('@')[0];
@@ -538,6 +543,7 @@
         }
     });
 
+    // AUTH ACTION
     btnAction.addEventListener('click',async()=>{
         const em=emailInput.value.trim(),pw=passInput.value;
         if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');
@@ -565,44 +571,222 @@
     function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;}
     function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`;});h+='</div>';tableContent.innerHTML=h;}
 
-    btnPlay.addEventListener('click',async()=>{
-        if(!currentUserId)return;if(saldoActual<apuestaActual)return alert('Saldo insuficiente');
-        const lr=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),mj=MAX_JUGADORES[modoJuego];
-        if(esperandoPartida){await set(lr,null);await update(ref(db,`presencia/${currentUserId}`),{status:'online'});esperandoPartida=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(mj);updateTablePreview();return;}
-        btnPlay.disabled=true;btnPlay.textContent='Buscando...';btnPlay.classList.add('canceling');esperandoPartida=true;
-        await update(ref(db,`presencia/${currentUserId}`),{status:'waiting'});renderSearchUI(1,mj);updatePotDisplay(1);
-        const result=await runTransaction(lr,lobby=>{if(!lobby||lobby.estado==='finalizado')return{host:currentUserId,jugadores:[currentUserId],estado:'esperando',creado:Date.now()};if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<mj){if(!lobby.jugadores.includes(currentUserId)){lobby.jugadores.push(currentUserId);if(lobby.jugadores.length===mj)lobby.estado='jugando';}return lobby;}return lobby;});
-        if(!result.snapshot.val()){resetSearch();return alert('Error');}
-        const listener=onValue(lr,async snap=>{const d=snap.val();if(!d?.jugadores){off(lr,listener);resetSearch();return;}renderSearchUI(d.jugadores.length,mj);updatePotDisplay(d.jugadores.length);if(d.estado==='jugando'&&d.matchId&&d.jugadores.length===mj){off(lr,listener);await update(ref(db,`presencia/${currentUserId}`),{status:'playing'});await ejecutarPartida(d.matchId);}});
-        setTimeout(async()=>{if((await get(lr)).val()?.jugadores?.length<mj){await set(lr,null);off(lr,listener);resetSearch();alert('Tiempo agotado');}},45000);
+    // ===== SISTEMA DE EMPAREJAMIENTO CORREGIDO =====
+    btnPlay.addEventListener('click', async () => {
+        if (!currentUserId) return;
+        if (saldoActual < apuestaActual) return alert('Saldo insuficiente');
+        
+        const lobbyRef = ref(db, `lobbies/${modoJuego}_${apuestaActual}`);
+        const maxJ = MAX_JUGADORES[modoJuego];
+        
+        if (esperandoPartida) {
+            await set(lobbyRef, null);
+            await update(ref(db, `presencia/${currentUserId}`), { status: 'online' });
+            esperandoPartida = false;
+            btnPlay.textContent = 'Buscar Partida';
+            btnPlay.classList.remove('canceling');
+            btnPlay.disabled = false;
+            updatePotDisplay(MAX_JUGADORES[modoJuego]);
+            updateTablePreview();
+            return;
+        }
+        
+        btnPlay.disabled = true;
+        btnPlay.textContent = 'Buscando...';
+        btnPlay.classList.add('canceling');
+        esperandoPartida = true;
+        
+        await update(ref(db, `presencia/${currentUserId}`), { status: 'waiting' });
+        renderSearchUI(1, maxJ);
+        updatePotDisplay(1);
+        
+        const result = await runTransaction(lobbyRef, (lobby) => {
+            if (!lobby || lobby.estado === 'finalizado') {
+                return {
+                    host: currentUserId,
+                    jugadores: [currentUserId],
+                    estado: 'esperando',
+                    creado: Date.now()
+                };
+            }
+            
+            if (lobby.estado === 'esperando' && lobby.jugadores && lobby.jugadores.length < maxJ) {
+                if (!lobby.jugadores.includes(currentUserId)) {
+                    lobby.jugadores.push(currentUserId);
+                    
+                    if (lobby.jugadores.length === maxJ) {
+                        lobby.estado = 'jugando';
+                        lobby.cartas = {};
+                        lobby.jugadores.forEach(uid => {
+                            lobby.cartas[uid] = generarCarta();
+                        });
+                    }
+                    return lobby;
+                }
+            }
+            
+            return lobby;
+        });
+        
+        const lobbyData = result.snapshot.val();
+        
+        if (!lobbyData) {
+            resetSearch();
+            return alert('Error al conectar con la sala');
+        }
+        
+        const listener = onValue(lobbyRef, async (snap) => {
+            const data = snap.val();
+            
+            if (!data || !data.jugadores) {
+                off(lobbyRef, listener);
+                resetSearch();
+                return;
+            }
+            
+            renderSearchUI(data.jugadores.length, maxJ);
+            updatePotDisplay(data.jugadores.length);
+            
+            if (data.estado === 'jugando' && data.matchId && data.jugadores.length === maxJ) {
+                off(lobbyRef, listener);
+                await update(ref(db, `presencia/${currentUserId}`), { status: 'playing' });
+                await ejecutarPartida(data.matchId, data);
+            }
+            else if (data.estado === 'jugando' && !data.matchId && data.jugadores.length === maxJ) {
+                const matchId = push(ref(db, 'matches')).key;
+                const matchData = {
+                    jugadores: data.jugadores.map(uid => ({
+                        uid: uid,
+                        username: uid === currentUserId ? currentUsername : 'Jugador',
+                        carta: data.cartas ? data.cartas[uid] : generarCarta()
+                    })),
+                    apuesta: apuestaActual,
+                    modalidad: modoJuego,
+                    creado: Date.now()
+                };
+                
+                await set(ref(db, `matches/${matchId}`), matchData);
+                await update(lobbyRef, { matchId: matchId });
+            }
+        });
+        
+        setTimeout(async () => {
+            const snap = await get(lobbyRef);
+            if (snap.val() && snap.val().jugadores && snap.val().jugadores.length < maxJ) {
+                await set(lobbyRef, null);
+                off(lobbyRef, listener);
+                resetSearch();
+                alert('Tiempo agotado. No se encontraron suficientes jugadores.');
+            }
+        }, 60000);
     });
 
-    function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});}
+    function resetSearch() {
+        esperandoPartida = false;
+        btnPlay.disabled = false;
+        btnPlay.textContent = 'Buscar Partida';
+        btnPlay.classList.remove('canceling');
+        updatePotDisplay(MAX_JUGADORES[modoJuego]);
+        updateTablePreview();
+        update(ref(db, `presencia/${currentUserId}`), { status: 'online' }).catch(() => {});
+    }
 
-    async function ejecutarPartida(matchId){
-        currentMatchId=matchId;btnPlay.textContent='Repartiendo...';
-        const data=(await get(ref(db,`matches/${matchId}`))).val();
-        if(!data?.jugadores){resetSearch();return;}
-        const jugadores=data.jugadores,miIdx=jugadores.findIndex(j=>j.uid===currentUserId),labels=jugadores.map((j,i)=>i===miIdx?'Tú':j.username);
-        const totalPot=apuestaActual*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores,labels);
-        setTimeout(()=>{btnPlay.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
-            setTimeout(async()=>{
-                const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);
-                let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
-                if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const o={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(o[b.carta.pinta.icon]||0)>(o[a.carta.pinta.icon]||0)?b:a);}
-                const yoGane=ganador.uid===currentUserId;
-                const comision=jugadores.length===2?apuestaActual*0.05:apuestaActual*0.10;
-                const ganancia=totalPot-comision;
-                if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
-                jugadores.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i];}else if(j.uid===currentUserId)lbl.classList.add('loser');});
-                try{
-                    if(yoGane){await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(ganancia)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:ganancia,timestamp:Date.now(),matchId});await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)});}
-                    else{await update(ref(db,`usuarios/${currentUserId}`),{saldo:increment(-apuestaActual)});await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});}
-                }catch(e){}
-                btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';
-                setTimeout(async()=>{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);await update(ref(db,'adminData'),{partidas_jugando:increment(-1)});resetSearch();},4000);
-            },1200);
-        },800);
+    async function ejecutarPartida(matchId, lobbyData) {
+        currentMatchId = matchId;
+        btnPlay.textContent = 'Repartiendo...';
+        
+        const matchSnap = await get(ref(db, `matches/${matchId}`));
+        let matchData = matchSnap.val();
+        
+        if (!matchData || !matchData.jugadores) {
+            const jugadores = (lobbyData.jugadores || []).map((uid, i) => ({
+                uid: uid,
+                username: uid === currentUserId ? currentUsername : ('Jugador ' + (i + 1)),
+                carta: lobbyData.cartas ? lobbyData.cartas[uid] : generarCarta()
+            }));
+            matchData = { jugadores, apuesta: apuestaActual, modalidad: modoJuego };
+            await set(ref(db, `matches/${matchId}`), matchData);
+        }
+        
+        const jugadores = matchData.jugadores;
+        const miIdx = jugadores.findIndex(j => j.uid === currentUserId);
+        const labels = jugadores.map((j, i) => i === miIdx ? 'Tú' : (j.username || 'Jugador ' + (i + 1)));
+        
+        const totalPot = apuestaActual * jugadores.length;
+        updatePotDisplay(jugadores.length);
+        renderGameCards(jugadores, labels);
+        
+        setTimeout(() => {
+            btnPlay.textContent = 'Revelando...';
+            document.querySelectorAll('.card-wrapper').forEach(cw => cw.classList.add('flipped'));
+            
+            setTimeout(async () => {
+                const pesos = jugadores.map(j => j.carta.peso);
+                const maxP = Math.max(...pesos);
+                let ganador = jugadores.filter(j => j.carta.peso === maxP)[0];
+                
+                if (jugadores.filter(j => j.carta.peso === maxP).length > 1) {
+                    const o = { '♠': 4, '♥': 3, '♦': 2, '♣': 1 };
+                    ganador = jugadores.filter(j => j.carta.peso === maxP).reduce((a, b) => 
+                        (o[b.carta.pinta.icon] || 0) > (o[a.carta.pinta.icon] || 0) ? b : a
+                    );
+                }
+                
+                const yoGane = ganador.uid === currentUserId;
+                const comision = jugadores.length === 2 ? apuestaActual * 0.05 : apuestaActual * 0.10;
+                const ganancia = totalPot - comision;
+                
+                if (yoGane && potAmount) {
+                    potAmount.classList.add('pot-won');
+                    setTimeout(() => potAmount.classList.remove('pot-won'), 600);
+                }
+                
+                jugadores.forEach((j, i) => {
+                    const lbl = document.getElementById('cl' + i);
+                    if (!lbl) return;
+                    lbl.classList.remove('winner', 'loser');
+                    if (j.uid === ganador.uid) {
+                        lbl.classList.add('winner');
+                        lbl.textContent = '🏆 ' + labels[i];
+                    } else if (j.uid === currentUserId) {
+                        lbl.classList.add('loser');
+                    }
+                });
+                
+                try {
+                    if (yoGane) {
+                        await update(ref(db, `usuarios/${currentUserId}`), { saldo: increment(ganancia) });
+                        await push(ref(db, `usuarios/${currentUserId}/historial`), {
+                            mesa: 'N1', resultado: 'GANÓ', monto: ganancia,
+                            timestamp: Date.now(), matchId
+                        });
+                        await update(ref(db, 'adminData'), {
+                            total_comisiones: increment(comision),
+                            dinero_movido: increment(totalPot),
+                            partidas_jugando: increment(1)
+                        });
+                    } else {
+                        await update(ref(db, `usuarios/${currentUserId}`), { saldo: increment(-apuestaActual) });
+                        await push(ref(db, `usuarios/${currentUserId}/historial`), {
+                            mesa: 'N1', resultado: 'PERDIÓ', monto: apuestaActual,
+                            timestamp: Date.now(), matchId
+                        });
+                    }
+                } catch (e) {
+                    console.error('Error actualizando Firebase:', e);
+                }
+                
+                btnPlay.textContent = yoGane ? '🎉 ¡Ganaste!' : '😔 Perdiste';
+                
+                setTimeout(async () => {
+                    await set(ref(db, `matches/${matchId}`), null);
+                    await set(ref(db, `lobbies/${modoJuego}_${apuestaActual}`), null);
+                    await update(ref(db, 'adminData'), { partidas_jugando: increment(-1) });
+                    resetSearch();
+                }, 4000);
+                
+            }, 1200);
+        }, 800);
     }
 
     window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()});});
