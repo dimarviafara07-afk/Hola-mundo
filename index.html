@@ -195,66 +195,42 @@ const mode1v1=document.getElementById('mode1v1'),mode3p=document.getElementById(
 let currentUserId=null,currentUsername='',currentAlias='',saldoActual=0,apuestaActual=2000,modoJuego='1v1',esperandoPartida=false,currentMatchId=null,codigoAcceso='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nombresCartas=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MAX_JUGADORES={'1v1':2,'3p':3};
 
-// 🔒 SISTEMA DE RESERVAS (Two-Phase Commit)
-const reservasActivas=new Map(); // matchId -> {uid, monto}
-const partidasProcesadas=new Set(); // Evitar doble procesamiento
+// 🔒 Protección contra doble procesamiento
+const partidasProcesadas=new Set();
+// 🔒 Flag para evitar múltiples ejecuciones simultáneas
+let ejecutandoPartida=false;
 
 const esperar=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
 
-// ===== BILLETERA CON RESERVAS =====
+// ✅ CORRECCIÓN #1: modificarSaldo atómico
 async function cargarSaldo(uid){
-    const snap=await get(ref(db,`usuarios/${uid}/saldo`));
-    return snap.val()||0;
+    const s=await get(ref(db,`usuarios/${uid}/saldo`));
+    return s.val()||0;
 }
 
-// ✅ FASE 1: RESERVAR (descuenta el saldo inmediatamente)
-async function reservarSaldo(uid,monto,matchId){
+async function modificarSaldo(uid,monto,concepto,matchId=null){
     const saldoRef=ref(db,`usuarios/${uid}/saldo`);
-    const reservaRef=ref(db,`reservas/${matchId}/${uid}`);
     
-    return await runTransaction(saldoRef,(saldo)=>{
-        const actual=saldo||0;
-        if(actual<monto)throw new Error('SALDO_INSUFICIENTE');
-        return actual-monto;
-    }).then(async()=>{
-        // Guardar la reserva
-        await set(reservaRef,{
-            monto:monto,
+    // Transacción atómica
+    await runTransaction(saldoRef,(s)=>{
+        const nuevo=(s||0)+monto;
+        if(nuevo<0)throw new Error('Saldo insuficiente');
+        return nuevo;
+    });
+    
+    // Registrar después (si falla, el saldo ya es correcto)
+    try{
+        await push(ref(db,`usuarios/${uid}/historial`),{
+            mesa:matchId?'N1':'ADMIN',
+            resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),
+            monto:Math.abs(monto),
             timestamp:Date.now(),
-            estado:'reservado'
+            matchId:matchId||'admin'
         });
-        reservasActivas.set(matchId,{uid,monto});
-        return true;
-    }).catch(e=>{
-        if(e.message==='SALDO_INSUFICIENTE')return false;
-        throw e;
-    });
-}
-
-// ✅ FASE 2a: LIBERAR RESERVA (devuelve el dinero al perdedor)
-async function liberarReserva(uid,monto,matchId){
-    const saldoRef=ref(db,`usuarios/${uid}/saldo`);
-    const reservaRef=ref(db,`reservas/${matchId}/${uid}`);
-    
-    await runTransaction(saldoRef,(saldo)=>{
-        return(saldo||0)+monto;
-    });
-    await update(reservaRef,{estado:'liberado',liberadoEn:Date.now()});
-    reservasActivas.delete(matchId);
-}
-
-// ✅ FASE 2b: PAGAR GANADOR (transfiere el pozo)
-async function pagarGanador(uid,monto,matchId){
-    const saldoRef=ref(db,`usuarios/${uid}/saldo`);
-    
-    await runTransaction(saldoRef,(saldo)=>{
-        return(saldo||0)+monto;
-    });
-    await set(ref(db,`reservas/${matchId}/${uid}`),{
-        monto:monto,
-        timestamp:Date.now(),
-        estado:'pagado'
-    });
+        await push(ref(db,`auditoria/${uid}`),{monto,concepto,timestamp:Date.now(),matchId:matchId||'admin'});
+    }catch(e){
+        console.warn('Error registrando historial (saldo ya actualizado):',e);
+    }
 }
 
 // ===== TABS =====
@@ -354,7 +330,7 @@ onAuthStateChanged(auth,async(user)=>{
             onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0});
             onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length});
             const cfg=(await get(ref(db,'configuracion'))).val()||{};configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
-            btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await runTransaction(ref(db,`usuarios/${uidEncontrado}/saldo`),(s)=>(s||0)+monto);await push(ref(db,`usuarios/${uidEncontrado}/historial`),{mesa:'ADMIN',resultado:'RECARGA',monto:monto,timestamp:Date.now()});await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);adminUserEmail.value='';adminMontoRecarga.value=''}catch(error){alert('❌ Error: '+error.message)}};
+            btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);adminUserEmail.value='';adminMontoRecarga.value=''}catch(error){alert('❌ Error: '+error.message)}};
         }else{adminPanel.classList.add('hidden')}
 
         onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('low','zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!'}else if(saldoActual<apuestaActual){saldoDisplay.classList.add('low')}});
@@ -370,22 +346,54 @@ btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
 btnWaConfirm.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');nequiModal.classList.add('hidden')});
 btnRetirar.addEventListener('click',()=>{if(saldoActual<=0)return alert('Sin saldo');if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank')});
 
-function generarCarta(){const vi=Math.floor(Math.random()*nombresCartas.length),pi=Math.floor(Math.random()*pintas.length);return{peso:vi,texto:nombresCartas[vi],pinta:pintas[pi]}}
-function renderSearchUI(e,t){let h='<div class="search-inline">';for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`}h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h}
-function renderGameCards(j,l){let h='<div class="cards-row">';j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`});h+='</div>';tableContent.innerHTML=h}
+// ✅ CORRECCIÓN #2: generarCarta determinista (sin Math.random en transacción)
+function generarCarta(seed=null){
+    let vi,pi;
+    if(seed!==null){
+        // Usar seed para ser determinista dentro de transacciones
+        vi=seed%nombresCartas.length;
+        pi=Math.floor(seed/nombresCartas.length)%pintas.length;
+    }else{
+        vi=Math.floor(Math.random()*nombresCartas.length);
+        pi=Math.floor(Math.random()*pintas.length);
+    }
+    return{peso:vi,texto:nombresCartas[vi],pinta:pintas[pi]};
+}
 
-// ===== EMPAREJAMIENTO CON RESERVAS =====
+function renderSearchUI(e,t){
+    let h='<div class="search-inline">';
+    for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`}
+    h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;
+}
+
+function renderGameCards(j,l){
+    let h='<div class="cards-row">';
+    j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`});
+    h+='</div>';tableContent.innerHTML=h;
+}
+
+// ===== EMPAREJAMIENTO CORREGIDO =====
 btnPlay.addEventListener('click',async()=>{
-    if(!currentUserId)return;
+    if(!currentUserId||ejecutandoPartida)return;
+    
     const saldoReal=await cargarSaldo(currentUserId);
     if(saldoReal<=0)return alert('❌ Saldo en $0. Recarga para jugar.');
     if(saldoReal<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoReal.toLocaleString('es-CO')}, necesitas $${apuestaActual.toLocaleString('es-CO')}`);
 
     const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),maxJ=MAX_JUGADORES[modoJuego];
 
+    // ✅ CORRECCIÓN #8: Cancelar búsqueda sin romper partidas activas
     if(esperandoPartida){
-        // Cancelar búsqueda
-        try{await set(lobbyRef,null)}catch(e){}
+        btnPlay.disabled=true;
+        btnPlay.textContent='Cancelando...';
+        try{
+            // Solo cancelar si el lobby está en espera y eres el host
+            const snap=await get(lobbyRef);
+            const lobby=snap.val();
+            if(lobby&&lobby.estado==='esperando'&&lobby.host===currentUserId){
+                await set(lobbyRef,null);
+            }
+        }catch(e){}
         await update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
         esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
         btnPlay.classList.remove('canceling','cooldown');
@@ -401,9 +409,18 @@ btnPlay.addEventListener('click',async()=>{
     let lobbyListener=null,timeoutId=null;
 
     try{
+        // ✅ CORRECCIÓN #2: Usar seed para cartas deterministas en transacción
+        const seed=Date.now();
+        
         const result=await runTransaction(lobbyRef,(lobby)=>{
             if(!lobby||lobby.estado==='finalizado'){
-                return{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()};
+                return{
+                    host:currentUserId,
+                    jugadores:[{uid:currentUserId,alias:currentAlias}],
+                    estado:'esperando',
+                    creado:Date.now(),
+                    seed:seed
+                };
             }
             if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){
                 const yaEsta=lobby.jugadores.some(j=>j.uid===currentUserId);
@@ -412,7 +429,11 @@ btnPlay.addEventListener('click',async()=>{
                     if(lobby.jugadores.length===maxJ){
                         lobby.estado='jugando';
                         lobby.cartas={};
-                        lobby.jugadores.forEach(j=>{lobby.cartas[j.uid]=generarCarta()});
+                        // Usar seed determinista
+                        const baseSeed=lobby.seed||seed;
+                        lobby.jugadores.forEach((j,i)=>{
+                            lobby.cartas[j.uid]=generarCarta(baseSeed+i);
+                        });
                     }
                     return lobby;
                 }
@@ -423,143 +444,205 @@ btnPlay.addEventListener('click',async()=>{
         const lobbyData=result.snapshot.val();
         if(!lobbyData){resetSearch();return alert('Error al conectar');}
 
+        // ✅ CORRECCIÓN #3 y #4: Listener que NO se dispara dos veces
+        let matchCreado=false; // Flag para evitar doble procesamiento
+        
         lobbyListener=onValue(lobbyRef,async(snap)=>{
             const data=snap.val();
-            if(!data||!data.jugadores){if(lobbyListener)off(lobbyRef,'value',lobbyListener);resetSearch();return}
-            renderSearchUI(data.jugadores.length,maxJ);updatePotDisplay(data.jugadores.length);
-
-            if(data.estado==='jugando'&&data.matchId){
+            
+            // Si el lobby desapareció
+            if(!data||!data.jugadores){
                 if(lobbyListener)off(lobbyRef,'value',lobbyListener);
                 if(timeoutId)clearTimeout(timeoutId);
-                if(partidasProcesadas.has(data.matchId)){resetSearch();return}
-                partidasProcesadas.add(data.matchId);
-                await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});
-                await ejecutarPartidaConReservas(data.matchId,data);
-            }else if(data.estado==='jugando'&&!data.matchId&&data.jugadores.length===maxJ){
+                if(!ejecutandoPartida)resetSearch();
+                return;
+            }
+            
+            renderSearchUI(data.jugadores.length,maxJ);
+            updatePotDisplay(data.jugadores.length);
+            
+            // ✅ CORRECCIÓN #3: Solo procesar UNA vez
+            if(data.estado==='jugando'&&data.jugadores.length===maxJ&&!matchCreado){
+                matchCreado=true; // Bloquear inmediatamente
+                
+                // Remover listener ANTES de cualquier operación
                 if(lobbyListener)off(lobbyRef,'value',lobbyListener);
                 if(timeoutId)clearTimeout(timeoutId);
-                const matchId=push(ref(db,'matches')).key;
-                const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};
-                await set(ref(db,`matches/${matchId}`),matchData);
-                await update(lobbyRef,{matchId:matchId});
-                partidasProcesadas.add(matchId);
-                await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});
-                await ejecutarPartidaConReservas(matchId,{...data,matchId});
+                
+                // Si no tiene matchId, crearlo
+                if(!data.matchId){
+                    const matchId=push(ref(db,'matches')).key;
+                    const matchData={
+                        jugadores:data.jugadores.map(j=>({
+                            uid:j.uid,
+                            alias:j.alias||'Jugador',
+                            carta:data.cartas?data.cartas[j.uid]:generarCarta()
+                        })),
+                        apuesta:apuestaActual,
+                        modalidad:modoJuego,
+                        creado:Date.now()
+                    };
+                    await set(ref(db,`matches/${matchId}`),matchData);
+                    await update(lobbyRef,{matchId:matchId});
+                    data.matchId=matchId;
+                }
+                
+                // ✅ CORRECCIÓN #4: Ejecutar partida UNA SOLA VEZ
+                if(!partidasProcesadas.has(data.matchId)){
+                    partidasProcesadas.add(data.matchId);
+                    ejecutandoPartida=true;
+                    await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});
+                    await ejecutarPartida(data.matchId,data);
+                    ejecutandoPartida=false;
+                }
             }
         });
 
+        // ✅ CORRECCIÓN #5: Timeout que no interfiere con partidas activas
         timeoutId=setTimeout(async()=>{
+            if(matchCreado)return; // Ya se está procesando la partida
             if(lobbyListener)off(lobbyRef,'value',lobbyListener);
+            
             const snap=await get(lobbyRef);
-            if(snap.val()&&snap.val().host===currentUserId)await set(lobbyRef,null).catch(()=>{});
-            resetSearch();
+            const data=snap.val();
+            // Solo cancelar si el lobby sigue en espera y somos el host
+            if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores.length<maxJ){
+                await set(lobbyRef,null).catch(()=>{});
+            }
+            if(!ejecutandoPartida)resetSearch();
         },60000);
+        
     }catch(error){
         console.error('Error:',error);
         if(lobbyListener)off(lobbyRef,'value',lobbyListener);
         if(timeoutId)clearTimeout(timeoutId);
-        resetSearch();
+        if(!ejecutandoPartida)resetSearch();
     }
 });
 
 function resetSearch(){
-    esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
+    esperandoPartida=false;
+    btnPlay.disabled=false;
+    btnPlay.textContent='Buscar Partida';
     btnPlay.classList.remove('canceling','cooldown');
-    updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();
+    updatePotDisplay(MAX_JUGADORES[modoJuego]);
+    updateTablePreview();
     update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
 }
 
-// ✅ NUEVA FUNCIÓN DE PARTIDA CON RESERVAS
-async function ejecutarPartidaConReservas(matchId,lobbyData){
+// ===== PARTIDA CORREGIDA =====
+async function ejecutarPartida(matchId,lobbyData){
     currentMatchId=matchId;
-    btnPlay.textContent='Procesando reservas...';
-    btnPlay.classList.remove('canceling');btnPlay.classList.add('cooldown');btnPlay.disabled=true;
+    btnPlay.textContent='Repartiendo cartas...';
+    btnPlay.classList.remove('canceling');
+    btnPlay.classList.add('cooldown');
+    btnPlay.disabled=true;
 
     try{
+        // ✅ CORRECCIÓN #4: Verificar si ya se procesó (idempotencia)
         const matchSnap=await get(ref(db,`matches/${matchId}`));
         let matchData=matchSnap.val();
+        
         if(!matchData||!matchData.jugadores){
-            matchData={jugadores:(lobbyData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()})),apuesta:apuestaActual,modalidad:modoJuego};
+            const jugadores=(lobbyData.jugadores||[]).map((j,i)=>({
+                uid:j.uid,
+                alias:j.alias||('Jugador '+(i+1)),
+                carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()
+            }));
+            matchData={jugadores,apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};
             await set(ref(db,`matches/${matchId}`),matchData).catch(()=>{});
         }
-
+        
         const jugadores=matchData.jugadores;
         const miIdx=jugadores.findIndex(j=>j.uid===currentUserId);
-        if(miIdx===-1){resetSearch();return}
-
-        // ✅ FASE 1: RESERVAR SALDOS DE TODOS LOS JUGADORES
-        btnPlay.textContent='Reservando apuestas...';
-        const reservas=[];
-        for(const jugador of jugadores){
-            if(jugador.uid===currentUserId){
-                const reservado=await reservarSaldo(jugador.uid,apuestaActual,matchId);
-                if(!reservado){alert('❌ Error al reservar tu saldo');resetSearch();return}
-                reservas.push({uid:jugador.uid,ok:true});
-            }else{
-                // Los otros jugadores reservan desde su propio cliente
-                const reservaRef=ref(db,`reservas/${matchId}/${jugador.uid}`);
-                const snap=await get(reservaRef);
-                if(!snap.val()){alert('❌ Un jugador no completó la reserva');resetSearch();return}
-                reservas.push({uid:jugador.uid,ok:true});
-            }
+        
+        // ✅ Validación: Verificar que el usuario es jugador real
+        if(miIdx===-1){
+            console.warn('⚠️ Espectador detectado');
+            resetSearch();
+            return;
         }
-
+        
         const labels=jugadores.map((j,i)=>i===miIdx?'Tú':(j.alias||'Jugador '+(i+1)));
         const totalPot=apuestaActual*jugadores.length;
-        updatePotDisplay(jugadores.length);renderGameCards(jugadores,labels);
+        updatePotDisplay(jugadores.length);
+        renderGameCards(jugadores,labels);
 
-        await esperar(1500);btnPlay.textContent='Revelando cartas...';
+        // Animación de reparto
+        await esperar(1500);
+        btnPlay.textContent='Revelando cartas...';
         document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
-        await esperar(1200);btnPlay.textContent='Calculando resultados...';
+
+        // Calculando resultados
+        await esperar(1200);
+        btnPlay.textContent='Calculando resultados...';
 
         // Determinar ganador
-        const pesos=jugadores.map(j=>j.carta.peso),maxP=Math.max(...pesos);
+        const pesos=jugadores.map(j=>j.carta.peso);
+        const maxP=Math.max(...pesos);
         let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
+        
+        // Desempate por pinta
         if(jugadores.filter(j=>j.carta.peso===maxP).length>1){
-            const prioridad={'♠':4,'♥':3,'♦':2,'♣':1};
-            ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(prioridad[b.carta.pinta.icon]||0)>(prioridad[a.carta.pinta.icon]||0)?b:a);
+            const prioridadPinta={'♠':4,'♥':3,'♦':2,'♣':1};
+            ganador=jugadores
+                .filter(j=>j.carta.peso===maxP)
+                .reduce((a,b)=>(prioridadPinta[b.carta.pinta.icon]||0)>(prioridadPinta[a.carta.pinta.icon]||0)?b:a);
         }
-
+        
         const yoGane=ganador.uid===currentUserId;
         const comision=jugadores.length===2?Math.floor(apuestaActual*0.05):Math.floor(apuestaActual*0.10);
         const gananciaNetaReal=(totalPot-apuestaActual)-comision;
 
-        if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
-
+        // Animación del pozo
+        if(yoGane&&potAmount){
+            potAmount.classList.add('pot-won');
+            setTimeout(()=>potAmount.classList.remove('pot-won'),600);
+        }
+        
+        // Etiquetas visuales
         jugadores.forEach((j,i)=>{
             const lbl=document.getElementById('cl'+i);
-            if(!lbl)return;lbl.classList.remove('winner','loser');
-            if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+labels[i]}
-            else if(j.uid===currentUserId)lbl.classList.add('loser');
+            if(!lbl)return;
+            lbl.classList.remove('winner','loser');
+            if(j.uid===ganador.uid){
+                lbl.classList.add('winner');
+                lbl.textContent='🏆 '+labels[i];
+            }else if(j.uid===currentUserId){
+                lbl.classList.add('loser');
+            }
         });
 
-        // ✅ FASE 2: LIQUIDAR RESERVAS
-        btnPlay.textContent='Liquidando pagos...';
-        
-        for(const jugador of jugadores){
-            if(jugador.uid===ganador.uid){
-                // Ganador: recibe el pozo menos comisión
-                await pagarGanador(jugador.uid,totalPot-comision,matchId);
-                if(jugador.uid===currentUserId){
-                    await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'GANÓ',monto:gananciaNetaReal,timestamp:Date.now(),matchId});
-                }
+        // ✅ CORRECCIÓN #1: Actualizar saldo de forma atómica
+        try{
+            if(yoGane){
+                await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida',matchId);
             }else{
-                // Perdedor: ya se descontó en la reserva, solo registramos
-                await liberarReserva(jugador.uid,0,matchId); // La reserva ya fue descontada
-                if(jugador.uid===currentUserId){
-                    await push(ref(db,`usuarios/${currentUserId}/historial`),{mesa:'N1',resultado:'PERDIÓ',monto:apuestaActual,timestamp:Date.now(),matchId});
-                }
+                await modificarSaldo(currentUserId,-apuestaActual,'Perdió partida',matchId);
             }
+            
+            // Actualizar admin data
+            await update(ref(db,'adminData'),{
+                total_comisiones:increment(comision),
+                dinero_movido:increment(totalPot),
+                partidas_jugando:increment(1)
+            }).catch(()=>{});
+        }catch(e){
+            console.error('Error actualizando saldo:',e);
         }
 
-        // Actualizar admin
-        await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}).catch(()=>{});
-
+        // Cooldown de seguridad
         btnPlay.textContent=yoGane?'🎉 ¡Ganaste! - Limpiando mesa...':'😔 Perdiste - Limpiando mesa...';
         await esperar(4000);
 
-        // Limpiar
-        try{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);await set(ref(db,`reservas/${matchId}`),null)}catch(e){}
+        // Limpieza final
+        try{
+            await set(ref(db,`matches/${matchId}`),null);
+            await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);
+        }catch(e){
+            console.error('Error limpiando:',e);
+        }
+        
     }catch(error){
         console.error('Error en partida:',error);
     }finally{
@@ -567,7 +650,12 @@ async function ejecutarPartidaConReservas(matchId,lobbyData){
     }
 }
 
-window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{})});
+// ✅ CORRECCIÓN #7: Cleanup al desconectar
+window.addEventListener('beforeunload',()=>{
+    if(currentUserId){
+        set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});
+    }
+});
 </script>
 </body>
 </html>
