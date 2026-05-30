@@ -82,7 +82,9 @@
         .game-table-main{background:var(--bg-card);border-radius:var(--radius-lg);padding:10px;margin-bottom:10px;border:1px solid var(--border-subtle);text-align:center;transition:all .3s}
         .table-felt{background:linear-gradient(160deg,#0A1F14 0%,#0D2818 40%,#091A10 100%);border-radius:var(--radius-md);padding:20px 10px;width:100%;border:3px solid #4A3724;position:relative;box-shadow:inset 0 0 40px rgba(0,0,0,0.3);min-height:160px;display:flex;align-items:center;justify-content:center}
         .cards-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap;position:relative;z-index:1}
-        .card-slot{display:flex;flex-direction:column;align-items:center;gap:7px}
+        .card-slot{display:flex;flex-direction:column;align-items:center;gap:7px;padding:4px;border-radius:12px;transition:all .3s}
+        .card-slot.tu-carta{border:2px solid var(--gold);background:rgba(201,168,76,0.1);box-shadow:0 0 15px rgba(201,168,76,0.15)}
+        .card-slot.oponente{border:2px solid transparent}
         .card-wrapper{perspective:800px;width:72px;height:100px}.card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
         .card-wrapper.flipped .card-inner{transform:rotateY(180deg)}.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,0.35)}
         .card-back{background:var(--card-back-bg);border:2px solid var(--card-back-border);position:relative;overflow:hidden}
@@ -92,6 +94,7 @@
         .card-value{font-size:1.4rem;font-weight:800}.card-suit{font-size:1.1rem;margin-top:2px}
         .card-label{font-size:.68rem;color:var(--text-secondary);font-weight:500;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center}
         .card-label.winner{color:var(--success);font-weight:700;text-shadow:0 0 8px rgba(22,163,74,0.4)}.card-label.loser{color:var(--danger)}
+        .card-label.tu-label{color:var(--gold);font-weight:700}
         .table-empty-msg{color:var(--text-muted);font-size:.8rem;line-height:1.5}.table-empty-msg strong{color:var(--primary)}
 
         .search-inline{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
@@ -153,8 +156,6 @@
         .config-row input{flex:1;min-width:0;padding:7px 9px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-card);color:var(--text-main);font-size:.72rem}
         .config-row input:focus{outline:none;border-color:var(--primary-border)}.btn-config-save{padding:8px 16px;background:var(--success);color:#fff;border:none;border-radius:var(--radius-xs);font-weight:600;font-size:.7rem;cursor:pointer;margin-top:4px}
         .btn-config-save:hover{background:#15803D}
-        
-        /* ✅ NUEVO: Botón de limpieza de lobbies */
         .btn-clean-lobbies{width:100%;padding:10px;background:rgba(245,158,11,0.15);color:var(--warning);border:1px solid rgba(245,158,11,0.3);border-radius:var(--radius-xs);font-weight:600;font-size:.7rem;cursor:pointer;margin-top:8px;transition:all .2s}
         .btn-clean-lobbies:hover{background:rgba(245,158,11,0.25)}
         
@@ -167,10 +168,7 @@
     <div id="accessView" class="access-screen hidden"><div class="access-icon">🔐</div><div class="access-title">Código de Acceso</div><div class="access-subtitle">Ingresa el código de la jornada</div><div class="jornada-status" id="jornadaStatus"><span class="jornada-dot"></span><span id="jornadaStatusText">Verificando...</span></div><input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4" inputmode="numeric"><div class="access-error" id="accessError"></div><button id="btnAccess" class="btn-primary btn-gold">Ingresar</button><div class="access-info">Horario: <span id="accessSchedule">--:--</span></div></div>
     <div id="authView" class="auth-screen"><div class="auth-logo">Royal<span>High</span></div><div class="auth-tabs"><button id="tabLogin" class="auth-tab active">Iniciar sesión</button><button id="tabRegister" class="auth-tab">Registrarse</button></div><input type="email" id="email" class="auth-input" placeholder="Correo electrónico"><input type="text" id="aliasInput" class="auth-input hidden" placeholder="Alias (nombre visible)" maxlength="15"><input type="password" id="pass" class="auth-input" placeholder="Contraseña"><button id="btnAction" class="btn-primary">Ingresar</button><button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button></div>
     <div id="gameView" class="hidden">
-        <div id="adminPanel" class="admin-panel hidden"><div class="admin-title">✦ Panel de Control</div><div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div><button class="admin-stat-reset" id="btnResetComision">↺</button></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div><button class="admin-stat-reset" id="btnResetMovido">↺</button></div></div><div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email del usuario" style="max-width:160px;"><input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:85px;"><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div><div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos a $0</button></div>
-        <!-- ✅ NUEVO: Botón para limpiar lobbies corruptos -->
-        <button id="btnCleanLobbies" class="btn-clean-lobbies">🧹 Limpiar Lobbies Corruptos</button>
-        <div class="admin-config"><div class="admin-config-title">⚙️ Jornada</div><div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4"></div><div class="config-row"><label>Inicio:</label><input type="time" id="configHoraInicio"></div><div class="config-row"><label>Fin:</label><input type="time" id="configHoraFin"></div><div class="config-row"><label>Activa:</label><input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;"></div><button id="btnConfigSave" class="btn-config-save">💾 Guardar</button></div></div>
+        <div id="adminPanel" class="admin-panel hidden"><div class="admin-title">✦ Panel de Control</div><div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div><button class="admin-stat-reset" id="btnResetComision">↺</button></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div><button class="admin-stat-reset" id="btnResetMovido">↺</button></div></div><div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email del usuario" style="max-width:160px;"><input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:85px;"><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div><div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos a $0</button></div><button id="btnCleanLobbies" class="btn-clean-lobbies">🧹 Limpiar Lobbies Corruptos</button><div class="admin-config"><div class="admin-config-title">⚙️ Jornada</div><div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4"></div><div class="config-row"><label>Inicio:</label><input type="time" id="configHoraInicio"></div><div class="config-row"><label>Fin:</label><input type="time" id="configHoraFin"></div><div class="config-row"><label>Activa:</label><input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;"></div><button id="btnConfigSave" class="btn-config-save">💾 Guardar</button></div></div>
         <div class="unified-header"><div class="avatar" id="userAvatar">R</div><div class="user-info"><div class="user-name" id="txtUsername">Usuario</div><div class="user-status"><span class="status-dot"></span>En línea</div></div><div class="balance-mini"><div class="balance-mini-label">Saldo</div><div class="balance-mini-amount" id="saldoDisplay">$0</div></div><div class="header-actions"><button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button><button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button><button id="btnLogout" class="btn-sm btn-out">Salir</button></div></div>
         <div class="community-bar"><div class="comm-stats"><div class="comm-stat"><span class="comm-dot green"></span><span id="statOnline">0</span> en línea</div><div class="comm-stat"><span class="comm-dot blue"></span><span id="statPlaying">0</span> jugando</div><div class="comm-stat"><span class="comm-dot amber"></span><span id="statWaiting">0</span> esperando</div></div><div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div></div>
         <div class="pot-container"><div class="pot-label">Pozo acumulado</div><div class="pot-amount" id="potAmount">$0</div></div>
@@ -184,7 +182,7 @@
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import{getDatabase,ref,onValue,off,set,push,update,increment,onDisconnect,runTransaction,get,remove}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import{getDatabase,ref,onValue,off,set,push,update,increment,onDisconnect,runTransaction,get}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
@@ -205,152 +203,63 @@ const btnCleanLobbies=document.getElementById('btnCleanLobbies');
 let currentUserId=null,currentUsername='',currentAlias='',saldoActual=0,apuestaActual=2000,modoJuego='1v1',esperandoPartida=false,currentMatchId=null,codigoAcceso='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nombresCartas=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MAX_JUGADORES={'1v1':2,'3p':3};
 
-// 🔒 Protección contra doble procesamiento
 const partidasProcesadas=new Set();
-// 🔒 Flag para evitar múltiples ejecuciones simultáneas
 let ejecutandoPartida=false;
 
 const esperar=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
 
-// ✅ CORRECCIÓN #1: modificarSaldo atómico
-async function cargarSaldo(uid){
-    const s=await get(ref(db,`usuarios/${uid}/saldo`));
-    return s.val()||0;
-}
+async function cargarSaldo(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
 
 async function modificarSaldo(uid,monto,concepto,matchId=null){
     const saldoRef=ref(db,`usuarios/${uid}/saldo`);
-    
-    // Transacción atómica
-    await runTransaction(saldoRef,(s)=>{
-        const nuevo=(s||0)+monto;
-        if(nuevo<0)throw new Error('Saldo insuficiente');
-        return nuevo;
-    });
-    
-    // Registrar después (si falla, el saldo ya es correcto)
+    await runTransaction(saldoRef,(s)=>{const nuevo=(s||0)+monto;if(nuevo<0)throw new Error('Saldo insuficiente');return nuevo;});
     try{
-        await push(ref(db,`usuarios/${uid}/historial`),{
-            mesa:matchId?'N1':'ADMIN',
-            resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),
-            monto:Math.abs(monto),
-            timestamp:Date.now(),
-            matchId:matchId||'admin'
-        });
+        await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});
         await push(ref(db,`auditoria/${uid}`),{monto,concepto,timestamp:Date.now(),matchId:matchId||'admin'});
-    }catch(e){
-        console.warn('Error registrando historial (saldo ya actualizado):',e);
-    }
+    }catch(e){console.warn('Error historial:',e);}
 }
 
 // ===== TABS =====
-tabLogin.addEventListener('click',()=>{
-    tabLogin.classList.add('active');tabRegister.classList.remove('active');
-    aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';
-});
-tabRegister.addEventListener('click',()=>{
-    tabRegister.classList.add('active');tabLogin.classList.remove('active');
-    aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';
-});
+tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
+tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
 
 // ===== RECUPERACIÓN =====
-btnForgotPassword.addEventListener('click',()=>{
-    authView.classList.add('hidden');recoveryView.classList.remove('hidden');
-    recoveryEmail.value=emailInput.value;
-});
-btnBackToLogin.addEventListener('click',()=>{
-    recoveryView.classList.add('hidden');authView.classList.remove('hidden');
-    recoveryMsg.textContent='';
-});
-btnRecovery.addEventListener('click',async()=>{
-    const e=recoveryEmail.value.trim();
-    if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return}
-    btnRecovery.disabled=true;btnRecovery.textContent='Enviando...';
-    try{
-        await sendPasswordResetEmail(auth,e);
-        recoveryMsg.textContent='✅ Correo enviado.';recoveryEmail.value='';
-    }catch(err){
-        recoveryMsg.textContent=err.code==='auth/user-not-found'?'❌ No existe':'❌ Error';
-    }
-    btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';
-});
+btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
+btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
+btnRecovery.addEventListener('click',async()=>{const e=recoveryEmail.value.trim();if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return}btnRecovery.disabled=true;btnRecovery.textContent='Enviando...';try{await sendPasswordResetEmail(auth,e);recoveryMsg.textContent='✅ Correo enviado.';recoveryEmail.value='';}catch(err){recoveryMsg.textContent=err.code==='auth/user-not-found'?'❌ No existe':'❌ Error';}btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';});
 
 // ===== ACCESO =====
 async function verificarAcceso(){
-    try{
-        const cfg=(await get(ref(db,'configuracion'))).val()||{};
-        codigoAcceso=cfg.codigo_acceso||'4927';
-        const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';
-        accessSchedule.textContent=`${hi} a ${hf}`;
-        const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');
-        jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';
-        jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';
-    }catch(e){codigoAcceso='4927';}
+    try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';accessSchedule.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}
 }
 
-btnAccess.addEventListener('click',async()=>{
-    const c=accessCode.value.trim();
-    if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}
-    if(c===codigoAcceso){
-        accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');
-    }else{
-        accessError.textContent='Código incorrecto';accessCode.value='';accessCode.focus();
-    }
-});
-accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click()});
+btnAccess.addEventListener('click',async()=>{const c=accessCode.value.trim();if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');}else{accessError.textContent='Código incorrecto';accessCode.value='';accessCode.focus();}});
+accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
 // ===== RESET =====
 btnResetComision.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
 btnResetMovido.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
 btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
 
-// ✅ NUEVO: Limpiar lobbies corruptos
+// ✅ LIMPIAR LOBBIES
 btnCleanLobbies.addEventListener('click',async()=>{
-    if(!confirm('¿Limpiar TODOS los lobbies? Esto puede cancelar partidas en espera.'))return;
-    btnCleanLobbies.disabled=true;
-    btnCleanLobbies.textContent='Limpiando...';
-    
-    const modalidades=['1v1','3p'];
-    const montos=[2000,4000,8000,16000,32000];
-    let limpiados=0;
-    
-    for(const mod of modalidades){
-        for(const monto of montos){
-            const lobbyRef=ref(db,`lobbies/${mod}_${monto}`);
-            const snap=await get(lobbyRef);
-            const lobby=snap.val();
-            
-            // Limpiar si está corrupto o abandonado
-            if(lobby){
-                const corrupto=lobby.estado==='jugando'&&!lobby.matchId;
-                const abandonado=lobby.creado&&(Date.now()-lobby.creado>60000)&&lobby.estado==='esperando';
-                
-                if(corrupto||abandonado){
-                    await set(lobbyRef,null);
-                    limpiados++;
-                    console.log(`🧹 Limpiado lobby corrupto: ${mod}_${monto}`);
-                }
-            }
-        }
-    }
-    
-    btnCleanLobbies.disabled=false;
-    btnCleanLobbies.textContent='🧹 Limpiar Lobbies Corruptos';
-    alert(`✅ ${limpiados} lobbies limpiados. ¡Prueba jugar 2K ahora!`);
+    if(!confirm('¿Limpiar TODOS los lobbies?'))return;
+    btnCleanLobbies.disabled=true;btnCleanLobbies.textContent='Limpiando...';
+    const modalidades=['1v1','3p'];const montos=[2000,4000,8000,16000,32000];let limpiados=0;
+    for(const mod of modalidades){for(const monto of montos){const lobbyRef=ref(db,`lobbies/${mod}_${monto}`);const snap=await get(lobbyRef);const lobby=snap.val();if(lobby){const corrupto=lobby.estado==='jugando'&&!lobby.matchId;const abandonado=lobby.creado&&(Date.now()-lobby.creado>60000)&&lobby.estado==='esperando';if(corrupto||abandonado){await set(lobbyRef,null);limpiados++;}}}}
+    btnCleanLobbies.disabled=false;btnCleanLobbies.textContent='🧹 Limpiar Lobbies Corruptos';
+    alert(`✅ ${limpiados} lobbies limpiados.`);
 });
 
 // ===== CONFIG =====
-btnConfigSave.addEventListener('click',async()=>{
-    await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});
-    codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');
-});
+btnConfigSave.addEventListener('click',async()=>{await set(ref(db,'configuracion'),{codigo_acceso:configCodigo.value.trim()||'4927',jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});codigoAcceso=configCodigo.value.trim()||'4927';alert('✅ Guardado');});
 
 // ===== UTILS =====
 function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO')}
 historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
-mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview()});
-mode3p.addEventListener('click',()=>{if(esperandoPartida)return;mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview()});
-betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego])})});
+mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
+mode3p.addEventListener('click',()=>{if(esperandoPartida)return;mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
+betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);console.log('💰 Apuesta cambiada a:',apuestaActual);updatePotDisplay(MAX_JUGADORES[modoJuego]);})});
 
 function updateTablePreview(){
     if(esperandoPartida)return;
@@ -366,55 +275,80 @@ onAuthStateChanged(auth,async(user)=>{
     if(user){
         currentUserId=user.uid;const userSnap=await get(ref(db,`usuarios/${user.uid}`));const userData=userSnap.val()||{};currentUsername=user.email.split('@')[0];currentAlias=userData.alias||currentUsername;
         const isAdmin=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();authView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');
-        if(isAdmin){gameView.classList.remove('hidden')}else{await verificarAcceso();accessView.classList.remove('hidden')}
+        if(isAdmin){gameView.classList.remove('hidden');}else{await verificarAcceso();accessView.classList.remove('hidden');}
         txtUsername.textContent=currentAlias;userAvatar.textContent=currentAlias.charAt(0).toUpperCase();updateTablePreview();
-        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,alias:currentAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()})}});
+        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,alias:currentAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
 
-        if(isAdmin){
-            adminPanel.classList.remove('hidden');
-            btnCleanLobbies.classList.remove('hidden');
-            onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0});
-            onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length});
-            const cfg=(await get(ref(db,'configuracion'))).val()||{};configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;
-            btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);adminUserEmail.value='';adminMontoRecarga.value=''}catch(error){alert('❌ Error: '+error.message)}};
-        }else{adminPanel.classList.add('hidden');btnCleanLobbies.classList.add('hidden')}
+        if(isAdmin){adminPanel.classList.remove('hidden');btnCleanLobbies.classList.remove('hidden');onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});const cfg=(await get(ref(db,'configuracion'))).val()||{};configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break;}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});alert(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`);adminUserEmail.value='';adminMontoRecarga.value='';}catch(error){alert('❌ Error: '+error.message);}};}else{adminPanel.classList.add('hidden');btnCleanLobbies.classList.add('hidden');}
 
-        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('low','zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!'}else if(saldoActual<apuestaActual){saldoDisplay.classList.add('low')}});
-        onValue(ref(db,`usuarios/${user.uid}/historial`),snap=>{historialBody.innerHTML='';const d=snap.val();if(d){Object.values(d).reverse().slice(0,10).forEach(i=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`})}else historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>'});
-        onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS});
-    }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');verificarAcceso()}
+        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('low','zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!';}else if(saldoActual<apuestaActual){saldoDisplay.classList.add('low');}});
+        onValue(ref(db,`usuarios/${user.uid}/historial`),snap=>{historialBody.innerHTML='';const d=snap.val();if(d){Object.values(d).reverse().slice(0,10).forEach(i=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});}else historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';});
+        onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
+    }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');verificarAcceso();}
 });
 
-btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias');btnAction.disabled=true;try{if(tabLogin.classList.contains('active'))await signInWithEmailAndPassword(auth,em,pw);else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});alert('¡Bienvenido a Royal High, '+alias+'!')}}catch(e){alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'))}btnAction.disabled=false});
+btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias');btnAction.disabled=true;try{if(tabLogin.classList.contains('active'))await signInWithEmailAndPassword(auth,em,pw);else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});alert('¡Bienvenido a Royal High, '+alias+'!');}}catch(e){alert('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'));}btnAction.disabled=false;});
 btnLogout.addEventListener('click',()=>signOut(auth));
 btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
 btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
-btnWaConfirm.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');nequiModal.classList.add('hidden')});
-btnRetirar.addEventListener('click',()=>{if(saldoActual<=0)return alert('Sin saldo');if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank')});
+btnWaConfirm.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');nequiModal.classList.add('hidden');});
+btnRetirar.addEventListener('click',()=>{if(saldoActual<=0)return alert('Sin saldo');if(confirm(`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`))window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank');});
 
-// ✅ CORRECCIÓN #2: generarCarta determinista (sin Math.random en transacción)
-function generarCarta(seed=null){
-    let vi,pi;
-    if(seed!==null){
-        vi=seed%nombresCartas.length;
-        pi=Math.floor(seed/nombresCartas.length)%pintas.length;
-    }else{
-        vi=Math.floor(Math.random()*nombresCartas.length);
-        pi=Math.floor(Math.random()*pintas.length);
-    }
+// ✅ CORRECCIÓN #3: Cartas verdaderamente aleatorias usando crypto
+function generarCarta(){
+    // Usar crypto.getRandomValues para verdadera aleatoriedad
+    const array=new Uint32Array(2);
+    crypto.getRandomValues(array);
+    const vi=array[0]%nombresCartas.length;
+    const pi=array[1]%pintas.length;
     return{peso:vi,texto:nombresCartas[vi],pinta:pintas[pi]};
 }
 
 function renderSearchUI(e,t){
     let h='<div class="search-inline">';
-    for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`}
+    for(let i=0;i<t;i++){const o=i<e;h+=`<div class="search-player"><div class="search-avatar ${o?'found':'searching'}">${o?'👤':'⏳'}</div><div class="search-name">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}
     h+=`</div><div class="search-progress-inline">${e}/${t}</div>`;tableContent.innerHTML=h;
 }
 
-function renderGameCards(j,l){
+// ✅ CORRECCIÓN #2: Cartas SIEMPRE en orden TÚ vs OPONENTE
+function renderGameCards(jugadoresOriginales){
+    // Reordenar: el usuario actual SIEMPRE primero (izquierda)
+    const reordenados=[];
+    const labels=[];
+    
+    // Primero el usuario actual
+    const yo=jugadoresOriginales.find(j=>j.uid===currentUserId);
+    if(yo){
+        reordenados.push(yo);
+        labels.push('Tú');
+    }
+    
+    // Luego los oponentes
+    jugadoresOriginales.forEach(j=>{
+        if(j.uid!==currentUserId){
+            reordenados.push(j);
+            labels.push(j.alias||'Oponente');
+        }
+    });
+    
     let h='<div class="cards-row">';
-    j.forEach((p,i)=>{h+=`<div class="card-slot"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label" id="cl${i}">${l[i]||''}</div></div>`});
-    h+='</div>';tableContent.innerHTML=h;
+    reordenados.forEach((p,i)=>{
+        const esTuCarta=p.uid===currentUserId;
+        h+=`<div class="card-slot ${esTuCarta?'tu-carta':'oponente'}">
+            <div class="card-wrapper" id="cw${i}">
+                <div class="card-inner">
+                    <div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div>
+                    <div class="card-face card-front">
+                        <div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div>
+                        <div class="card-suit" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-label ${esTuCarta?'tu-label':''}" id="cl${i}">${labels[i]||''}</div>
+        </div>`;
+    });
+    h+='</div>';
+    tableContent.innerHTML=h;
 }
 
 // ===== EMPAREJAMIENTO CORREGIDO =====
@@ -425,18 +359,19 @@ btnPlay.addEventListener('click',async()=>{
     if(saldoReal<=0)return alert('❌ Saldo en $0. Recarga para jugar.');
     if(saldoReal<apuestaActual)return alert(`❌ Saldo insuficiente. Tienes $${saldoReal.toLocaleString('es-CO')}, necesitas $${apuestaActual.toLocaleString('es-CO')}`);
 
-    const lobbyRef=ref(db,`lobbies/${modoJuego}_${apuestaActual}`),maxJ=MAX_JUGADORES[modoJuego];
+    // ✅ CORRECCIÓN #1: Asegurar que apuestaActual es number y usar la clave correcta
+    const apuesta=Number(apuestaActual);
+    const lobbyPath=`lobbies/${modoJuego}_${apuesta}`;
+    console.log('🔍 Creando lobby en:',lobbyPath,'con apuesta:',apuesta);
+    const lobbyRef=ref(db,lobbyPath);
+    const maxJ=MAX_JUGADORES[modoJuego];
 
-    // Cancelar búsqueda
     if(esperandoPartida){
-        btnPlay.disabled=true;
-        btnPlay.textContent='Cancelando...';
+        btnPlay.disabled=true;btnPlay.textContent='Cancelando...';
         try{
             const snap=await get(lobbyRef);
             const lobby=snap.val();
-            if(lobby&&lobby.estado==='esperando'&&lobby.host===currentUserId){
-                await set(lobbyRef,null);
-            }
+            if(lobby&&lobby.estado==='esperando'&&lobby.host===currentUserId){await set(lobbyRef,null);}
         }catch(e){}
         await update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
         esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
@@ -453,27 +388,15 @@ btnPlay.addEventListener('click',async()=>{
     let lobbyListener=null,timeoutId=null;
 
     try{
-        const seed=Date.now();
-        
-        // ✅ CORRECCIÓN DEL 2K: Transacción que detecta y limpia lobbies corruptos
         const result=await runTransaction(lobbyRef,(lobby)=>{
-            // Si el lobby está corrupto (jugando sin matchId) o abandonado (>60s en espera), limpiarlo
             const ahora=Date.now();
             const corrupto=lobby&&lobby.estado==='jugando'&&!lobby.matchId;
             const abandonado=lobby&&lobby.estado==='esperando'&&lobby.creado&&(ahora-lobby.creado>60000);
             
             if(!lobby||lobby.estado==='finalizado'||corrupto||abandonado){
-                // Si está corrupto/abandonado, lo reseteamos y creamos uno nuevo
-                if(corrupto)console.warn('🧹 Detectado lobby corrupto, limpiando...');
-                if(abandonado)console.warn('🧹 Detectado lobby abandonado, limpiando...');
-                
-                return{
-                    host:currentUserId,
-                    jugadores:[{uid:currentUserId,alias:currentAlias}],
-                    estado:'esperando',
-                    creado:ahora,
-                    seed:seed
-                };
+                if(corrupto)console.warn('🧹 Lobby corrupto detectado en',lobbyPath);
+                if(abandonado)console.warn('🧹 Lobby abandonado detectado en',lobbyPath);
+                return{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:ahora};
             }
             
             if(lobby.estado==='esperando'&&lobby.jugadores&&lobby.jugadores.length<maxJ){
@@ -482,55 +405,37 @@ btnPlay.addEventListener('click',async()=>{
                     lobby.jugadores.push({uid:currentUserId,alias:currentAlias});
                     if(lobby.jugadores.length===maxJ){
                         lobby.estado='jugando';
+                        // ✅ CORRECCIÓN #3: Cartas generadas aquí (en transacción) también usan crypto
                         lobby.cartas={};
-                        const baseSeed=lobby.seed||seed;
-                        lobby.jugadores.forEach((j,i)=>{
-                            lobby.cartas[j.uid]=generarCarta(baseSeed+i);
-                        });
+                        lobby.jugadores.forEach(j=>{lobby.cartas[j.uid]=generarCarta();});
                     }
                     return lobby;
                 }
             }
-            return lobby; // No modificar si ya está jugando
+            return lobby;
         });
 
         const lobbyData=result.snapshot.val();
         if(!lobbyData){resetSearch();return alert('Error al conectar');}
+        console.log('✅ Lobby creado/unido:',lobbyData);
 
-        // Listener que NO se dispara dos veces
         let matchCreado=false;
         
         lobbyListener=onValue(lobbyRef,async(snap)=>{
             const data=snap.val();
-            
-            if(!data||!data.jugadores){
-                if(lobbyListener)off(lobbyRef,'value',lobbyListener);
-                if(timeoutId)clearTimeout(timeoutId);
-                if(!ejecutandoPartida)resetSearch();
-                return;
-            }
+            if(!data||!data.jugadores){if(lobbyListener)off(lobbyRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();return;}
             
             renderSearchUI(data.jugadores.length,maxJ);
             updatePotDisplay(data.jugadores.length);
             
             if(data.estado==='jugando'&&data.jugadores.length===maxJ&&!matchCreado){
                 matchCreado=true;
-                
                 if(lobbyListener)off(lobbyRef,'value',lobbyListener);
                 if(timeoutId)clearTimeout(timeoutId);
                 
                 if(!data.matchId){
                     const matchId=push(ref(db,'matches')).key;
-                    const matchData={
-                        jugadores:data.jugadores.map(j=>({
-                            uid:j.uid,
-                            alias:j.alias||'Jugador',
-                            carta:data.cartas?data.cartas[j.uid]:generarCarta()
-                        })),
-                        apuesta:apuestaActual,
-                        modalidad:modoJuego,
-                        creado:Date.now()
-                    };
+                    const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuesta,modalidad:modoJuego,creado:Date.now()};
                     await set(ref(db,`matches/${matchId}`),matchData);
                     await update(lobbyRef,{matchId:matchId});
                     data.matchId=matchId;
@@ -540,7 +445,7 @@ btnPlay.addEventListener('click',async()=>{
                     partidasProcesadas.add(data.matchId);
                     ejecutandoPartida=true;
                     await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});
-                    await ejecutarPartida(data.matchId,data);
+                    await ejecutarPartida(data.matchId,data,apuesta);
                     ejecutandoPartida=false;
                 }
             }
@@ -549,15 +454,10 @@ btnPlay.addEventListener('click',async()=>{
         timeoutId=setTimeout(async()=>{
             if(matchCreado)return;
             if(lobbyListener)off(lobbyRef,'value',lobbyListener);
-            
-            const snap=await get(lobbyRef);
-            const data=snap.val();
-            if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores.length<maxJ){
-                await set(lobbyRef,null).catch(()=>{});
-            }
+            const snap=await get(lobbyRef);const data=snap.val();
+            if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores.length<maxJ){await set(lobbyRef,null).catch(()=>{});}
             if(!ejecutandoPartida)resetSearch();
         },60000);
-        
     }catch(error){
         console.error('Error:',error);
         if(lobbyListener)off(lobbyRef,'value',lobbyListener);
@@ -567,128 +467,84 @@ btnPlay.addEventListener('click',async()=>{
 });
 
 function resetSearch(){
-    esperandoPartida=false;
-    btnPlay.disabled=false;
-    btnPlay.textContent='Buscar Partida';
+    esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
     btnPlay.classList.remove('canceling','cooldown');
-    updatePotDisplay(MAX_JUGADORES[modoJuego]);
-    updateTablePreview();
+    updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();
     update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
 }
 
 // ===== PARTIDA CORREGIDA =====
-async function ejecutarPartida(matchId,lobbyData){
+async function ejecutarPartida(matchId,lobbyData,apuesta){
     currentMatchId=matchId;
     btnPlay.textContent='Repartiendo cartas...';
-    btnPlay.classList.remove('canceling');
-    btnPlay.classList.add('cooldown');
-    btnPlay.disabled=true;
+    btnPlay.classList.remove('canceling');btnPlay.classList.add('cooldown');btnPlay.disabled=true;
 
     try{
         const matchSnap=await get(ref(db,`matches/${matchId}`));
         let matchData=matchSnap.val();
         
         if(!matchData||!matchData.jugadores){
-            const jugadores=(lobbyData.jugadores||[]).map((j,i)=>({
-                uid:j.uid,
-                alias:j.alias||('Jugador '+(i+1)),
-                carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()
-            }));
-            matchData={jugadores,apuesta:apuestaActual,modalidad:modoJuego,creado:Date.now()};
+            const jugadores=(lobbyData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()}));
+            matchData={jugadores,apuesta:apuesta,modalidad:modoJuego,creado:Date.now()};
             await set(ref(db,`matches/${matchId}`),matchData).catch(()=>{});
         }
         
         const jugadores=matchData.jugadores;
         const miIdx=jugadores.findIndex(j=>j.uid===currentUserId);
+        if(miIdx===-1){console.warn('⚠️ Espectador detectado');resetSearch();return;}
         
-        if(miIdx===-1){
-            console.warn('⚠️ Espectador detectado');
-            resetSearch();
-            return;
-        }
-        
-        const labels=jugadores.map((j,i)=>i===miIdx?'Tú':(j.alias||'Jugador '+(i+1)));
-        const totalPot=apuestaActual*jugadores.length;
+        const totalPot=apuesta*jugadores.length;
         updatePotDisplay(jugadores.length);
-        renderGameCards(jugadores,labels);
+        // ✅ CORRECCIÓN #2: Usar la nueva función que ordena TÚ primero
+        renderGameCards(jugadores);
 
-        await esperar(1500);
-        btnPlay.textContent='Revelando cartas...';
+        await esperar(1500);btnPlay.textContent='Revelando cartas...';
         document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+        await esperar(1200);btnPlay.textContent='Calculando resultados...';
 
-        await esperar(1200);
-        btnPlay.textContent='Calculando resultados...';
-
+        // Determinar ganador
         const pesos=jugadores.map(j=>j.carta.peso);
         const maxP=Math.max(...pesos);
         let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
         
         if(jugadores.filter(j=>j.carta.peso===maxP).length>1){
             const prioridadPinta={'♠':4,'♥':3,'♦':2,'♣':1};
-            ganador=jugadores
-                .filter(j=>j.carta.peso===maxP)
-                .reduce((a,b)=>(prioridadPinta[b.carta.pinta.icon]||0)>(prioridadPinta[a.carta.pinta.icon]||0)?b:a);
+            ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(prioridadPinta[b.carta.pinta.icon]||0)>(prioridadPinta[a.carta.pinta.icon]||0)?b:a);
         }
         
         const yoGane=ganador.uid===currentUserId;
-        const comision=jugadores.length===2?Math.floor(apuestaActual*0.05):Math.floor(apuestaActual*0.10);
-        const gananciaNetaReal=(totalPot-apuestaActual)-comision;
+        const comision=jugadores.length===2?Math.floor(apuesta*0.05):Math.floor(apuesta*0.10);
+        const gananciaNetaReal=(totalPot-apuesta)-comision;
 
-        if(yoGane&&potAmount){
-            potAmount.classList.add('pot-won');
-            setTimeout(()=>potAmount.classList.remove('pot-won'),600);
-        }
+        if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
         
-        jugadores.forEach((j,i)=>{
-            const lbl=document.getElementById('cl'+i);
-            if(!lbl)return;
+        // Actualizar etiquetas - usando los nuevos IDs de la función renderGameCards
+        const reordenados=[];reordenados.push(jugadores.find(j=>j.uid===currentUserId));jugadores.forEach(j=>{if(j.uid!==currentUserId)reordenados.push(j);});
+        reordenados.forEach((j,i)=>{
+            const lbl=document.getElementById('cl'+i);if(!lbl)return;
             lbl.classList.remove('winner','loser');
-            if(j.uid===ganador.uid){
-                lbl.classList.add('winner');
-                lbl.textContent='🏆 '+labels[i];
-            }else if(j.uid===currentUserId){
-                lbl.classList.add('loser');
-            }
+            if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===currentUserId?'Tú':(j.alias||'Oponente'));}
+            else if(j.uid===currentUserId){lbl.classList.add('loser');}
         });
 
         try{
-            if(yoGane){
-                await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida',matchId);
-            }else{
-                await modificarSaldo(currentUserId,-apuestaActual,'Perdió partida',matchId);
-            }
-            
-            await update(ref(db,'adminData'),{
-                total_comisiones:increment(comision),
-                dinero_movido:increment(totalPot),
-                partidas_jugando:increment(1)
-            }).catch(()=>{});
-        }catch(e){
-            console.error('Error actualizando saldo:',e);
-        }
+            if(yoGane){await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida',matchId);}
+            else{await modificarSaldo(currentUserId,-apuesta,'Perdió partida',matchId);}
+            await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}).catch(()=>{});
+        }catch(e){console.error('Error actualizando saldo:',e);}
 
         btnPlay.textContent=yoGane?'🎉 ¡Ganaste! - Limpiando mesa...':'😔 Perdiste - Limpiando mesa...';
         await esperar(4000);
 
         try{
             await set(ref(db,`matches/${matchId}`),null);
-            await set(ref(db,`lobbies/${modoJuego}_${apuestaActual}`),null);
-        }catch(e){
-            console.error('Error limpiando:',e);
-        }
-        
-    }catch(error){
-        console.error('Error en partida:',error);
-    }finally{
-        resetSearch();
-    }
+            await set(ref(db,`lobbies/${modoJuego}_${apuesta}`),null);
+        }catch(e){console.error('Error limpiando:',e);}
+    }catch(error){console.error('Error en partida:',error);}
+    finally{resetSearch();}
 }
 
-window.addEventListener('beforeunload',()=>{
-    if(currentUserId){
-        set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});
-    }
-});
+window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
 </script>
 </body>
 </html>
