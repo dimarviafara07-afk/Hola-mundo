@@ -3,25 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal High P2P - Salas Múltiples</title>
+    <title>Royal High P2P</title>
     <style>
         :root {
             --bg-app: #0B1121; --bg-card: #111B2E; --bg-card-hover: #162240; --bg-input: #0F1A2C;
-            --primary: #2563EB; --primary-hover: #1D4ED8; --primary-soft: rgba(37,99,235,0.15); --primary-border: #3B82F6;
-            --success: #16A34A; --success-soft: rgba(22,163,74,0.15); --danger: #DC2626; --danger-soft: rgba(220,38,38,0.15);
-            --warning: #F59E0B; --text-main: #F8FAFC; --text-secondary: #94A3B8; --text-muted: #475569;
-            --border-subtle: #1E293B; --gold: #c9a84c; --gold-soft: rgba(201,168,76,0.1); --gold-border: rgba(201,168,76,0.25);
-            --pot-color: #d4a853; --pot-glow: rgba(212,168,83,0.25);
-            --radius-xs: 6px; --radius-sm: 10px; --radius-md: 14px; --radius-lg: 18px; --radius-xl: 22px;
-            --card-back-bg: linear-gradient(145deg, #0F1A2C 0%, #162240 50%, #0F1A2C 100%);
-            --card-back-border: #c9a84c;
+            --primary: #2563EB; --primary-hover: #1D4ED8; --primary-soft: rgba(37,99,235,0.15);
+            --success: #16A34A; --danger: #DC2626; --warning: #F59E0B; --text-main: #F8FAFC;
+            --text-secondary: #94A3B8; --text-muted: #475569; --border-subtle: #1E293B;
+            --gold: #c9a84c; --gold-soft: rgba(201,168,76,0.1); --pot-color: #d4a853;
+            --radius-xs: 6px; --radius-sm: 10px; --radius-md: 14px; --radius-lg: 18px;
         }
         *{margin:0;padding:0;box-sizing:border-box}
-        body{background:var(--bg-app);color:var(--text-main);font-family:'Inter','Segoe UI',system-ui,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px;-webkit-font-smoothing:antialiased}
+        body{background:var(--bg-app);color:var(--text-main);font-family:'Inter','Segoe UI',system-ui,sans-serif;display:flex;justify-content:center;align-items:flex-start;min-height:100vh;padding:10px}
         .app-container{width:100%;max-width:480px}.hidden{display:none!important}
 
         .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:90%;max-width:400px}
-        .toast{padding:12px 16px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;text-align:center;animation:slideDown .3s ease-out;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
+        .toast{padding:12px 16px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;text-align:center;animation:slideDown .3s ease-out}
         .toast.success{background:#065f46;color:#6ee7b7;border:1px solid #059669}
         .toast.error{background:#7f1d1d;color:#fca5a5;border:1px solid #dc2626}
         .toast.info{background:#1e3a5f;color:#93c5fd;border:1px solid #3b82f6}
@@ -33,202 +30,147 @@
         .searching-dot:nth-child(2){animation-delay:0.2s}.searching-dot:nth-child(3){animation-delay:0.4s}
         @keyframes bounce{from{opacity:.3;transform:translateY(0)}to{opacity:1;transform:translateY(-6px)}}
 
-        .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg-card);border-top:1px solid var(--border-subtle);display:flex;justify-content:space-around;padding:8px 0;z-index:50;box-shadow:0 -4px 16px rgba(0,0,0,0.3)}
-        .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:var(--radius-xs);transition:all .2s;border:none;background:none;color:var(--text-muted);font-size:.65rem;position:relative}
-        .nav-item.active{color:var(--gold);background:var(--gold-soft)}
-        .nav-item .nav-icon{font-size:1.2rem}.nav-item .nav-label{font-weight:500}
+        .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg-card);border-top:1px solid var(--border-subtle);display:flex;justify-content:space-around;padding:8px 0;z-index:50}
+        .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 12px;border-radius:var(--radius-xs);border:none;background:none;color:var(--text-muted);font-size:.65rem}
+        .nav-item.active{color:var(--gold);background:var(--gold-soft)}.nav-item .nav-icon{font-size:1.2rem}
 
         .section{display:none;padding-bottom:80px}.section.active{display:block}
 
-        .recovery-screen,.access-screen,.auth-screen{background:var(--bg-card);padding:2.5rem 1.8rem;border-radius:var(--radius-xl);text-align:center;margin-top:40px;border:1px solid var(--border-subtle);box-shadow:0 8px 32px rgba(0,0,0,0.4)}
-        .access-screen{border:1px solid var(--gold-border);box-shadow:0 8px 32px rgba(0,0,0,0.5)}
-        .recovery-icon,.access-icon{font-size:2.5rem;margin-bottom:1rem}.access-icon{font-size:3rem}
-        .recovery-title,.access-title{font-size:1.2rem;font-weight:700;margin-bottom:.5rem}.access-title{font-size:1.3rem}
-        .recovery-subtitle,.access-subtitle{font-size:.78rem;color:var(--text-muted);margin-bottom:1.5rem;line-height:1.4}
-        .recovery-success{color:var(--success);font-size:.8rem;margin-bottom:10px;min-height:20px}
-        .btn-back{background:transparent;border:1px solid var(--border-subtle);color:var(--text-muted);padding:10px 20px;border-radius:var(--radius-sm);font-weight:600;font-size:.8rem;cursor:pointer;margin-top:8px}
-        .access-input{width:100%;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:1.2rem;text-align:center;letter-spacing:8px;margin-bottom:12px}
-        .access-input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.15)}
-        .access-error{color:var(--danger);font-size:.75rem;margin-bottom:8px;min-height:20px}
-        .access-info{font-size:.7rem;color:var(--text-muted);margin-top:14px}.access-info span{color:var(--gold);font-weight:600}
-        .jornada-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.72rem;font-weight:600;margin-bottom:16px}
-        .jornada-status.active{background:rgba(22,163,74,0.12);color:var(--success);border:1px solid rgba(22,163,74,0.3)}
-        .jornada-status.inactive{background:rgba(220,38,38,0.12);color:var(--danger);border:1px solid rgba(220,38,38,0.3)}
-        .jornada-dot{width:7px;height:7px;border-radius:50%}.jornada-status.active .jornada-dot{background:var(--success);animation:pulse-dot 2s infinite}
-        .jornada-status.inactive .jornada-dot{background:var(--danger)}@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
-
-        .auth-screen{margin-top:30px;padding:2.2rem 1.5rem}
-        .auth-logo{font-size:1.7rem;font-weight:700;letter-spacing:-.5px;margin-bottom:1.8rem}.auth-logo span{color:var(--gold)}
-        .auth-tabs{display:flex;background:var(--bg-input);border-radius:var(--radius-sm);padding:3px;margin-bottom:1.3rem;border:1px solid var(--border-subtle)}
-        .auth-tab{flex:1;padding:11px;border:none;background:transparent;color:var(--text-muted);font-weight:600;font-size:.85rem;cursor:pointer;border-radius:7px;transition:all .25s}
-        .auth-tab.active{background:var(--primary);color:#fff;font-weight:700}
+        .auth-screen{background:var(--bg-card);padding:2rem 1.5rem;border-radius:var(--radius-lg);text-align:center;margin-top:30px;border:1px solid var(--border-subtle)}
+        .access-screen{background:var(--bg-card);padding:2rem 1.5rem;border-radius:var(--radius-lg);text-align:center;margin-top:30px;border:1px solid var(--gold)}
+        .auth-logo{font-size:1.7rem;font-weight:700;margin-bottom:1.5rem}.auth-logo span{color:var(--gold)}
+        .auth-tabs{display:flex;background:var(--bg-input);border-radius:var(--radius-sm);padding:3px;margin-bottom:1rem;border:1px solid var(--border-subtle)}
+        .auth-tab{flex:1;padding:11px;border:none;background:transparent;color:var(--text-muted);font-weight:600;font-size:.85rem;cursor:pointer;border-radius:7px}
+        .auth-tab.active{background:var(--primary);color:#fff}
         .auth-input{width:100%;padding:13px 15px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.9rem;margin-bottom:10px}
-        .auth-input:focus{outline:none;border-color:var(--primary-border);box-shadow:0 0 0 3px var(--primary-soft)}
-        .btn-primary,.btn-gold{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--primary);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .25s;margin-top:4px;letter-spacing:.5px}
-        .btn-primary:hover:not(:disabled){background:var(--primary-hover);box-shadow:0 4px 20px rgba(37,99,235,0.3)}.btn-primary:disabled{opacity:.5;cursor:not-allowed}
-        .btn-gold{background:var(--gold);color:#0B1121}.btn-gold:hover{background:#b8963a}
+        .auth-input:focus{outline:none;border-color:var(--primary)}
+        .btn-primary,.btn-gold{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--primary);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:4px}
+        .btn-gold{background:var(--gold);color:#0B1121}.btn-primary:disabled{opacity:.5}
         .forgot-link{display:block;margin-top:14px;font-size:.72rem;color:var(--text-muted);cursor:pointer;background:none;border:none;text-decoration:underline}
+        .access-input{width:100%;padding:14px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:1.2rem;text-align:center;letter-spacing:8px;margin-bottom:12px}
+        .jornada-status{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:.72rem;font-weight:600;margin-bottom:16px}
+        .jornada-status.active{background:rgba(22,163,74,0.12);color:var(--success)}
+        .jornada-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse-dot 2s infinite}
+        @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
 
-        .unified-header{background:var(--bg-card);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border:1px solid var(--border-subtle)}
-        .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c97a);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;color:#0B1121;flex-shrink:0}
-        .user-info{flex:1;min-width:0}.user-name{font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .user-status{font-size:.7rem;color:var(--success);display:flex;align-items:center;gap:5px}
-        .status-dot{width:7px;height:7px;border-radius:50%;background:var(--success);animation:pulse-dot 2s infinite}
-        .balance-mini{text-align:right}.balance-mini-label{font-size:.65rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-        .balance-mini-amount{font-size:1.15rem;font-weight:700;color:var(--gold)}.balance-mini-amount.zero{color:#ef4444;animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
-        .header-actions{display:flex;gap:6px;width:100%;margin-top:10px}
-        .btn-sm{flex:1;padding:9px 10px;border-radius:var(--radius-xs);font-weight:600;font-size:.73rem;cursor:pointer;border:none;transition:all .2s;text-transform:uppercase;letter-spacing:.5px;text-align:center}
-        .btn-dep{background:var(--success-soft);color:var(--success);border:1px solid rgba(22,163,74,0.25)}.btn-wit{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(220,38,38,0.25)}.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-subtle)}
+        /* Panel salas compacto */
+        .salas-panel{background:var(--bg-card);border:1px solid var(--primary);border-radius:var(--radius-md);padding:8px 10px;margin-bottom:8px}
+        .salas-title{font-size:.6rem;text-transform:uppercase;letter-spacing:1px;color:var(--primary);margin-bottom:6px;font-weight:600}
+        .salas-row{display:flex;gap:4px}
+        .sala-chip{background:var(--bg-input);border:1px solid var(--border-subtle);border-radius:var(--radius-xs);padding:5px 8px;font-size:.62rem;text-align:center;flex:1}
+        .sala-chip .val{font-weight:700;font-size:.8rem;color:var(--text-main)}
+        .sala-chip .lbl{color:var(--text-muted);font-size:.5rem;text-transform:uppercase}
+        .sala-chip.activa{border-color:var(--success)}.sala-chip.activa .val{color:var(--success)}
 
-        .community-bar{background:var(--bg-card);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--border-subtle)}
-        .comm-stats{display:flex;gap:12px;font-size:.7rem;color:var(--text-secondary);flex-wrap:wrap}.comm-dot{width:6px;height:6px;border-radius:50%}
-        .comm-dot.green{background:var(--success)}.comm-dot.blue{background:var(--primary)}.comm-dot.amber{background:var(--warning)}
-        .membership-mini{margin-left:auto;font-size:.68rem;color:var(--text-muted)}.membership-mini strong{color:var(--primary)}
+        /* Header */
+        .unified-header{background:var(--bg-card);border-radius:var(--radius-lg);padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:1px solid var(--border-subtle)}
+        .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c97a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0B1121;flex-shrink:0;font-size:.9rem}
+        .user-name{font-weight:600;font-size:.85rem}.user-status{font-size:.68rem;color:var(--success);display:flex;align-items:center;gap:4px}
+        .status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse-dot 2s infinite;box-shadow:0 0 6px rgba(22,163,74,0.4)}
+        .balance-mini-amount{font-size:1.1rem;font-weight:700;color:var(--gold)}.balance-mini-amount.zero{color:#ef4444;animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+        .header-actions{display:flex;gap:5px;width:100%;margin-top:8px}
+        .btn-sm{flex:1;padding:8px 6px;border-radius:var(--radius-xs);font-weight:600;font-size:.68rem;cursor:pointer;border:none;text-align:center;text-transform:uppercase}
+        .btn-dep{background:rgba(22,163,74,0.15);color:var(--success)}.btn-wit{background:rgba(220,38,38,0.15);color:var(--danger)}.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-subtle)}
 
-        .lobby-players{background:var(--bg-card);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:10px;border:1px solid var(--gold-border);display:none}
-        .lobby-players.visible{display:block}.lobby-players-title{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px}
-        .lobby-player-item{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.75rem;color:var(--text-secondary)}
-        .lobby-player-dot{width:8px;height:8px;border-radius:50%;background:var(--success)}
+        .community-bar{background:var(--bg-card);border-radius:var(--radius-md);padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px;border:1px solid var(--border-subtle);font-size:.68rem;flex-wrap:wrap}
+        .comm-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}.comm-dot.green{background:var(--success);box-shadow:0 0 4px rgba(22,163,74,0.4)}.comm-dot.blue{background:var(--primary)}.comm-dot.amber{background:var(--warning)}
 
-        .pot-container{background:var(--bg-card);border-radius:var(--radius-md);padding:12px 16px;margin-bottom:10px;text-align:center;border:1px solid var(--gold-border)}
-        .pot-label{font-size:.7rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px}.pot-amount{font-size:1.6rem;font-weight:700;color:var(--pot-color)}
-        .pot-amount.pot-won{animation:pot-pulse .5s ease-out}@keyframes pot-pulse{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+        .lobby-players{background:var(--bg-card);border-radius:var(--radius-md);padding:8px 12px;margin-bottom:8px;border:1px solid var(--gold);display:none}
+        .lobby-players.visible{display:block}.lobby-players-title{font-size:.62rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
 
-        .game-table-main{background:var(--bg-card);border-radius:var(--radius-lg);padding:10px;margin-bottom:10px;border:1px solid var(--border-subtle)}
-        .table-felt{background:linear-gradient(160deg,#0A1F14 0%,#0D2818 40%,#091A10 100%);border-radius:var(--radius-md);padding:20px 10px;border:3px solid #4A3724;min-height:160px;display:flex;align-items:center;justify-content:center}
-        .cards-row{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}.card-slot{padding:4px;border-radius:12px;transition:all .3s}
-        .card-slot.tu-carta{border:2px solid var(--gold);background:rgba(201,168,76,0.1)}.card-wrapper{perspective:800px;width:72px;height:100px}
+        .pot-container{background:var(--bg-card);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:8px;text-align:center;border:1px solid var(--gold)}
+        .pot-label{font-size:.65rem;color:var(--text-muted)}.pot-amount{font-size:1.5rem;font-weight:700;color:var(--pot-color)}
+
+        .game-table-main{background:var(--bg-card);border-radius:var(--radius-lg);padding:8px;margin-bottom:8px;border:1px solid var(--border-subtle)}
+        .table-felt{background:linear-gradient(160deg,#0A1F14,#0D2818,#091A10);border-radius:var(--radius-md);padding:18px 8px;border:3px solid #4A3724;min-height:140px;display:flex;align-items:center;justify-content:center}
+        .cards-row{display:flex;justify-content:center;align-items:center;gap:12px}.card-slot{padding:3px;border-radius:12px}
+        .card-slot.tu-carta{border:2px solid var(--gold);background:rgba(201,168,76,0.1)}.card-wrapper{perspective:800px;width:68px;height:96px}
         .card-inner{width:100%;height:100%;position:relative;transform-style:preserve-3d;transition:transform .5s}.card-wrapper.flipped .card-inner{transform:rotateY(180deg)}
         .card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center}
-        .card-back{background:var(--card-back-bg);border:2px solid var(--card-back-border)}.card-back::before{content:'';position:absolute;inset:5px;border:1.5px solid rgba(201,168,76,0.25);border-radius:4px}
-        .card-back-pattern{position:relative;z-index:1;font-size:1.3rem;font-weight:700;color:rgba(201,168,76,0.4)}
-        .card-front{background:linear-gradient(150deg,#fff 0%,#F8FAFC 100%);transform:rotateY(180deg);border:2px solid #E2E8F0}
-        .card-value{font-size:1.4rem;font-weight:800}.card-label{font-size:.68rem;color:var(--text-secondary);font-weight:500;text-align:center}
-        .card-label.winner{color:var(--success);font-weight:700}.card-label.loser{color:var(--danger)}.card-label.tu-label{color:var(--gold);font-weight:700}
-        .table-empty-msg{color:var(--text-muted);font-size:.8rem;line-height:1.5}.table-empty-msg strong{color:var(--primary)}
+        .card-back{background:linear-gradient(145deg,#0F1A2C,#162240);border:2px solid var(--gold)}.card-front{background:linear-gradient(150deg,#fff,#F8FAFC);transform:rotateY(180deg);border:2px solid #E2E8F0}
+        .card-value{font-size:1.3rem;font-weight:800}.card-label{font-size:.62rem;color:var(--text-secondary);text-align:center}
+        .card-label.winner{color:var(--success);font-weight:700}.card-label.loser{color:var(--danger)}.card-label.tu-label{color:var(--gold)}
 
-        .controls-section{background:var(--bg-card);border-radius:var(--radius-lg);padding:15px;margin-bottom:10px;border:1px solid var(--border-subtle)}
-        .section-label{font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-muted);margin-bottom:9px;font-weight:600}
-        .mode-row,.bet-row{display:flex;gap:7px;margin-bottom:12px}
-        .mode-chip,.bet-chip{flex:1;padding:11px 8px;background:var(--bg-input);border:2px solid var(--border-subtle);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-weight:600;font-size:.8rem;color:var(--text-secondary);transition:all .25s}
+        .controls-section{background:var(--bg-card);border-radius:var(--radius-lg);padding:12px;margin-bottom:8px;border:1px solid var(--border-subtle)}
+        .section-label{font-size:.62rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;font-weight:600}
+        .mode-row,.bet-row{display:flex;gap:5px;margin-bottom:10px}
+        .mode-chip,.bet-chip{flex:1;padding:10px 6px;background:var(--bg-input);border:2px solid var(--border-subtle);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-weight:600;font-size:.75rem;color:var(--text-secondary)}
         .mode-chip.selected,.bet-chip.selected{border-color:var(--primary);background:var(--primary-soft);color:var(--primary)}
-        .btn-cta{width:100%;padding:15px;border:none;border-radius:var(--radius-sm);background:var(--primary);color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;text-transform:uppercase;letter-spacing:1.2px}
+        .btn-cta{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--primary);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;text-transform:uppercase}
         .btn-cta:disabled{opacity:.5}.btn-cta.canceling{background:var(--danger)}.btn-cta.cooldown{background:#475569}
 
-        /* ✅ NUEVO: Panel de salas en admin */
-        .salas-panel{background:var(--bg-card);border:1.5px solid var(--primary);border-radius:var(--radius-md);padding:15px;margin-bottom:10px}
-        .salas-title{color:var(--primary);font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-        .salas-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-        .sala-mini{background:var(--bg-input);padding:8px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);font-size:.68rem}
-        .sala-mini-label{color:var(--text-muted);font-size:.58rem;text-transform:uppercase;margin-bottom:3px}
-        .sala-mini-value{color:var(--text-main);font-weight:600}
-        .sala-mini-value.active{color:var(--success)}.sala-mini-value.waiting{color:var(--warning)}
-
-        .ranking-card{background:var(--bg-card);border-radius:var(--radius-md);padding:14px;margin-bottom:10px;border:1px solid var(--border-subtle)}
-        .ranking-title{font-size:.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:10px}
-        .ranking-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border-subtle);font-size:.78rem}
-        .ranking-pos{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.75rem;flex-shrink:0}
+        .ranking-card{background:var(--bg-card);border-radius:var(--radius-md);padding:12px;margin-bottom:8px;border:1px solid var(--border-subtle)}
+        .ranking-title{font-size:.65rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
+        .ranking-item{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-subtle);font-size:.72rem}
+        .ranking-pos{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.7rem;flex-shrink:0;background:var(--bg-input);color:var(--text-muted)}
         .ranking-pos.gold{background:linear-gradient(135deg,#f59e0b,#d97706);color:#000}
-        .ranking-pos.silver{background:linear-gradient(135deg,#94a3b8,#64748b);color:#000}
-        .ranking-pos.bronze{background:linear-gradient(135deg,#d97706,#92400e);color:#fff}
-        .ranking-pos.normal{background:var(--bg-input);color:var(--text-muted)}
-        .ranking-name{flex:1;font-weight:500}.ranking-wins{color:var(--success);font-weight:600}
 
-        .chat-container{background:var(--bg-card);border-radius:var(--radius-md);padding:10px;margin-bottom:10px;border:1px solid var(--border-subtle);max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:6px}
-        .chat-msg{font-size:.7rem;padding:6px 10px;border-radius:var(--radius-xs);max-width:85%;word-break:break-word}
-        .chat-msg.mio{background:var(--primary-soft);color:var(--text-main);align-self:flex-end;border:1px solid var(--primary-border)}
-        .chat-msg.otro{background:var(--bg-input);color:var(--text-secondary);align-self:flex-start;border:1px solid var(--border-subtle)}
-        .chat-msg.sistema{background:rgba(201,168,76,0.1);color:var(--gold);align-self:center;font-style:italic;font-size:.65rem;border:1px solid var(--gold-border)}
-        .chat-author{font-weight:700;font-size:.6rem;margin-bottom:2px;color:var(--gold)}
-        .chat-input-row{display:flex;gap:6px;margin-top:8px}
-        .chat-input{flex:1;padding:8px 10px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.72rem}
-        .chat-send{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-xs);padding:8px 14px;font-weight:600;font-size:.7rem;cursor:pointer}
+        .chat-container{background:var(--bg-card);border-radius:var(--radius-md);padding:8px;margin-bottom:8px;border:1px solid var(--border-subtle);max-height:180px;overflow-y:auto;display:flex;flex-direction:column;gap:5px}
+        .chat-msg{font-size:.65rem;padding:5px 8px;border-radius:var(--radius-xs);max-width:85%}
+        .chat-msg.mio{background:var(--primary-soft);align-self:flex-end;border:1px solid var(--primary)}.chat-msg.otro{background:var(--bg-input);align-self:flex-start;border:1px solid var(--border-subtle)}
+        .chat-author{font-weight:700;font-size:.55rem;color:var(--gold)}.chat-input-row{display:flex;gap:5px;margin-top:6px}
+        .chat-input{flex:1;padding:7px 9px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.68rem}
+        .chat-send{background:var(--primary);color:#fff;border:none;border-radius:var(--radius-xs);padding:7px 12px;font-weight:600;font-size:.65rem;cursor:pointer}
 
-        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-        .stat-box{background:var(--bg-card);border-radius:var(--radius-sm);padding:12px;text-align:center;border:1px solid var(--border-subtle)}
-        .stat-value{font-size:1.3rem;font-weight:700}.stat-value.green{color:var(--success)}.stat-value.red{color:var(--danger)}.stat-value.gold{color:var(--gold)}
-        .stat-label{font-size:.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+        .stat-box{background:var(--bg-card);border-radius:var(--radius-sm);padding:10px;text-align:center;border:1px solid var(--border-subtle)}
+        .stat-value{font-size:1.2rem;font-weight:700}.stat-value.green{color:var(--success)}.stat-value.red{color:var(--danger)}.stat-value.gold{color:var(--gold)}
+        .stat-label{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;margin-top:2px}
 
-        .admin-panel{background:var(--bg-card);border:1.5px solid var(--gold);border-radius:var(--radius-md);padding:15px;margin-bottom:10px}
-        .admin-title{color:var(--gold);font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-        .admin-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
-        .admin-stat{background:var(--bg-input);padding:9px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);position:relative}
-        .admin-stat-label{font-size:.62rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:.5px}
-        .admin-stat-value{font-size:1.05rem;font-weight:700;color:var(--text-main);margin-top:3px}
-        .admin-stat-reset{position:absolute;top:4px;right:6px;background:none;border:none;color:var(--text-muted);font-size:.55rem;cursor:pointer}
-        .admin-recarga{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-        .admin-recarga input{flex:1 1 100px;min-width:0;padding:9px 10px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.75rem}
-        .btn-admin-recargar{padding:9px 14px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-xs);font-weight:700;font-size:.75rem;cursor:pointer}
-        .admin-reset-row{display:flex;gap:6px;margin-top:8px}
-        .btn-reset-contadores{flex:1;padding:8px;background:var(--danger-soft);color:var(--danger);border:1px solid rgba(220,38,38,0.3);border-radius:var(--radius-xs);font-weight:600;font-size:.68rem;cursor:pointer}
+        .admin-panel{background:var(--bg-card);border:1.5px solid var(--gold);border-radius:var(--radius-md);padding:10px;margin-bottom:8px}
+        .admin-title{color:var(--gold);font-weight:700;font-size:.7rem;text-transform:uppercase;margin-bottom:6px}
+        .admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px}
+        .admin-stat{background:var(--bg-input);padding:6px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);font-size:.6rem;text-align:center}
+        .admin-stat-label{color:var(--text-muted);font-size:.5rem}.admin-stat-value{font-weight:700;font-size:.75rem;margin-top:1px}
+        .admin-recarga{display:flex;gap:4px;margin-bottom:6px}
+        .admin-recarga input{flex:1;padding:6px 7px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.65rem;min-width:0}
+        .btn-admin-recargar{padding:6px 8px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-xs);font-weight:600;font-size:.6rem;cursor:pointer;white-space:nowrap}
+        .admin-reset-row{display:flex;gap:4px}
+        .btn-reset-contadores{flex:1;padding:5px;background:rgba(220,38,38,0.1);color:var(--danger);border:1px solid rgba(220,38,38,0.2);border-radius:var(--radius-xs);font-weight:600;font-size:.55rem;cursor:pointer;text-align:center}
 
         .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.88);display:flex;justify-content:center;align-items:center;z-index:100;padding:16px}
-        .modal-content{background:var(--bg-card);padding:24px;border-radius:var(--radius-lg);width:100%;max-width:370px;text-align:center;border:1px solid var(--gold-border)}
-        .modal-title{font-weight:700;font-size:1.05rem;margin-bottom:12px}
-        .nequi-number{background:var(--bg-input);padding:13px;border-radius:var(--radius-sm);font-size:1.25rem;font-weight:700;color:#E11D48;margin:12px 0;border:1.5px solid #E11D48;display:flex;align-items:center;justify-content:center;gap:8px}
-        .nequi-logo{background:#E11D48;color:#fff;padding:2px 8px;border-radius:4px;font-weight:900;font-size:.75rem}
-        .btn-wa{width:100%;padding:13px;background:var(--success);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;font-size:.88rem;cursor:pointer;text-transform:uppercase}
-        .btn-modal-close{background:none;border:none;color:var(--text-muted);margin-top:10px;cursor:pointer;font-size:.78rem}
+        .modal-content{background:var(--bg-card);padding:20px;border-radius:var(--radius-lg);width:100%;max-width:350px;text-align:center;border:1px solid var(--gold)}
+        .nequi-number{background:var(--bg-input);padding:12px;border-radius:var(--radius-sm);font-size:1.2rem;font-weight:700;color:#E11D48;margin:10px 0;border:1.5px solid #E11D48}
+        .btn-wa{width:100%;padding:12px;background:var(--success);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;cursor:pointer}
+        .btn-modal-close{background:none;border:none;color:var(--text-muted);margin-top:8px;cursor:pointer;font-size:.72rem}
 
-        .tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
-        .tutorial-icon{font-size:4rem;margin-bottom:20px}.tutorial-title{font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:10px}
-        .tutorial-text{font-size:.85rem;color:var(--text-secondary);margin-bottom:20px;line-height:1.5}
-        .tutorial-dots{display:flex;gap:6px;margin-bottom:20px}.tutorial-dot{width:8px;height:8px;border-radius:50%;background:var(--text-muted)}
-        .tutorial-dot.active{background:var(--gold);width:20px;border-radius:4px}
-        .btn-tutorial{background:var(--gold);color:#000;border:none;padding:12px 30px;border-radius:var(--radius-sm);font-weight:700;font-size:.85rem;cursor:pointer}
-
-        @media(max-width:360px){.card-wrapper{width:58px;height:82px}.card-value{font-size:1.15rem}}
+        @media(max-width:360px){.card-wrapper{width:56px;height:80px}.card-value{font-size:1.1rem}}
     </style>
 </head>
 <body>
 <div class="toast-container" id="toastContainer"></div>
-
 <div class="app-container">
-    <!-- Auth views -->
-    <div id="recoveryView" class="recovery-screen hidden"><div class="recovery-icon">📧</div><div class="recovery-title">Recuperar Contraseña</div><div class="recovery-subtitle">Ingresa tu correo y te enviaremos un enlace.</div><input type="email" id="recoveryEmail" class="auth-input" placeholder="Correo electrónico"><div class="recovery-success" id="recoveryMsg"></div><button id="btnRecovery" class="btn-primary">Enviar enlace</button><button id="btnBackToLogin" class="btn-back">← Volver al inicio</button></div>
-    <div id="accessView" class="access-screen hidden"><div class="access-icon">🔐</div><div class="access-title">Código de Acceso</div><div class="access-subtitle">Ingresa el código de la jornada</div><div class="jornada-status" id="jornadaStatus"><span class="jornada-dot"></span><span id="jornadaStatusText">Verificando...</span></div><input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4" inputmode="numeric"><div class="access-error" id="accessError"></div><button id="btnAccess" class="btn-primary btn-gold">Ingresar</button><div class="access-info">Horario: <span id="accessSchedule">--:--</span></div></div>
-    <div id="authView" class="auth-screen"><div class="auth-logo">Royal<span>High</span></div><div class="auth-tabs"><button id="tabLogin" class="auth-tab active">Iniciar sesión</button><button id="tabRegister" class="auth-tab">Registrarse</button></div><input type="email" id="email" class="auth-input" placeholder="Correo electrónico"><input type="text" id="aliasInput" class="auth-input hidden" placeholder="Alias (nombre visible)" maxlength="15"><input type="password" id="pass" class="auth-input" placeholder="Contraseña"><button id="btnAction" class="btn-primary">Ingresar</button><button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button></div>
+    <div id="recoveryView" class="auth-screen hidden"><div style="font-size:2rem;margin-bottom:.8rem">📧</div><div style="font-weight:700;margin-bottom:.5rem">Recuperar Contraseña</div><input type="email" id="recoveryEmail" class="auth-input" placeholder="Correo electrónico"><div id="recoveryMsg" style="font-size:.7rem;min-height:18px;margin:4px 0"></div><button id="btnRecovery" class="btn-primary">Enviar enlace</button><button id="btnBackToLogin" class="forgot-link" style="margin-top:10px">← Volver</button></div>
+    <div id="accessView" class="access-screen hidden"><div style="font-size:2.5rem;margin-bottom:.8rem">🔐</div><div style="font-weight:700;font-size:1.2rem;margin-bottom:.5rem">Código de Acceso</div><div class="jornada-status" id="jornadaStatus"><span class="jornada-dot"></span><span id="jornadaStatusText">Verificando...</span></div><input type="text" id="accessCode" class="access-input" placeholder="• • • •" maxlength="4"><div id="accessError" style="color:var(--danger);font-size:.7rem;min-height:18px"></div><button id="btnAccess" class="btn-primary btn-gold">Ingresar</button></div>
+    <div id="authView" class="auth-screen"><div class="auth-logo">Royal<span>High</span></div><div class="auth-tabs"><button id="tabLogin" class="auth-tab active">Iniciar sesión</button><button id="tabRegister" class="auth-tab">Registrarse</button></div><input type="email" id="email" class="auth-input" placeholder="Correo electrónico"><input type="text" id="aliasInput" class="auth-input hidden" placeholder="Alias" maxlength="15"><input type="password" id="pass" class="auth-input" placeholder="Contraseña"><button id="btnAction" class="btn-primary">Ingresar</button><button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button></div>
 
-    <!-- Game View -->
     <div id="gameView" class="hidden">
-        <!-- SECCIÓN JUEGO -->
         <div id="sectionJuego" class="section active">
-            <!-- ✅ NUEVO: Panel de salas (admin) -->
-            <div id="salasPanel" class="salas-panel hidden"><div class="salas-title">🏠 Salas Activas</div><div class="salas-grid" id="salasGrid"></div></div>
-            
-            <div id="adminPanel" class="admin-panel hidden"><div class="admin-title">✦ Panel de Control</div><div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div><button class="admin-stat-reset" id="btnResetComision">↺</button></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div><button class="admin-stat-reset" id="btnResetMovido">↺</button></div></div><div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email del usuario" style="max-width:160px;"><input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:85px;"><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div><div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todo</button></div></div>
-            
-            <div class="unified-header"><div class="avatar" id="userAvatar">R</div><div class="user-info"><div class="user-name" id="txtUsername">Usuario</div><div class="user-status"><span class="status-dot"></span>En línea</div></div><div class="balance-mini"><div class="balance-mini-label">Saldo</div><div class="balance-mini-amount" id="saldoDisplay">$0</div></div><div class="header-actions"><button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button><button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button><button id="btnLogout" class="btn-sm btn-out">Salir</button></div></div>
-            <div class="community-bar"><div class="comm-stats"><div class="comm-stat"><span class="comm-dot green"></span><span id="statOnline">0</span> en línea</div><div class="comm-stat"><span class="comm-dot blue"></span><span id="statPlaying">0</span> jugando</div><div class="comm-stat"><span class="comm-dot amber"></span><span id="statWaiting">0</span> esperando</div></div><div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div></div>
-            <div class="lobby-players" id="lobbyPlayers"><div class="lobby-players-title">👥 Jugadores en la sala</div><div id="lobbyPlayersList"></div></div>
+            <div id="salasPanel" class="salas-panel hidden"><div class="salas-title">Salas activas</div><div class="salas-row" id="salasRow"></div></div>
+            <div id="adminPanel" class="admin-panel hidden"><div class="admin-title">Panel Admin</div><div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisión</div><div class="admin-stat-value" id="adminComision">$0</div></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div></div><div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email"><input type="number" id="adminMontoRecarga" placeholder="$Monto" min="1000"><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div><div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetComision">↺ Com</button><button class="btn-reset-contadores" id="btnResetMovido">↺ Mov</button><button class="btn-reset-contadores" id="btnResetAll">🔄 Todo</button></div></div>
+
+            <div class="unified-header"><div class="avatar" id="userAvatar">R</div><div style="flex:1;min-width:0"><div class="user-name" id="txtUsername">Usuario</div><div class="user-status"><span class="status-dot"></span>En línea</div></div><div style="text-align:right"><div style="font-size:.55rem;color:var(--text-muted)">SALDO</div><div class="balance-mini-amount" id="saldoDisplay">$0</div></div><div class="header-actions"><button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button><button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button><button id="btnLogout" class="btn-sm btn-out">Salir</button></div></div>
+            <div class="community-bar"><span class="comm-dot green"></span><span id="statOnline">0</span> online<span class="comm-dot blue" style="margin-left:8px"></span><span id="statPlaying">0</span> jugando<span class="comm-dot amber" style="margin-left:8px"></span><span id="statWaiting">0</span> esperando<span style="margin-left:auto;font-size:.6rem">Cupos: <strong id="membershipText">0/50</strong></span></div>
+            <div class="lobby-players" id="lobbyPlayers"><div class="lobby-players-title">Jugadores en sala</div><div id="lobbyPlayersList"></div></div>
             <div class="pot-container"><div class="pot-label">Pozo acumulado</div><div class="pot-amount" id="potAmount">$0</div></div>
-            <div class="game-table-main"><div class="table-felt"><div id="tableContent"><div class="table-empty-msg">Selecciona modalidad<br><strong>Buscar Partida</strong></div></div></div></div>
+            <div class="game-table-main"><div class="table-felt"><div id="tableContent"><div class="table-empty-msg" style="color:var(--text-muted);font-size:.75rem;text-align:center">Selecciona modalidad<br><strong style="color:var(--primary)">Buscar Partida</strong></div></div></div></div>
             <div class="searching-indicator hidden" id="searchingIndicator"><span class="searching-dot"></span><span class="searching-dot"></span><span class="searching-dot"></span></div>
-            <div class="controls-section"><div class="section-label">Modalidad</div><div class="mode-row"><div class="mode-chip selected" id="mode1v1" data-mode="1v1">⚔️ 1 VS 1</div><div class="mode-chip" id="mode3p" data-mode="3p">👥 3 Jugadores</div></div><div class="section-label">Apuesta</div><div class="bet-row"><div class="bet-chip selected" data-apuesta="2000">$2K</div><div class="bet-chip" data-apuesta="4000">$4K</div><div class="bet-chip" data-apuesta="8000">$8K</div><div class="bet-chip" data-apuesta="16000">$16K</div><div class="bet-chip" data-apuesta="32000">$32K</div></div><button id="btnPlay" class="btn-cta">Buscar Partida</button></div>
+            <div class="controls-section"><div class="section-label">Modalidad</div><div class="mode-row"><div class="mode-chip selected" id="mode1v1" data-mode="1v1">1 VS 1</div><div class="mode-chip" id="mode3p" data-mode="3p">3 Jugadores</div></div><div class="section-label">Apuesta</div><div class="bet-row"><div class="bet-chip selected" data-apuesta="2000">$2K</div><div class="bet-chip" data-apuesta="4000">$4K</div><div class="bet-chip" data-apuesta="8000">$8K</div><div class="bet-chip" data-apuesta="16000">$16K</div><div class="bet-chip" data-apuesta="32000">$32K</div></div><button id="btnPlay" class="btn-cta">Buscar Partida</button></div>
         </div>
-
-        <!-- SECCIÓN RANKING -->
-        <div id="sectionRanking" class="section"><div class="ranking-card"><div class="ranking-title">🏆 Top Jugadores</div><div id="rankingList"></div></div></div>
-
-        <!-- SECCIÓN CHAT -->
-        <div id="sectionChat" class="section"><div class="chat-container" id="chatContainer"></div><div class="chat-input-row"><input type="text" id="chatInput" class="chat-input" placeholder="Escribe un mensaje..." maxlength="100"><button id="chatSend" class="chat-send">Enviar</button></div></div>
-
-        <!-- SECCIÓN STATS -->
-        <div id="sectionStats" class="section"><div class="stats-grid"><div class="stat-box"><div class="stat-value gold" id="statGanancias">$0</div><div class="stat-label">Ganancias totales</div></div><div class="stat-box"><div class="stat-value green" id="statPartidas">0</div><div class="stat-label">Partidas jugadas</div></div><div class="stat-box"><div class="stat-value green" id="statVictorias">0</div><div class="stat-label">Victorias</div></div><div class="stat-box"><div class="stat-value red" id="statDerrotas">0</div><div class="stat-label">Derrotas</div></div></div><div class="ranking-card"><div class="ranking-title">📈 Rendimiento</div><div id="statsDetail"></div></div></div>
+        <div id="sectionRanking" class="section"><div class="ranking-card"><div class="ranking-title">Top Jugadores</div><div id="rankingList"></div></div></div>
+        <div id="sectionChat" class="section"><div class="chat-container" id="chatContainer"></div><div class="chat-input-row"><input type="text" id="chatInput" class="chat-input" placeholder="Escribe..." maxlength="100"><button id="chatSend" class="chat-send">Enviar</button></div></div>
+        <div id="sectionStats" class="section"><div class="stats-grid"><div class="stat-box"><div class="stat-value gold" id="statGanancias">$0</div><div class="stat-label">Ganancias</div></div><div class="stat-box"><div class="stat-value green" id="statPartidas">0</div><div class="stat-label">Partidas</div></div><div class="stat-box"><div class="stat-value green" id="statVictorias">0</div><div class="stat-label">Victorias</div></div><div class="stat-box"><div class="stat-value red" id="statDerrotas">0</div><div class="stat-label">Derrotas</div></div></div><div id="statsDetail"></div></div>
     </div>
 
-    <!-- Bottom Nav -->
     <div class="bottom-nav hidden" id="bottomNav">
-        <button class="nav-item active" data-section="sectionJuego"><span class="nav-icon">🎮</span><span class="nav-label">Juego</span></button>
-        <button class="nav-item" data-section="sectionRanking"><span class="nav-icon">🏆</span><span class="nav-label">Ranking</span></button>
-        <button class="nav-item" data-section="sectionChat"><span class="nav-icon">💬</span><span class="nav-label">Chat</span></button>
-        <button class="nav-item" data-section="sectionStats"><span class="nav-icon">📊</span><span class="nav-label">Stats</span></button>
+        <button class="nav-item active" data-section="sectionJuego"><span class="nav-icon">🎮</span>Juego</button>
+        <button class="nav-item" data-section="sectionRanking"><span class="nav-icon">🏆</span>Ranking</button>
+        <button class="nav-item" data-section="sectionChat"><span class="nav-icon">💬</span>Chat</button>
+        <button class="nav-item" data-section="sectionStats"><span class="nav-icon">📊</span>Stats</button>
     </div>
 
-    <!-- Modals -->
-    <div id="nequiModal" class="modal-overlay hidden"><div class="modal-content"><div class="modal-title">Recargar Saldo</div><p style="font-size:.78rem;color:var(--text-muted);">Transfiere a esta cuenta:</p><div class="nequi-number"><span class="nequi-logo">NEQUI</span> 3219401352</div><button id="btnWaConfirm" class="btn-wa">📱 Enviar Comprobante</button><button id="btnModalCerrar" class="btn-modal-close">Cancelar</button></div></div>
-    <div id="confirmModal" class="modal-overlay hidden"><div class="modal-content"><div class="modal-title" id="confirmTitle">¿Confirmar?</div><p style="font-size:.78rem;color:var(--text-muted);margin-bottom:16px" id="confirmMsg"></p><button id="btnConfirmYes" class="btn-primary" style="margin-bottom:8px">Sí, continuar</button><button id="btnConfirmNo" class="btn-modal-close">Cancelar</button></div></div>
-    <div id="tutorialOverlay" class="tutorial-overlay hidden"><div class="tutorial-icon" id="tutorialIcon">🎮</div><div class="tutorial-title" id="tutorialTitle"></div><div class="tutorial-text" id="tutorialText"></div><div class="tutorial-dots" id="tutorialDots"></div><button class="btn-tutorial" id="btnTutorialNext">Siguiente →</button></div>
+    <div id="nequiModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-weight:700;margin-bottom:10px">Recargar Saldo</div><p style="font-size:.7rem;color:var(--text-muted)">Transfiere a:</p><div class="nequi-number">NEQUI 3219401352</div><button id="btnWaConfirm" class="btn-wa">📱 Enviar Comprobante</button><button id="btnModalCerrar" class="btn-modal-close">Cancelar</button></div></div>
+    <div id="confirmModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-weight:700;margin-bottom:8px" id="confirmTitle"></div><p style="font-size:.7rem;color:var(--text-muted);margin-bottom:12px" id="confirmMsg"></p><button id="btnConfirmYes" class="btn-primary" style="margin-bottom:6px">Sí</button><button id="btnConfirmNo" class="btn-modal-close">Cancelar</button></div></div>
 </div>
 
 <script type="module">
@@ -236,321 +178,325 @@ import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-app
 import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import{getDatabase,ref,onValue,off,set,push,update,increment,onDisconnect,runTransaction,get}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
-const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
-const CORREO_ADMIN="dimarviafara07@gmail.com",WHATSAPP="573219401352",MAX_MIEMBROS=50;
+const fc={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
+const app=initializeApp(fc),auth=getAuth(app),db=getDatabase(app);
+const CA="dimarviafara07@gmail.com",WA="573219401352",MM=50;
+const AC=window.AudioContext||window.webkitAudioContext;let ac=null;
+function ia(){if(!ac)ac=new AC();}
+function pb(f,t,ty='sine',v=0.1){if(!ac)ia();const o=ac.createOscillator(),g=ac.createGain();o.connect(g);g.connect(ac.destination);o.frequency.value=f;o.type=ty;g.gain.setValueAtTime(v,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+t);o.start();o.stop(ac.currentTime+t);}
+function sc(){pb(800,0.1)}function sb(){pb(600,0.3,'triangle');setTimeout(()=>pb(800,0.3,'triangle'),300)}
+function sm(){pb(523,0.15);setTimeout(()=>pb(659,0.15),150);setTimeout(()=>pb(784,0.3),300)}
+function scart(){pb(200,0.4,'triangle');setTimeout(()=>pb(300,0.2,'triangle'),400)}
+function sg(){pb(523,0.2);setTimeout(()=>pb(659,0.2),200);setTimeout(()=>pb(784,0.2),400);setTimeout(()=>pb(1047,0.5,'sine',0.2),600)}
+function sp(){pb(400,0.3,'sawtooth',0.08);setTimeout(()=>pb(300,0.3,'sawtooth',0.08),300);setTimeout(()=>pb(200,0.5,'sawtooth',0.06),600)}
+function sf(){pb(1000,0.05);setTimeout(()=>pb(1200,0.05),50);setTimeout(()=>pb(1400,0.08),100)}
 
-const AudioContext=window.AudioContext||window.webkitAudioContext;let audioCtx=null;
-function initAudio(){if(!audioCtx)audioCtx=new AudioContext();}
-function playBeep(f,t,ty='sine',v=0.1){if(!audioCtx)initAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;o.type=ty;g.gain.setValueAtTime(v,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+t);o.start();o.stop(audioCtx.currentTime+t);}
-function sonidoClick(){playBeep(800,0.1,'sine',0.08);}function sonidoBusqueda(){playBeep(600,0.3,'triangle',0.1);setTimeout(()=>playBeep(800,0.3,'triangle',0.1),300);}
-function sonidoMatch(){playBeep(523,0.15,'sine',0.12);setTimeout(()=>playBeep(659,0.15,'sine',0.12),150);setTimeout(()=>playBeep(784,0.3,'sine',0.15),300);}
-function sonidoCartas(){playBeep(200,0.4,'triangle',0.08);setTimeout(()=>playBeep(300,0.2,'triangle',0.08),400);}
-function sonidoGanar(){playBeep(523,0.2,'sine',0.15);setTimeout(()=>playBeep(659,0.2,'sine',0.15),200);setTimeout(()=>playBeep(784,0.2,'sine',0.15),400);setTimeout(()=>playBeep(1047,0.5,'sine',0.2),600);}
-function sonidoPerder(){playBeep(400,0.3,'sawtooth',0.08);setTimeout(()=>playBeep(300,0.3,'sawtooth',0.08),300);setTimeout(()=>playBeep(200,0.5,'sawtooth',0.06),600);}
-function sonidoFichas(){playBeep(1000,0.05,'sine',0.1);setTimeout(()=>playBeep(1200,0.05,'sine',0.1),50);setTimeout(()=>playBeep(1400,0.08,'sine',0.1),100);}
+// DOM
+const rv=document.getElementById('recoveryView'),av=document.getElementById('accessView'),auv=document.getElementById('authView'),gv=document.getElementById('gameView');
+const re=document.getElementById('recoveryEmail'),rm=document.getElementById('recoveryMsg'),br=document.getElementById('btnRecovery'),bl=document.getElementById('btnBackToLogin');
+const ac2=document.getElementById('accessCode'),ae=document.getElementById('accessError'),ba=document.getElementById('btnAccess'),js=document.getElementById('jornadaStatus'),jst=document.getElementById('jornadaStatusText');
+const tl=document.getElementById('tabLogin'),tr=document.getElementById('tabRegister'),bA=document.getElementById('btnAction'),ei=document.getElementById('email'),ai=document.getElementById('aliasInput'),pi=document.getElementById('pass'),bf=document.getElementById('btnForgotPassword');
+const tu=document.getElementById('txtUsername'),ua=document.getElementById('userAvatar'),sd=document.getElementById('saldoDisplay'),bL=document.getElementById('btnLogout'),bRec=document.getElementById('btnRecargar'),bRet=document.getElementById('btnRetirar'),bP=document.getElementById('btnPlay'),tC=document.getElementById('tableContent'),pA=document.getElementById('potAmount');
+const nM=document.getElementById('nequiModal'),bWC=document.getElementById('btnWaConfirm'),bMC=document.getElementById('btnModalCerrar');
+const cM=document.getElementById('confirmModal'),cT=document.getElementById('confirmTitle'),cMsg=document.getElementById('confirmMsg'),bCY=document.getElementById('btnConfirmYes'),bCN=document.getElementById('btnConfirmNo');
+const aP=document.getElementById('adminPanel'),aUE=document.getElementById('adminUserEmail'),aMR=document.getElementById('adminMontoRecarga'),bAR=document.getElementById('btnAdminRecargar');
+const bRC=document.getElementById('btnResetComision'),bRM=document.getElementById('btnResetMovido'),bRA=document.getElementById('btnResetAll');
+const m1=document.getElementById('mode1v1'),m3=document.getElementById('mode3p'),bCs=document.querySelectorAll('.bet-chip');
+const sI=document.getElementById('searchingIndicator'),lP=document.getElementById('lobbyPlayers'),lPL=document.getElementById('lobbyPlayersList');
+const tCon=document.getElementById('toastContainer');
+const bN=document.getElementById('bottomNav');
+const cCon=document.getElementById('chatContainer'),cI=document.getElementById('chatInput'),cS=document.getElementById('chatSend');
+const rL=document.getElementById('rankingList');
+const sGan=document.getElementById('statGanancias'),sPar=document.getElementById('statPartidas'),sVic=document.getElementById('statVictorias'),sDer=document.getElementById('statDerrotas'),sD=document.getElementById('statsDetail');
+const salasPanel=document.getElementById('salasPanel'),salasRow=document.getElementById('salasRow');
 
-// DOM refs
-const recoveryView=document.getElementById('recoveryView'),accessView=document.getElementById('accessView'),authView=document.getElementById('authView'),gameView=document.getElementById('gameView');
-const recoveryEmail=document.getElementById('recoveryEmail'),recoveryMsg=document.getElementById('recoveryMsg'),btnRecovery=document.getElementById('btnRecovery'),btnBackToLogin=document.getElementById('btnBackToLogin');
-const accessCode=document.getElementById('accessCode'),accessError=document.getElementById('accessError'),btnAccess=document.getElementById('btnAccess'),jornadaStatus=document.getElementById('jornadaStatus'),jornadaStatusText=document.getElementById('jornadaStatusText'),accessSchedule=document.getElementById('accessSchedule');
-const tabLogin=document.getElementById('tabLogin'),tabRegister=document.getElementById('tabRegister'),btnAction=document.getElementById('btnAction'),emailInput=document.getElementById('email'),aliasInput=document.getElementById('aliasInput'),passInput=document.getElementById('pass'),btnForgotPassword=document.getElementById('btnForgotPassword');
-const txtUsername=document.getElementById('txtUsername'),userAvatar=document.getElementById('userAvatar'),saldoDisplay=document.getElementById('saldoDisplay'),btnLogout=document.getElementById('btnLogout'),btnRecargar=document.getElementById('btnRecargar'),btnRetirar=document.getElementById('btnRetirar'),btnPlay=document.getElementById('btnPlay'),tableContent=document.getElementById('tableContent'),potAmount=document.getElementById('potAmount');
-const nequiModal=document.getElementById('nequiModal'),btnWaConfirm=document.getElementById('btnWaConfirm'),btnModalCerrar=document.getElementById('btnModalCerrar');
-const confirmModal=document.getElementById('confirmModal'),confirmTitle=document.getElementById('confirmTitle'),confirmMsg=document.getElementById('confirmMsg'),btnConfirmYes=document.getElementById('btnConfirmYes'),btnConfirmNo=document.getElementById('btnConfirmNo');
-const adminPanel=document.getElementById('adminPanel'),adminUserEmail=document.getElementById('adminUserEmail'),adminMontoRecarga=document.getElementById('adminMontoRecarga'),btnAdminRecargar=document.getElementById('btnAdminRecargar');
-const btnResetComision=document.getElementById('btnResetComision'),btnResetMovido=document.getElementById('btnResetMovido'),btnResetAll=document.getElementById('btnResetAll');
-const mode1v1=document.getElementById('mode1v1'),mode3p=document.getElementById('mode3p'),betChips=document.querySelectorAll('.bet-chip');
-const searchingIndicator=document.getElementById('searchingIndicator'),lobbyPlayers=document.getElementById('lobbyPlayers'),lobbyPlayersList=document.getElementById('lobbyPlayersList');
-const toastContainer=document.getElementById('toastContainer');
-const bottomNav=document.getElementById('bottomNav');
-const chatContainer=document.getElementById('chatContainer'),chatInput=document.getElementById('chatInput'),chatSend=document.getElementById('chatSend');
-const rankingList=document.getElementById('rankingList');
-const statGanancias=document.getElementById('statGanancias'),statPartidas=document.getElementById('statPartidas'),statVictorias=document.getElementById('statVictorias'),statDerrotas=document.getElementById('statDerrotas'),statsDetail=document.getElementById('statsDetail');
-const salasPanel=document.getElementById('salasPanel'),salasGrid=document.getElementById('salasGrid');
-const tutorialOverlay=document.getElementById('tutorialOverlay'),tutorialIcon=document.getElementById('tutorialIcon'),tutorialTitle=document.getElementById('tutorialTitle'),tutorialText=document.getElementById('tutorialText'),tutorialDots=document.getElementById('tutorialDots'),btnTutorialNext=document.getElementById('btnTutorialNext');
+let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cMId=null;
+const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
+const pP=new Set();let ePart=false;
+const esp=(ms)=>new Promise(r=>setTimeout(r,ms));
 
-let currentUserId=null,currentUsername='',currentAlias='',saldoActual=0,apuestaActual=2000,modoJuego='1v1',esperandoPartida=false,currentMatchId=null,codigoAcceso='';
-const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nombresCartas=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MAX_JUGADORES={'1v1':2,'3p':3};
-const partidasProcesadas=new Set();let ejecutandoPartida=false;
-const esperar=(ms)=>new Promise(r=>setTimeout(r,ms));
+function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;tCon.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
+function mC(t,m){return new Promise(r=>{cT.textContent=t;cMsg.textContent=m;cM.classList.remove('hidden');bCY.onclick=()=>{cM.classList.add('hidden');r(true);};bCN.onclick=()=>{cM.classList.add('hidden');r(false);};});}
 
-function mostrarToast(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;toastContainer.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
-function mostrarConfirmacion(t,m){return new Promise(r=>{confirmTitle.textContent=t;confirmMsg.textContent=m;confirmModal.classList.remove('hidden');btnConfirmYes.onclick=()=>{confirmModal.classList.add('hidden');r(true);};btnConfirmNo.onclick=()=>{confirmModal.classList.add('hidden');r(false);};});}
+async function cSald(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
+async function mSald(uid,monto,concepto,matchId=null){const sRef=ref(db,`usuarios/${uid}/saldo`);await runTransaction(sRef,(s)=>{const n=(s||0)+monto;if(n<0)throw new Error('Saldo insuficiente');return n;});try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}}
 
-async function cargarSaldo(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
-async function modificarSaldo(uid,monto,concepto,matchId=null){const sRef=ref(db,`usuarios/${uid}/saldo`);await runTransaction(sRef,(s)=>{const n=(s||0)+monto;if(n<0)throw new Error('Saldo insuficiente');return n;});try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}}
-
-// Navegación
 function cambiarSeccion(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector(`[data-section="${id}"]`)?.classList.add('active');}
-document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sonidoClick();cambiarSeccion(item.dataset.section);});});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sc();cambiarSeccion(item.dataset.section);});});
 
-// Chat
-let chatListener=null;
-function initChat(){if(chatListener)off(ref(db,'chat/global'),'value',chatListener);chatListener=onValue(ref(db,'chat/global'),snap=>{const msgs=snap.val();chatContainer.innerHTML='';if(msgs){Object.values(msgs).slice(-50).forEach(m=>{const esMio=m.uid===currentUserId;const esSistema=m.uid==='sistema';chatContainer.innerHTML+=`<div class="chat-msg ${esSistema?'sistema':(esMio?'mio':'otro')}">${!esSistema?`<div class="chat-author">${m.alias||'Anónimo'}</div>`:''}${m.texto}</div>`;});}chatContainer.scrollTop=chatContainer.scrollHeight;});}
-chatSend.addEventListener('click',async()=>{const t=chatInput.value.trim();if(!t||!currentUserId)return;await push(ref(db,'chat/global'),{uid:currentUserId,alias:currentAlias,texto:t,timestamp:Date.now()});chatInput.value='';});
-chatInput.addEventListener('keypress',e=>{if(e.key==='Enter')chatSend.click();});
+let chatL=null;
+function initChat(){if(chatL)off(ref(db,'chat/global'),'value',chatL);chatL=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();cCon.innerHTML='';if(ms){Object.values(ms).slice(-40).forEach(m=>{const em=m.uid===cU;cCon.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}cCon.scrollTop=cCon.scrollHeight;});}
+cS.addEventListener('click',async()=>{const t=cI.value.trim();if(!t||!cU)return;await push(ref(db,'chat/global'),{uid:cU,alias:cAlias,texto:t,timestamp:Date.now()});cI.value='';});
+cI.addEventListener('keypress',e=>{if(e.key==='Enter')cS.click();});
 
-// Ranking
-function initRanking(){onValue(ref(db,'usuarios'),snap=>{const users=snap.val()||{};const ranking=[];for(const uid in users){const u=users[uid];if(u.historial){let ganancias=0;Object.values(u.historial).forEach(h=>{if(h.resultado==='GANÓ')ganancias+=h.monto||0;else if(h.resultado==='PERDIÓ')ganancias-=(h.monto||0);});if(Object.keys(u.historial).length>0)ranking.push({alias:u.alias||'Anónimo',ganancias});}}ranking.sort((a,b)=>b.ganancias-a.ganancias);let h='';ranking.slice(0,20).forEach((r,i)=>{const pos=i+1;let cls='normal';if(pos===1)cls='gold';else if(pos===2)cls='silver';else if(pos===3)cls='bronze';h+=`<div class="ranking-item"><div class="ranking-pos ${cls}">${pos===1?'👑':pos===2?'🥈':pos===3?'🥉':pos}</div><div class="ranking-name">${r.alias}</div><div class="ranking-wins">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});rankingList.innerHTML=h||'<div style="text-align:center;color:var(--text-muted);padding:20px">Sin datos aún</div>';});}
+function initRanking(){onValue(ref(db,'usuarios'),snap=>{const us=snap.val()||{};const rank=[];for(const uid in us){const u=us[uid];if(u.historial){let g=0;Object.values(u.historial).forEach(h=>{if(h.resultado==='GANÓ')g+=h.monto||0;else if(h.resultado==='PERDIÓ')g-=(h.monto||0);});rank.push({alias:u.alias||'Anónimo',ganancias:g});}}rank.sort((a,b)=>b.ganancias-a.ganancias);let h='';rank.slice(0,15).forEach((r,i)=>{const p=i+1;h+=`<div class="ranking-item"><div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div><div style="flex:1">${r.alias}</div><div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});rL.innerHTML=h||'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Sin datos</div>';});}
 
-// Stats
-function initStats(){onValue(ref(db,`usuarios/${currentUserId}/historial`),snap=>{const h=snap.val()||{};let ganancias=0,partidas=0,victorias=0,derrotas=0;Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;partidas++;if(r.resultado==='GANÓ'){victorias++;ganancias+=r.monto||0;}else{derrotas++;ganancias-=r.monto||0;}});statGanancias.textContent='$'+ganancias.toLocaleString('es-CO');statPartidas.textContent=partidas;statVictorias.textContent=victorias;statDerrotas.textContent=derrotas;const wr=partidas>0?Math.round((victorias/partidas)*100):0;statsDetail.innerHTML=`<div style="display:flex;justify-content:space-around;padding:12px 0"><div style="text-align:center"><div style="font-size:1.5rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.6rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.5rem;font-weight:700;color:var(--gold)">$${partidas>0?Math.round(ganancias/partidas).toLocaleString('es-CO'):'0'}</div><div style="font-size:.6rem;color:var(--text-muted)">Promedio</div></div></div>`;});}
+function initStats(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const h=snap.val()||{};let g=0,p=0,v=0,d=0;Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;p++;if(r.resultado==='GANÓ'){v++;g+=r.monto||0;}else{d++;g-=r.monto||0;}});sGan.textContent='$'+g.toLocaleString('es-CO');sPar.textContent=p;sVic.textContent=v;sDer.textContent=d;const wr=p>0?Math.round((v/p)*100):0;sD.innerHTML=`<div style="display:flex;justify-content:space-around;padding:10px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:8px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.55rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">$${p>0?Math.round(g/p).toLocaleString('es-CO'):'0'}</div><div style="font-size:.55rem;color:var(--text-muted)">Promedio</div></div></div>`;});}
 
-// ✅ NUEVO: Panel de salas para admin
-function initSalasPanel(){
-    const modalidades=['1v1','3p'];const montos=[2000,4000,8000,16000,32000];
+// ✅ Panel de salas compacto
+function initSalas(){
+    const montos=[2000,4000,8000,16000,32000];
     onValue(ref(db,'lobbies'),snap=>{
         const lobbies=snap.val()||{};let h='';
-        for(const mod of modalidades){
-            for(const monto of montos){
-                const baseKey=`${mod}_${monto}`;const baseLobbies=lobbies[baseKey]||{};
-                const total=Object.keys(baseLobbies).length;
-                const activas=Object.values(baseLobbies).filter(l=>l.estado==='jugando').length;
-                const esperando=Object.values(baseLobbies).filter(l=>l.estado==='esperando').length;
-                h+=`<div class="sala-mini"><div class="sala-mini-label">${mod} $${(monto/1000).toFixed(0)}K</div><div class="sala-mini-value active">🎮 ${activas} jugando</div><div class="sala-mini-value waiting">⏳ ${esperando} esperando</div></div>`;
+        for(const monto of montos){
+            let total=0;
+            for(const mod of ['1v1','3p']){
+                const key=`${mod}_${monto}`;
+                if(lobbies[key])total+=Object.keys(lobbies[key]).length;
             }
+            const k=monto/1000;
+            h+=`<div class="sala-chip ${total>0?'activa':''}"><div class="val">${total}</div><div class="lbl">$${k}K</div></div>`;
         }
-        salasGrid.innerHTML=h||'<div style="text-align:center;color:var(--text-muted);font-size:.7rem">No hay salas activas</div>';
+        salasRow.innerHTML=h;
     });
 }
 
-// Tutorial
-const tutorialSteps=[{icon:'👋',title:'¡Bienvenido a Royal High!',text:'Compite contra otros jugadores y gana dinero real.'},{icon:'🏠',title:'Salas múltiples',text:'Ahora puedes jugar sin esperar. Se crean salas automáticamente para cada grupo de jugadores.'},{icon:'🃏',title:'Las cartas',text:'Tu carta a la izquierda (borde dorado). Gana la carta más alta.'},{icon:'🏆',title:'¡A jugar!',text:'Presiona "Buscar Partida" y diviértete.'}];
-let tutorialIndex=0;
-function mostrarTutorial(){tutorialOverlay.classList.remove('hidden');tutorialIndex=0;actualizarTutorial();}
-function actualizarTutorial(){const s=tutorialSteps[tutorialIndex];tutorialIcon.textContent=s.icon;tutorialTitle.textContent=s.title;tutorialText.textContent=s.text;tutorialDots.innerHTML='';tutorialSteps.forEach((_,i)=>{tutorialDots.innerHTML+=`<div class="tutorial-dot ${i===tutorialIndex?'active':''}"></div>`;});btnTutorialNext.textContent=tutorialIndex<tutorialSteps.length-1?'Siguiente →':'🎮 ¡Jugar!';}
-btnTutorialNext.addEventListener('click',()=>{if(tutorialIndex<tutorialSteps.length-1){tutorialIndex++;actualizarTutorial();}else{tutorialOverlay.classList.add('hidden');}});
+// Auth & Tabs
+tl.addEventListener('click',()=>{sc();tl.classList.add('active');tr.classList.remove('active');ai.classList.add('hidden');bA.textContent='Ingresar';});
+tr.addEventListener('click',()=>{sc();tr.classList.add('active');tl.classList.remove('active');ai.classList.remove('hidden');bA.textContent='Registrarse';});
+bf.addEventListener('click',()=>{auv.classList.add('hidden');rv.classList.remove('hidden');re.value=ei.value;});
+bl.addEventListener('click',()=>{rv.classList.add('hidden');auv.classList.remove('hidden');});
+br.addEventListener('click',async()=>{const e=re.value.trim();if(!e){rm.textContent='❌ Ingresa tu correo';return}br.disabled=true;try{await sendPasswordResetEmail(auth,e);rm.textContent='✅ Enviado';}catch(err){rm.textContent='❌ Error';}br.disabled=false;});
 
-// Tab & Auth
-tabLogin.addEventListener('click',()=>{sonidoClick();tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
-tabRegister.addEventListener('click',()=>{sonidoClick();tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
-btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
-btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');});
-btnRecovery.addEventListener('click',async()=>{const e=recoveryEmail.value.trim();if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return}btnRecovery.disabled=true;try{await sendPasswordResetEmail(auth,e);recoveryMsg.textContent='✅ Enviado';}catch(err){recoveryMsg.textContent='❌ Error';}btnRecovery.disabled=false;});
+async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false;js.className=activa?'jornada-status active':'jornada-status inactive';jst.textContent=activa?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}}
+ba.addEventListener('click',async()=>{const c=ac2.value.trim();if(!c||c.length!==4){ae.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){ae.textContent='';av.classList.add('hidden');gv.classList.remove('hidden');bN.classList.remove('hidden');sf();mT('✅ Acceso concedido','success');}else{ae.textContent='Código incorrecto';ac2.value='';}});
 
-async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';accessSchedule.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}}
-btnAccess.addEventListener('click',async()=>{const c=accessCode.value.trim();if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');bottomNav.classList.remove('hidden');sonidoFichas();mostrarToast('✅ Acceso concedido','success');mostrarTutorial();}else{accessError.textContent='Código incorrecto';accessCode.value='';}});
-accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
+bRC.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
+bRM.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
+bRA.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
 
-btnResetComision.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
-btnResetMovido.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
-btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
+function updPot(c){if(pA)pA.textContent='$'+(apAct*c).toLocaleString('es-CO')}
+m1.addEventListener('click',()=>{if(eP)return;sc();m1.classList.add('selected');m3.classList.remove('selected');mJ='1v1';updPot(2);updTbl();});
+m3.addEventListener('click',()=>{if(eP)return;sc();m3.classList.add('selected');m1.classList.remove('selected');mJ='3p';updPot(3);updTbl();});
+bCs.forEach(ch=>{ch.addEventListener('click',()=>{if(eP)return;sc();bCs.forEach(c=>c.classList.remove('selected'));ch.classList.add('selected');apAct=parseInt(ch.dataset.apuesta);updPot(MJ[mJ]);})});
+function updTbl(){if(eP)return;const m=MJ[mJ];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div style="font-size:1rem;color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tC.innerHTML=h+'</div>';}
+updPot(2);
 
-function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO')}
-mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
-mode3p.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
-betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego]);})});
-function updateTablePreview(){if(esperandoPartida)return;const m=MAX_JUGADORES[modoJuego];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div style="font-size:1.1rem;color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tableContent.innerHTML=h+'</div>';}
-updatePotDisplay(2);
+function genCart(){const a=new Uint32Array(2);crypto.getRandomValues(a);return{peso:a[0]%nC.length,texto:nC[a[0]%nC.length],pinta:pintas[a[1]%pintas.length]};}
 
-function generarCarta(){const a=new Uint32Array(2);crypto.getRandomValues(a);return{peso:a[0]%nombresCartas.length,texto:nombresCartas[a[0]%nombresCartas.length],pinta:pintas[a[1]%pintas.length]};}
-
-function renderSearchUI(e,t){
-    let h='<div class="search-inline" style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">';
-    for(let i=0;i<t;i++){const o=i<e;h+=`<div><div style="width:50px;height:50px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.68rem;color:var(--text-secondary);text-align:center">${i===0?'Tú':(o?'Jugador '+(i+1):'Buscando...')}</div></div>`;}
-    h+=`</div>`;tableContent.innerHTML=h;searchingIndicator.classList.remove('hidden');lobbyPlayers.classList.add('visible');
+function rSearch(e,t){
+    let h='<div class="cards-row" style="gap:20px">';
+    for(let i=0;i<t;i++){const o=i<e;h+=`<div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px">${i===0?'Tú':(o?'Jugador':'Buscando')}</div></div>`;}
+    h+=`</div>`;tC.innerHTML=h;sI.classList.remove('hidden');lP.classList.add('visible');
 }
 
-function renderGameCards(jugadoresOriginales){
-    const reordenados=[],labels=[],yo=jugadoresOriginales.find(j=>j.uid===currentUserId);
-    if(yo){reordenados.push(yo);labels.push('Tú');}
-    jugadoresOriginales.forEach(j=>{if(j.uid!==currentUserId){reordenados.push(j);labels.push(j.alias||'Oponente');}});
+function rGame(jO){
+    const reo=[],labs=[],yo=jO.find(j=>j.uid===cU);
+    if(yo){reo.push(yo);labs.push('Tú');}
+    jO.forEach(j=>{if(j.uid!==cU){reo.push(j);labs.push(j.alias||'Oponente');}});
     let h='<div class="cards-row">';
-    reordenados.forEach((p,i)=>{const esTuCarta=p.uid===currentUserId;h+=`<div class="card-slot ${esTuCarta?'tu-carta':'oponente'}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div style="font-size:1.1rem;color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label ${esTuCarta?'tu-label':''}" id="cl${i}">${labels[i]||''}</div></div>`;});
-    h+='</div>';tableContent.innerHTML=h;searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');
+    reo.forEach((p,i)=>{const et=p.uid===cU;h+=`<div class="card-slot ${et?'tu-carta':'oponente'}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div style="font-size:1rem;color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${labs[i]||''}</div></div>`;});
+    h+='</div>';tC.innerHTML=h;sI.classList.add('hidden');lP.classList.remove('visible');
 }
 
-function updateLobbyPlayers(jugadores){let h='';jugadores.forEach(j=>{const esTu=j.uid===currentUserId;h+=`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-size:.75rem;color:var(--text-secondary)"><span style="width:8px;height:8px;border-radius:50%;background:var(--success)"></span>${esTu?'Tú (':''}${j.alias||'Jugador'}${esTu?')':''}</div>`;});lobbyPlayersList.innerHTML=h;}
+function updLobby(jugs){let h='';jugs.forEach(j=>{const et=j.uid===cU;h+=`<div style="display:flex;align-items:center;gap:6px;padding:4px 0;font-size:.7rem;color:var(--text-secondary)"><span style="width:7px;height:7px;border-radius:50%;background:var(--success)"></span>${et?'Tú (':''}${j.alias||'Jugador'}${et?')':''}</div>`;});lPL.innerHTML=h;}
 
-// ✅ NUEVO: Sistema de salas múltiples
-async function encontrarSalaDisponible(modo,monto,maxJ){
-    const baseRef=ref(db,`lobbies/${modo}_${monto}`);
+// ✅ SISTEMA DE SALAS MÚLTIPLES CORREGIDO
+let lobbyPath=null,salaId=null;
+
+async function encontrarOSala(modo,monto,maxJ){
+    const basePath=`lobbies/${modo}_${monto}`;
+    const baseRef=ref(db,basePath);
     
-    // Intentar encontrar sala existente con espacio
+    // Usar transacción para encontrar/crear sala
     const result=await runTransaction(baseRef,(lobbies)=>{
         if(!lobbies)lobbies={};
         
-        // Buscar sala con espacio
-        for(const salaId in lobbies){
-            const sala=lobbies[salaId];
+        // Buscar sala con espacio disponible
+        for(const sId in lobbies){
+            const sala=lobbies[sId];
             if(sala&&sala.estado==='esperando'&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.length<maxJ){
-                const yaEsta=sala.jugadores.some(j=>j.uid===currentUserId);
-                if(!yaEsta){
-                    sala.jugadores.push({uid:currentUserId,alias:currentAlias});
-                    if(sala.jugadores.length===maxJ){
-                        sala.estado='jugando';
-                        sala.cartas={};
-                        sala.jugadores.forEach(j=>{sala.cartas[j.uid]=generarCarta();});
-                    }
-                    return{lobbies,salaAsignada:salaId};
-                }
+                const yaEsta=sala.jugadores.some(j=>j.uid===cU);
+                if(!yaEsta)return lobbies; // Retornar sin modificar, usaremos esta sala
             }
         }
         
         // Si no hay sala disponible, crear una nueva
-        const nuevaSalaId='sala_'+Date.now().toString(36)+Math.random().toString(36).substr(2,4);
-        lobbies[nuevaSalaId]={
-            host:currentUserId,
-            jugadores:[{uid:currentUserId,alias:currentAlias}],
+        const nuevaId='s'+Date.now().toString(36)+Math.random().toString(36).substr(2,3);
+        lobbies[nuevaId]={
+            host:cU,
+            jugadores:[{uid:cU,alias:cAlias}],
             estado:'esperando',
             creado:Date.now()
         };
-        return{lobbies,salaAsignada:nuevaSalaId};
+        return lobbies;
     });
     
-    return{...result.snapshot.val(),salaAsignada:result.snapshot.val()?Object.keys(result.snapshot.val()).pop():null};
+    // Leer el resultado para encontrar la sala asignada
+    const lobbiesData=result.snapshot.val()||{};
+    
+    // Buscar sala donde estamos nosotros
+    for(const sId in lobbiesData){
+        const sala=lobbiesData[sId];
+        if(sala&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.some(j=>j.uid===cU)){
+            return{salaId:sId,basePath};
+        }
+    }
+    return null;
 }
 
-let lobbyActualPath=null,salaActualId=null;
-
-btnPlay.addEventListener('click',async()=>{
-    if(!currentUserId||ejecutandoPartida)return;initAudio();
-    const saldoReal=await cargarSaldo(currentUserId);
-    if(saldoReal<=0)return mostrarToast('❌ Saldo en $0','error');
-    if(saldoReal<apuestaActual)return mostrarToast(`❌ Necesitas $${apuestaActual.toLocaleString('es-CO')}`,'error');
+bP.addEventListener('click',async()=>{
+    if(!cU||ePart)return;ia();
+    const sReal=await cSald(cU);
+    if(sReal<=0)return mT('❌ Saldo en $0','error');
+    if(sReal<apAct)return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`,'error');
     
-    const apuesta=Number(apuestaActual);const maxJ=MAX_JUGADORES[modoJuego];
+    const ap=Number(apAct),maxJ=MJ[mJ];
     
-    if(esperandoPartida){
-        btnPlay.disabled=true;btnPlay.textContent='Cancelando...';
-        if(lobbyActualPath&&salaActualId){try{await set(ref(db,lobbyActualPath+'/'+salaActualId),null);}catch(e){}}
-        await update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
-        esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
-        btnPlay.classList.remove('canceling','cooldown');searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');
-        updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();lobbyActualPath=null;salaActualId=null;
+    if(eP){
+        bP.disabled=true;bP.textContent='Cancelando...';
+        if(lobbyPath&&salaId){try{await set(ref(db,lobbyPath+'/'+salaId),null);}catch(e){}}
+        await update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});
+        eP=false;bP.disabled=false;bP.textContent='Buscar Partida';
+        bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');
+        updPot(MJ[mJ]);updTbl();lobbyPath=null;salaId=null;
         return;
     }
     
-    const confirmado=await mostrarConfirmacion('Iniciar búsqueda',`¿Buscar partida ${modoJuego} por $${apuesta.toLocaleString('es-CO')}?`);
-    if(!confirmado)return;
+    const conf=await mC('Iniciar búsqueda',`¿Buscar ${mJ} por $${ap.toLocaleString('es-CO')}?`);
+    if(!conf)return;
     
-    sonidoBusqueda();btnPlay.disabled=true;btnPlay.classList.add('canceling');
-    btnPlay.textContent='Buscando oponente...';esperandoPartida=true;
-    await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias}).catch(()=>{});
-    renderSearchUI(1,maxJ);updatePotDisplay(1);
+    sb();bP.disabled=true;bP.classList.add('canceling');bP.textContent='Buscando...';eP=true;
+    await update(ref(db,`presencia/${cU}`),{status:'waiting',alias:cAlias}).catch(()=>{});
+    rSearch(1,maxJ);updPot(1);
     
-    let lobbyListener=null,timeoutId=null,partidaIniciada=false;
+    let lobbyL=null,tOut=null,pIni=false;
     
     try{
-        // ✅ Encontrar o crear sala
-        const resultado=await encontrarSalaDisponible(modoJuego,apuesta,maxJ);
-        if(!resultado||!resultado.salaAsignada){resetSearch();return mostrarToast('Error al encontrar sala','error');}
+        // Encontrar o crear sala
+        const enc=await encontrarOSala(mJ,ap,maxJ);
+        if(!enc){resetSearch();return mT('Error al encontrar sala','error');}
         
-        salaActualId=resultado.salaAsignada;
-        lobbyActualPath=`lobbies/${modoJuego}_${apuesta}`;
-        const salaRef=ref(db,lobbyActualPath+'/'+salaActualId);
+        salaId=enc.salaId;
+        lobbyPath=enc.basePath;
+        const salaRef=ref(db,lobbyPath+'/'+salaId);
+        
+        // Ahora unirse a la sala (agregar jugador si hay espacio)
+        await runTransaction(salaRef,(sala)=>{
+            if(!sala||!sala.jugadores)return sala;
+            if(sala.estado==='esperando'&&sala.jugadores.length<maxJ){
+                const yaEsta=sala.jugadores.some(j=>j.uid===cU);
+                if(!yaEsta){
+                    sala.jugadores.push({uid:cU,alias:cAlias});
+                    if(sala.jugadores.length===maxJ){
+                        sala.estado='jugando';
+                        sala.cartas={};
+                        sala.jugadores.forEach(j=>{sala.cartas[j.uid]=genCart();});
+                    }
+                }
+            }
+            return sala;
+        });
         
         const snapSala=await get(salaRef);
-        const salaData=snapSala.val();
-        if(!salaData||!salaData.jugadores){resetSearch();return mostrarToast('Error en sala','error');}
+        const sData=snapSala.val();
+        if(!sData||!sData.jugadores){resetSearch();return mT('Error en sala','error');}
         
-        updateLobbyPlayers(salaData.jugadores);
+        updLobby(sData.jugadores);
         
-        lobbyListener=onValue(salaRef,async(snap)=>{
-            if(partidaIniciada)return;
+        lobbyL=onValue(salaRef,async(snap)=>{
+            if(pIni)return;
             const data=snap.val();
-            if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyListener)off(salaRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();return;}
+            if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();return;}
             
-            renderSearchUI(data.jugadores.length,maxJ);
-            updateLobbyPlayers(data.jugadores);
-            updatePotDisplay(data.jugadores.length);
+            rSearch(data.jugadores.length,maxJ);
+            updLobby(data.jugadores);
+            updPot(data.jugadores.length);
             
             if(data.estado==='jugando'&&data.jugadores.length===maxJ){
-                partidaIniciada=true;
-                if(lobbyListener)off(salaRef,'value',lobbyListener);
-                if(timeoutId)clearTimeout(timeoutId);
-                sonidoMatch();
+                pIni=true;
+                if(lobbyL)off(salaRef,'value',lobbyL);
+                if(tOut)clearTimeout(tOut);
+                sm();
                 
                 if(!data.matchId){
                     const matchId=push(ref(db,'matches')).key;
-                    const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuesta,modalidad:modoJuego,creado:Date.now()};
-                    await set(ref(db,`matches/${matchId}`),matchData);
-                    await update(salaRef,{matchId:matchId});
+                    const mData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:genCart()})),apuesta:ap,modalidad:mJ,creado:Date.now()};
+                    await set(ref(db,`matches/${matchId}`),mData);
+                    await update(salaRef,{matchId});
                     data.matchId=matchId;
                 }
                 
-                if(!partidasProcesadas.has(data.matchId)){
-                    partidasProcesadas.add(data.matchId);
-                    ejecutandoPartida=true;
-                    await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});
-                    await ejecutarPartida(data.matchId,data,apuesta,lobbyActualPath,salaActualId);
-                    ejecutandoPartida=false;
+                if(!pP.has(data.matchId)){
+                    pP.add(data.matchId);
+                    ePart=true;
+                    await update(ref(db,`presencia/${cU}`),{status:'playing'}).catch(()=>{});
+                    await ejecutarPartida(data.matchId,data,ap,lobbyPath,salaId);
+                    ePart=false;
                 }
             }
         });
         
-        timeoutId=setTimeout(async()=>{
-            if(partidaIniciada)return;
-            if(lobbyListener)off(salaRef,'value',lobbyListener);
+        tOut=setTimeout(async()=>{
+            if(pIni)return;
+            if(lobbyL)off(salaRef,'value',lobbyL);
             const snap=await get(salaRef);const data=snap.val();
-            if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}
-            if(!ejecutandoPartida)resetSearch();
+            if(data&&data.estado==='esperando'&&data.host===cU&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}
+            if(!ePart)resetSearch();
         },90000);
     }catch(error){
-        if(lobbyListener)off(ref(db,lobbyActualPath+'/'+salaActualId),'value',lobbyListener);
-        if(timeoutId)clearTimeout(timeoutId);
-        if(!ejecutandoPartida)resetSearch();
-        mostrarToast('Error de conexión','error');
+        if(lobbyL&&lobbyPath&&salaId)off(ref(db,lobbyPath+'/'+salaId),'value',lobbyL);
+        if(tOut)clearTimeout(tOut);
+        if(!ePart)resetSearch();
+        mT('Error de conexión','error');
     }
 });
 
 function resetSearch(){
-    esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
-    btnPlay.classList.remove('canceling','cooldown');searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');
-    updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();
-    update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
-    lobbyActualPath=null;salaActualId=null;
+    eP=false;bP.disabled=false;bP.textContent='Buscar Partida';
+    bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');
+    updPot(MJ[mJ]);updTbl();
+    update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});
+    lobbyPath=null;salaId=null;
 }
 
-async function ejecutarPartida(matchId,lobbyData,apuesta,lobbyPath,salaId){
-    currentMatchId=matchId;btnPlay.textContent='Repartiendo cartas...';
-    btnPlay.classList.remove('canceling');btnPlay.classList.add('cooldown');btnPlay.disabled=true;
+async function ejecutarPartida(matchId,lData,ap,lPath,sId){
+    cMId=matchId;bP.textContent='Repartiendo...';
+    bP.classList.remove('canceling');bP.classList.add('cooldown');bP.disabled=true;
     try{
-        const matchSnap=await get(ref(db,`matches/${matchId}`));let matchData=matchSnap.val();
-        if(!matchData||!matchData.jugadores){const jugadores=(lobbyData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lobbyData.cartas?lobbyData.cartas[j.uid]:generarCarta()}));matchData={jugadores,apuesta:apuesta,modalidad:modoJuego};await set(ref(db,`matches/${matchId}`),matchData).catch(()=>{});}
-        const jugadores=matchData.jugadores;const miIdx=jugadores.findIndex(j=>j.uid===currentUserId);
-        if(miIdx===-1){resetSearch();return;}
-        const totalPot=apuesta*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores);
-        sonidoCartas();await esperar(1500);btnPlay.textContent='Revelando cartas...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
-        await esperar(1200);btnPlay.textContent='Calculando resultados...';
-        const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
-        if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const prioridadPinta={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(prioridadPinta[b.carta.pinta.icon]||0)>(prioridadPinta[a.carta.pinta.icon]||0)?b:a);}
-        const yoGane=ganador.uid===currentUserId;const comision=jugadores.length===2?Math.floor(apuesta*0.05):Math.floor(apuesta*0.10);const gananciaNetaReal=(totalPot-apuesta)-comision;
-        if(yoGane){sonidoGanar();}else{sonidoPerder();}
-        if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
-        const reordenados=[];reordenados.push(jugadores.find(j=>j.uid===currentUserId));jugadores.forEach(j=>{if(j.uid!==currentUserId)reordenados.push(j);});
-        reordenados.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===currentUserId?'Tú':(j.alias||'Oponente'));}else if(j.uid===currentUserId){lbl.classList.add('loser');}});
-        try{if(yoGane){await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida',matchId);mostrarToast(`🎉 ¡Ganaste $${gananciaNetaReal.toLocaleString('es-CO')}!`,'success');}else{await modificarSaldo(currentUserId,-apuesta,'Perdió partida',matchId);mostrarToast(`😔 Perdiste $${apuesta.toLocaleString('es-CO')}`,'warning');}await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}).catch(()=>{});}catch(e){}
-        btnPlay.textContent=yoGane?'🎉 ¡Ganaste!':'😔 Perdiste';await esperar(4000);
-        // Limpiar sala y match
-        try{await set(ref(db,`matches/${matchId}`),null);if(lobbyPath&&salaId)await set(ref(db,lobbyPath+'/'+salaId),null);}catch(e){}
+        const mSnap=await get(ref(db,`matches/${matchId}`));let mData=mSnap.val();
+        if(!mData||!mData.jugadores){const jgs=(lData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lData.cartas?lData.cartas[j.uid]:genCart()}));mData={jugadores:jgs,apuesta:ap,modalidad:mJ};await set(ref(db,`matches/${matchId}`),mData).catch(()=>{});}
+        const jgs=mData.jugadores;const mi=jgs.findIndex(j=>j.uid===cU);
+        if(mi===-1){resetSearch();return;}
+        const tPot=ap*jgs.length;updPot(jgs.length);rGame(jgs);
+        scart();await esp(1500);bP.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+        await esp(1200);bP.textContent='Calculando...';
+        const pesos=jgs.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let gan=jgs.filter(j=>j.carta.peso===maxP)[0];
+        if(jgs.filter(j=>j.carta.peso===maxP).length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};gan=jgs.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}
+        const yG=gan.uid===cU;const com=jgs.length===2?Math.floor(ap*0.05):Math.floor(ap*0.10);const gnr=(tPot-ap)-com;
+        if(yG){sg();}else{sp();}
+        if(yG&&pA){pA.classList.add('pot-won');setTimeout(()=>pA.classList.remove('pot-won'),600);}
+        const reo=[];reo.push(jgs.find(j=>j.uid===cU));jgs.forEach(j=>{if(j.uid!==cU)reo.push(j);});
+        reo.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===gan.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===cU?'Tú':(j.alias||'Oponente'));}else if(j.uid===cU){lbl.classList.add('loser');}});
+        try{if(yG){await mSald(cU,gnr,'Ganó partida',matchId);mT(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`,'success');}else{await mSald(cU,-ap,'Perdió partida',matchId);mT(`😔 Perdiste $${ap.toLocaleString('es-CO')}`,'warning');}await update(ref(db,'adminData'),{total_comisiones:increment(com),dinero_movido:increment(tPot),partidas_jugando:increment(1)}).catch(()=>{});}catch(e){}
+        bP.textContent=yG?'🎉 ¡Ganaste!':'😔 Perdiste';await esp(4000);
+        try{await set(ref(db,`matches/${matchId}`),null);if(lPath&&sId)await set(ref(db,lPath+'/'+sId),null);}catch(e){}
     }catch(error){}finally{resetSearch();}
 }
 
 // Auth state
 onAuthStateChanged(auth,async(user)=>{
     if(user){
-        currentUserId=user.uid;const userSnap=await get(ref(db,`usuarios/${user.uid}`));const userData=userSnap.val()||{};currentUsername=user.email.split('@')[0];currentAlias=userData.alias||currentUsername;
-        const isAdmin=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();authView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');
-        if(isAdmin){gameView.classList.remove('hidden');bottomNav.classList.remove('hidden');adminPanel.classList.remove('hidden');salasPanel.classList.remove('hidden');initSalasPanel();}else{await verificarAcceso();accessView.classList.remove('hidden');adminPanel.classList.add('hidden');salasPanel.classList.add('hidden');}
-        txtUsername.textContent=currentAlias;userAvatar.textContent=currentAlias.charAt(0).toUpperCase();updateTablePreview();
-        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,alias:currentAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
-        if(isAdmin){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Datos inválidos');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break;}}if(!uidEncontrado)return alert('❌ No encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});sonidoFichas();mostrarToast(`✅ $${monto.toLocaleString('es-CO')} a ${emailEncontrado}`,'success');adminUserEmail.value='';adminMontoRecarga.value='';}catch(error){alert('❌ Error');}};}
-        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!';}});
-        onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
+        cU=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;
+        const isA=user.email.toLowerCase()===CA.toLowerCase();auv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');
+        if(isA){gv.classList.remove('hidden');bN.classList.remove('hidden');aP.classList.remove('hidden');salasPanel.classList.remove('hidden');initSalas();}else{await verificarAcceso();av.classList.remove('hidden');aP.classList.add('hidden');salasPanel.classList.add('hidden');}
+        tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();
+        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
+        if(isA){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});bAR.onclick=async()=>{const eb=aUE.value.trim().toLowerCase(),monto=parseInt(aMR.value);if(!eb||!monto||monto<1000)return mT('❌ Datos inválidos','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;break;}}if(!uidE)return mT('❌ No encontrado','error');await mSald(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:cU,userId:uidE,email:emailE,monto,timestamp:Date.now()});sf();mT(`✅ $${monto.toLocaleString('es-CO')} a ${emailE}`,'success');aUE.value='';aMR.value='';}catch(error){mT('❌ Error','error');}};}
+        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{sAct=snap.val()||0;sd.textContent='$'+sAct.toLocaleString('es-CO');sd.classList.remove('zero');if(sAct<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}});
+        onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MM;});
         initChat();initRanking();initStats();
-    }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');bottomNav.classList.add('hidden');salasPanel.classList.add('hidden');if(chatListener)off(ref(db,'chat/global'),'value',chatListener);}
+    }else{gv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');auv.classList.remove('hidden');bN.classList.add('hidden');salasPanel.classList.add('hidden');if(chatL)off(ref(db,'chat/global'),'value',chatL);}
 });
 
-btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias');btnAction.disabled=true;try{if(tabLogin.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mostrarToast('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mostrarToast('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mostrarToast('Error','error');}btnAction.disabled=false;});
-btnLogout.addEventListener('click',()=>signOut(auth));
-btnRecargar.addEventListener('click',()=>{sonidoClick();nequiModal.classList.remove('hidden');});
-btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
-btnWaConfirm.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High.`)}`,'_blank');nequiModal.classList.add('hidden');mostrarToast('📱 Redirigiendo...','info');});
-btnRetirar.addEventListener('click',async()=>{sonidoClick();if(saldoActual<=0)return mostrarToast('❌ Sin saldo','error');const c=await mostrarConfirmacion('Retirar',`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`);if(c){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi:`)}`,'_blank');mostrarToast('📱 Redirigiendo...','info');}});
+bA.addEventListener('click',async()=>{const em=ei.value.trim(),alias=ai.value.trim(),pw=pi.value;if(!em||!pw)return mT('Completa los campos','error');if(pw.length<6)return mT('Mínimo 6 caracteres','error');if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');bA.disabled=true;try{if(tl.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mT('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mT('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mT('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}bA.disabled=false;});
+bL.addEventListener('click',()=>signOut(auth));
+bRec.addEventListener('click',()=>{sc();nM.classList.remove('hidden');});
+bMC.addEventListener('click',()=>nM.classList.add('hidden'));
+bWC.addEventListener('click',()=>{window.open(`https://wa.me/${WA}?text=${encodeURIComponent(`Hola, soy ${cAlias}. Solicito recarga en Royal High.`)}`,'_blank');nM.classList.add('hidden');mT('📱 Redirigiendo...','info');});
+bRet.addEventListener('click',async()=>{sc();if(sAct<=0)return mT('❌ Sin saldo','error');const c=await mC('Retirar',`¿Retirar $${sAct.toLocaleString('es-CO')}?`);if(c){window.open(`https://wa.me/${WA}?text=${encodeURIComponent(`Solicito retiro de $${sAct.toLocaleString('es-CO')}. Mi Nequi:`)}`,'_blank');mT('📱 Redirigiendo...','info');}});
 
-window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
+window.addEventListener('beforeunload',()=>{if(cU)set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
 </script>
 </body>
 </html>
