@@ -123,6 +123,17 @@
         .stat-value{font-size:1.2rem;font-weight:700}.stat-value.green{color:var(--success)}.stat-value.red{color:var(--danger)}.stat-value.gold{color:var(--gold)}
         .stat-label{font-size:.58rem;color:var(--text-muted);text-transform:uppercase;margin-top:2px}
 
+        .history-collapsible{background:var(--bg-card);border-radius:var(--radius-md);overflow:hidden;margin-bottom:8px;border:1px solid var(--border-subtle)}
+        .history-header{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+        .history-title{font-size:.65rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);font-weight:600}
+        .history-arrow{font-size:.65rem;color:var(--text-muted);transition:transform .3s}.history-collapsible.open .history-arrow{transform:rotate(180deg)}
+        .history-body{max-height:0;overflow:hidden;transition:max-height .3s ease}.history-collapsible.open .history-body{max-height:250px;overflow-y:auto}
+        .history-table{width:100%;font-size:.68rem;border-collapse:collapse;padding:0 14px 10px}
+        .history-table th{text-align:left;color:var(--text-muted);font-weight:500;padding:6px 0;font-size:.58rem;text-transform:uppercase}
+        .history-table td{padding:6px 0;border-bottom:1px solid var(--border-subtle);color:var(--text-secondary)}
+        .result-win{color:var(--success);font-weight:600}.result-lose{color:var(--danger);font-weight:600}
+        .amount-win{color:var(--success)}.amount-lose{color:var(--danger)}.history-empty{text-align:center;color:var(--text-muted);font-size:.65rem;padding:10px 0}
+
         .admin-panel{background:var(--bg-card);border:1.5px solid var(--gold);border-radius:var(--radius-md);padding:10px;margin-bottom:8px}
         .admin-title{color:var(--gold);font-weight:700;font-size:.7rem;text-transform:uppercase;margin-bottom:6px}
         .admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px}
@@ -162,6 +173,7 @@
             <div class="game-table-main"><div class="table-felt"><div id="tableContent"><div class="table-empty-msg">Selecciona modalidad<br><strong>Buscar Partida</strong></div></div></div></div>
             <div class="searching-indicator hidden" id="searchingIndicator"><span class="searching-dot"></span><span class="searching-dot"></span><span class="searching-dot"></span></div>
             <div class="controls-section"><div class="section-label">Modalidad</div><div class="mode-row"><div class="mode-chip selected" id="mode1v1" data-mode="1v1">1 VS 1</div><div class="mode-chip" id="mode3p" data-mode="3p">3 Jugadores</div></div><div class="section-label">Apuesta</div><div class="bet-row"><div class="bet-chip selected" data-apuesta="2000">$2K</div><div class="bet-chip" data-apuesta="4000">$4K</div><div class="bet-chip" data-apuesta="8000">$8K</div><div class="bet-chip" data-apuesta="16000">$16K</div><div class="bet-chip" data-apuesta="32000">$32K</div></div><button id="btnPlay" class="btn-cta">Buscar Partida</button></div>
+            <div class="history-collapsible"><div class="history-header" id="historyHeaderJuego"><span class="history-title">📊 Historial (5 min)</span><span class="history-arrow">▼</span></div><div class="history-body"><table class="history-table"><thead><tr><th>Resultado</th><th>Mesa</th><th>Monto</th></tr></thead><tbody id="historialBody"></tbody></table></div></div>
         </div>
         <div id="sectionRanking" class="section"><div class="ranking-card"><div class="ranking-title">🏆 Top Jugadores</div><div id="rankingList"></div></div></div>
         <div id="sectionChat" class="section"><div class="chat-container" id="chatContainer"></div><div class="chat-input-row"><input type="text" id="chatInput" class="chat-input" placeholder="Escribe un mensaje..." maxlength="100"><button id="chatSend" class="chat-send">Enviar</button></div></div>
@@ -187,269 +199,282 @@ import{getDatabase,ref,onValue,off,set,push,update,increment,onDisconnect,runTra
 const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 const CORREO_ADMIN="dimarviafara07@gmail.com",WHATSAPP="573219401352",MAX_MIEMBROS=50;
+const TIEMPO_VIDA_CHAT=300000,TIEMPO_VIDA_HISTORIAL=300000;
 
 const AudioContext=window.AudioContext||window.webkitAudioContext;let audioCtx=null;
 function initAudio(){if(!audioCtx)audioCtx=new AudioContext();}
 function playBeep(f,t,ty='sine',v=0.1){if(!audioCtx)initAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;o.type=ty;g.gain.setValueAtTime(v,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+t);o.start();o.stop(audioCtx.currentTime+t);}
-function sonidoClick(){playBeep(800,0.1)}function sonidoBusqueda(){playBeep(600,0.3,'triangle');setTimeout(()=>playBeep(800,0.3,'triangle'),300)}
-function sonidoMatch(){playBeep(523,0.15);setTimeout(()=>playBeep(659,0.15),150);setTimeout(()=>playBeep(784,0.3),300)}
-function sonidoCartas(){playBeep(200,0.4,'triangle');setTimeout(()=>playBeep(300,0.2,'triangle'),400)}
-function sonidoGanar(){playBeep(523,0.2);setTimeout(()=>playBeep(659,0.2),200);setTimeout(()=>playBeep(784,0.2),400);setTimeout(()=>playBeep(1047,0.5,'sine',0.2),600)}
-function sonidoPerder(){playBeep(400,0.3,'sawtooth',0.08);setTimeout(()=>playBeep(300,0.3,'sawtooth',0.08),300);setTimeout(()=>playBeep(200,0.5,'sawtooth',0.06),600)}
-function sonidoFichas(){playBeep(1000,0.05);setTimeout(()=>playBeep(1200,0.05),50);setTimeout(()=>playBeep(1400,0.08),100)}
+function sc(){playBeep(800,0.1)}function sb(){playBeep(600,0.3,'triangle');setTimeout(()=>playBeep(800,0.3,'triangle'),300)}
+function sm(){playBeep(523,0.15);setTimeout(()=>playBeep(659,0.15),150);setTimeout(()=>playBeep(784,0.3),300)}
+function scart(){playBeep(200,0.4,'triangle');setTimeout(()=>playBeep(300,0.2,'triangle'),400)}
+function sg(){playBeep(523,0.2);setTimeout(()=>playBeep(659,0.2),200);setTimeout(()=>playBeep(784,0.2),400);setTimeout(()=>playBeep(1047,0.5,'sine',0.2),600)}
+function sp(){playBeep(400,0.3,'sawtooth',0.08);setTimeout(()=>playBeep(300,0.3,'sawtooth',0.08),300);setTimeout(()=>playBeep(200,0.5,'sawtooth',0.06),600)}
+function sf(){playBeep(1000,0.05);setTimeout(()=>playBeep(1200,0.05),50);setTimeout(()=>playBeep(1400,0.08),100)}
 
-// DOM
-const recoveryView=document.getElementById('recoveryView'),accessView=document.getElementById('accessView'),authView=document.getElementById('authView'),gameView=document.getElementById('gameView');
-const recoveryEmail=document.getElementById('recoveryEmail'),recoveryMsg=document.getElementById('recoveryMsg'),btnRecovery=document.getElementById('btnRecovery'),btnBackToLogin=document.getElementById('btnBackToLogin');
-const accessCode=document.getElementById('accessCode'),accessError=document.getElementById('accessError'),btnAccess=document.getElementById('btnAccess'),jornadaStatus=document.getElementById('jornadaStatus'),jornadaStatusText=document.getElementById('jornadaStatusText'),accessSchedule=document.getElementById('accessSchedule');
-const tabLogin=document.getElementById('tabLogin'),tabRegister=document.getElementById('tabRegister'),btnAction=document.getElementById('btnAction'),emailInput=document.getElementById('email'),aliasInput=document.getElementById('aliasInput'),passInput=document.getElementById('pass'),btnForgotPassword=document.getElementById('btnForgotPassword');
-const txtUsername=document.getElementById('txtUsername'),userAvatar=document.getElementById('userAvatar'),saldoDisplay=document.getElementById('saldoDisplay'),btnLogout=document.getElementById('btnLogout'),btnRecargar=document.getElementById('btnRecargar'),btnRetirar=document.getElementById('btnRetirar'),btnPlay=document.getElementById('btnPlay'),tableContent=document.getElementById('tableContent'),potAmount=document.getElementById('potAmount');
-const nequiModal=document.getElementById('nequiModal'),btnWaConfirm=document.getElementById('btnWaConfirm'),btnModalCerrar=document.getElementById('btnModalCerrar');
-const confirmModal=document.getElementById('confirmModal'),confirmTitle=document.getElementById('confirmTitle'),confirmMsg=document.getElementById('confirmMsg'),btnConfirmYes=document.getElementById('btnConfirmYes'),btnConfirmNo=document.getElementById('btnConfirmNo');
-const adminPanel=document.getElementById('adminPanel'),adminUserEmail=document.getElementById('adminUserEmail'),adminMontoRecarga=document.getElementById('adminMontoRecarga'),btnAdminRecargar=document.getElementById('btnAdminRecargar');
-const btnResetComision=document.getElementById('btnResetComision'),btnResetMovido=document.getElementById('btnResetMovido'),btnResetAll=document.getElementById('btnResetAll');
-const mode1v1=document.getElementById('mode1v1'),mode3p=document.getElementById('mode3p'),betChips=document.querySelectorAll('.bet-chip');
-const searchingIndicator=document.getElementById('searchingIndicator'),lobbyPlayers=document.getElementById('lobbyPlayers'),lobbyPlayersList=document.getElementById('lobbyPlayersList');
-const toastContainer=document.getElementById('toastContainer');
-const bottomNav=document.getElementById('bottomNav');
-const chatContainer=document.getElementById('chatContainer'),chatInput=document.getElementById('chatInput'),chatSend=document.getElementById('chatSend');
-const rankingList=document.getElementById('rankingList');
-const statGanancias=document.getElementById('statGanancias'),statPartidas=document.getElementById('statPartidas'),statVictorias=document.getElementById('statVictorias'),statDerrotas=document.getElementById('statDerrotas'),statsDetail=document.getElementById('statsDetail');
-const salasPanel=document.getElementById('salasPanel'),salasRow=document.getElementById('salasRow');
+const rv=document.getElementById('recoveryView'),av=document.getElementById('accessView'),auv=document.getElementById('authView'),gv=document.getElementById('gameView');
+const re=document.getElementById('recoveryEmail'),rm=document.getElementById('recoveryMsg'),br=document.getElementById('btnRecovery'),bl=document.getElementById('btnBackToLogin');
+const ac=document.getElementById('accessCode'),ae=document.getElementById('accessError'),ba=document.getElementById('btnAccess'),js=document.getElementById('jornadaStatus'),jst=document.getElementById('jornadaStatusText'),ash=document.getElementById('accessSchedule');
+const tl=document.getElementById('tabLogin'),tr=document.getElementById('tabRegister'),bA=document.getElementById('btnAction'),ei=document.getElementById('email'),ai=document.getElementById('aliasInput'),pi=document.getElementById('pass'),bf=document.getElementById('btnForgotPassword');
+const tu=document.getElementById('txtUsername'),ua=document.getElementById('userAvatar'),sd=document.getElementById('saldoDisplay'),bL=document.getElementById('btnLogout'),bRec=document.getElementById('btnRecargar'),bRet=document.getElementById('btnRetirar'),bP=document.getElementById('btnPlay'),tC=document.getElementById('tableContent'),pA=document.getElementById('potAmount'),hB=document.getElementById('historialBody');
+const nM=document.getElementById('nequiModal'),bWC=document.getElementById('btnWaConfirm'),bMC=document.getElementById('btnModalCerrar');
+const cM=document.getElementById('confirmModal'),cT=document.getElementById('confirmTitle'),cMsg=document.getElementById('confirmMsg'),bCY=document.getElementById('btnConfirmYes'),bCN=document.getElementById('btnConfirmNo');
+const aP=document.getElementById('adminPanel'),aUE=document.getElementById('adminUserEmail'),aMR=document.getElementById('adminMontoRecarga'),bAR=document.getElementById('btnAdminRecargar');
+const bRC=document.getElementById('btnResetComision'),bRM=document.getElementById('btnResetMovido'),bRA=document.getElementById('btnResetAll');
+const m1=document.getElementById('mode1v1'),m3=document.getElementById('mode3p'),bCs=document.querySelectorAll('.bet-chip');
+const sI=document.getElementById('searchingIndicator'),lP=document.getElementById('lobbyPlayers'),lPL=document.getElementById('lobbyPlayersList');
+const tCon=document.getElementById('toastContainer');
+const bN=document.getElementById('bottomNav');
+const cCon=document.getElementById('chatContainer'),cI=document.getElementById('chatInput'),cS=document.getElementById('chatSend');
+const rL=document.getElementById('rankingList');
+const sGan=document.getElementById('statGanancias'),sPar=document.getElementById('statPartidas'),sVic=document.getElementById('statVictorias'),sDer=document.getElementById('statDerrotas'),sD=document.getElementById('statsDetail');
+const salP=document.getElementById('salasPanel'),salR=document.getElementById('salasRow');
+const histH=document.getElementById('historyHeaderJuego'),histColl=document.querySelector('.history-collapsible');
 
-let currentUserId=null,currentUsername='',currentAlias='',saldoActual=0,apuestaActual=2000,modoJuego='1v1',esperandoPartida=false,currentMatchId=null,codigoAcceso='';
-const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nombresCartas=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MAX_JUGADORES={'1v1':2,'3p':3};
-const partidasProcesadas=new Set();let ejecutandoPartida=false;
-const esperar=(ms)=>new Promise(r=>setTimeout(r,ms));
+let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cMId=null,cdA='';
+const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
+const pP=new Set();let ePart=false;
+const esp=(ms)=>new Promise(r=>setTimeout(r,ms));
 
-function mostrarToast(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;toastContainer.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
-function mostrarConfirmacion(t,m){return new Promise(r=>{confirmTitle.textContent=t;confirmMsg.textContent=m;confirmModal.classList.remove('hidden');btnConfirmYes.onclick=()=>{confirmModal.classList.add('hidden');r(true);};btnConfirmNo.onclick=()=>{confirmModal.classList.add('hidden');r(false);};});}
+function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;tCon.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
+function mC(t,m){return new Promise(r=>{cT.textContent=t;cMsg.textContent=m;cM.classList.remove('hidden');bCY.onclick=()=>{cM.classList.add('hidden');r(true);};bCN.onclick=()=>{cM.classList.add('hidden');r(false);};});}
 
-async function cargarSaldo(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
-async function modificarSaldo(uid,monto,concepto,matchId=null){const sRef=ref(db,`usuarios/${uid}/saldo`);await runTransaction(sRef,(s)=>{const n=(s||0)+monto;if(n<0)throw new Error('Saldo insuficiente');return n;});try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}}
+async function cSald(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
+async function mSald(uid,monto,concepto,matchId=null){const sRef=ref(db,`usuarios/${uid}/saldo`);await runTransaction(sRef,(s)=>{const n=(s||0)+monto;if(n<0)throw new Error('Saldo insuficiente');return n;});try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}}
 
 function cambiarSeccion(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector(`[data-section="${id}"]`)?.classList.add('active');}
-document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sonidoClick();cambiarSeccion(item.dataset.section);});});
+document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sc();cambiarSeccion(item.dataset.section);});});
 
-// ✅ CHAT CON AUTO-ELIMINACIÓN DE MENSAJES VIEJOS (>5 min)
-const TIEMPO_VIDA_CHAT=300000; // 5 minutos en milisegundos
-let chatListener=null;
-let chatCleanupInterval=null;
+// Historial collapsible
+histH.addEventListener('click',()=>histColl.classList.toggle('open'));
 
+// ✅ CHAT CON AUTO-LIMPIEZA
+let chatL=null,chatCI=null;
 function initChat(){
-    if(chatListener)off(ref(db,'chat/global'),'value',chatListener);
-    
-    chatListener=onValue(ref(db,'chat/global'),snap=>{
-        const ms=snap.val();
-        chatContainer.innerHTML='';
-        if(ms){
-            const ahora=Date.now();
-            const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);
-            mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);
-            mensajes.forEach(([id,m])=>{
-                const em=m.uid===currentUserId;
-                chatContainer.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;
-            });
-        }
-        chatContainer.scrollTop=chatContainer.scrollHeight;
-    });
-    
-    // Limpiar mensajes viejos cada 2 minutos
-    if(chatCleanupInterval)clearInterval(chatCleanupInterval);
-    chatCleanupInterval=setInterval(async()=>{
-        const snap=await get(ref(db,'chat/global'));
-        const ms=snap.val()||{};
-        const ahora=Date.now();
-        for(const id in ms){
-            if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){
-                await set(ref(db,`chat/global/${id}`),null);
+    if(chatL)off(ref(db,'chat/global'),'value',chatL);
+    chatL=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();cCon.innerHTML='';if(ms){const ahora=Date.now();const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);mensajes.forEach(([id,m])=>{const em=m.uid===cU;cCon.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}cCon.scrollTop=cCon.scrollHeight;});
+    if(chatCI)clearInterval(chatCI);
+    chatCI=setInterval(async()=>{const snap=await get(ref(db,'chat/global'));const ms=snap.val()||{};const ahora=Date.now();for(const id in ms){if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){await set(ref(db,`chat/global/${id}`),null);}}},120000);
+}
+cS.addEventListener('click',async()=>{const t=cI.value.trim();if(!t||!cU)return;await push(ref(db,'chat/global'),{uid:cU,alias:cAlias,texto:t,timestamp:Date.now()});cI.value='';});
+cI.addEventListener('keypress',e=>{if(e.key==='Enter')cS.click();});
+
+// ✅ RANKING LIMPIO (solo jugadores con partidas reales)
+function initRanking(){
+    onValue(ref(db,'usuarios'),snap=>{
+        const us=snap.val()||{};
+        const rank=[];
+        for(const uid in us){
+            const u=us[uid];
+            if(u.historial){
+                let g=0,p=0;
+                Object.values(u.historial).forEach(h=>{
+                    if(h.resultado==='RECARGA')return;
+                    p++;
+                    if(h.resultado==='GANÓ')g+=h.monto||0;
+                    else if(h.resultado==='PERDIÓ')g-=(h.monto||0);
+                });
+                // Solo mostrar si ha jugado al menos 1 partida
+                if(p>0)rank.push({alias:u.alias||'Anónimo',ganancias:g,partidas:p});
             }
         }
-    },120000);
+        rank.sort((a,b)=>b.ganancias-a.ganancias);
+        let h='';
+        if(rank.length>0){
+            rank.slice(0,15).forEach((r,i)=>{
+                const p=i+1;
+                h+=`<div class="ranking-item">
+                    <div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div>
+                    <div style="flex:1">${r.alias}</div>
+                    <div style="font-size:.6rem;color:var(--text-muted);margin-right:8px">${r.partidas} jug</div>
+                    <div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div>
+                </div>`;
+            });
+        }else{
+            h='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Aún no hay partidas jugadas</div>';
+        }
+        rL.innerHTML=h;
+    });
 }
 
-chatSend.addEventListener('click',async()=>{
-    const t=chatInput.value.trim();
-    if(!t||!currentUserId)return;
-    await push(ref(db,'chat/global'),{uid:currentUserId,alias:currentAlias,texto:t,timestamp:Date.now()});
-    chatInput.value='';
-});
-chatInput.addEventListener('keypress',e=>{if(e.key==='Enter')chatSend.click();});
+// ✅ ESTADÍSTICAS
+function initStats(){
+    onValue(ref(db,`usuarios/${cU}/historial`),snap=>{
+        const h=snap.val()||{};
+        let g=0,p=0,v=0,d=0;
+        Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;p++;if(r.resultado==='GANÓ'){v++;g+=r.monto||0;}else{d++;g-=r.monto||0;}});
+        sGan.textContent='$'+g.toLocaleString('es-CO');sPar.textContent=p;sVic.textContent=v;sDer.textContent=d;
+        const wr=p>0?Math.round((v/p)*100):0;
+        sD.innerHTML=`<div style="display:flex;justify-content:space-around;padding:10px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:8px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.55rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">$${p>0?Math.round(g/p).toLocaleString('es-CO'):'0'}</div><div style="font-size:.55rem;color:var(--text-muted)">Promedio</div></div></div>`;
+    });
+}
 
-function initRanking(){onValue(ref(db,'usuarios'),snap=>{const us=snap.val()||{};const rank=[];for(const uid in us){const u=us[uid];if(u.historial){let g=0;Object.values(u.historial).forEach(h=>{if(h.resultado==='GANÓ')g+=h.monto||0;else if(h.resultado==='PERDIÓ')g-=(h.monto||0);});rank.push({alias:u.alias||'Anónimo',ganancias:g});}}rank.sort((a,b)=>b.ganancias-a.ganancias);let h='';rank.slice(0,15).forEach((r,i)=>{const p=i+1;h+=`<div class="ranking-item"><div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div><div style="flex:1">${r.alias}</div><div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});rankingList.innerHTML=h||'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Sin datos</div>';});}
+// ✅ HISTORIAL CON AUTO-LIMPIEZA
+let histCI=null;
+function initHistorial(){
+    onValue(ref(db,`usuarios/${cU}/historial`),snap=>{
+        const d=snap.val();const ahora=Date.now();
+        if(d){
+            const partidas=Object.entries(d).filter(([id,h])=>h.timestamp&&(ahora-h.timestamp)<TIEMPO_VIDA_HISTORIAL).sort((a,b)=>b[1].timestamp-a[1].timestamp).slice(0,10);
+            if(partidas.length>0){
+                let html='';
+                partidas.forEach(([id,i])=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';html+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});
+                hB.innerHTML=html;
+            }else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas recientes</td></tr>';}
+        }else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';}
+    });
+    if(histCI)clearInterval(histCI);
+    histCI=setInterval(async()=>{if(!cU)return;const snap=await get(ref(db,`usuarios/${cU}/historial`));const h=snap.val()||{};const ahora=Date.now();for(const id in h){if(h[id].timestamp&&(ahora-h[id].timestamp)>TIEMPO_VIDA_HISTORIAL){await set(ref(db,`usuarios/${cU}/historial/${id}`),null);}}},120000);
+}
 
-function initStats(){onValue(ref(db,`usuarios/${currentUserId}/historial`),snap=>{const h=snap.val()||{};let g=0,p=0,v=0,d=0;Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;p++;if(r.resultado==='GANÓ'){v++;g+=r.monto||0;}else{d++;g-=r.monto||0;}});statGanancias.textContent='$'+g.toLocaleString('es-CO');statPartidas.textContent=p;statVictorias.textContent=v;statDerrotas.textContent=d;const wr=p>0?Math.round((v/p)*100):0;statsDetail.innerHTML=`<div style="display:flex;justify-content:space-around;padding:10px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:8px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.55rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">$${p>0?Math.round(g/p).toLocaleString('es-CO'):'0'}</div><div style="font-size:.55rem;color:var(--text-muted)">Promedio</div></div></div>`;});}
+// ✅ SALAS
+function initSalas(){const montos=[2000,4000,8000,16000,32000];onValue(ref(db,'lobbies'),snap=>{const lobbies=snap.val()||{};let h='';for(const monto of montos){let total=0;for(const mod of['1v1','3p']){const key=`${mod}_${monto}`;if(lobbies[key])total+=Object.keys(lobbies[key]).length;}const k=monto/1000;h+=`<div class="sala-chip ${total>0?'activa':''}"><div class="val">${total}</div><div class="lbl">$${k}K</div></div>`;}salR.innerHTML=h;});}
 
-function initSalas(){const montos=[2000,4000,8000,16000,32000];onValue(ref(db,'lobbies'),snap=>{const lobbies=snap.val()||{};let h='';for(const monto of montos){let total=0;for(const mod of['1v1','3p']){const key=`${mod}_${monto}`;if(lobbies[key])total+=Object.keys(lobbies[key]).length;}const k=monto/1000;h+=`<div class="sala-chip ${total>0?'activa':''}"><div class="val">${total}</div><div class="lbl">$${k}K</div></div>`;}salasRow.innerHTML=h;});}
+// Tabs
+tl.addEventListener('click',()=>{sc();tl.classList.add('active');tr.classList.remove('active');ai.classList.add('hidden');bA.textContent='Ingresar';});
+tr.addEventListener('click',()=>{sc();tr.classList.add('active');tl.classList.remove('active');ai.classList.remove('hidden');bA.textContent='Registrarse';});
+bf.addEventListener('click',()=>{auv.classList.add('hidden');rv.classList.remove('hidden');re.value=ei.value;});
+bl.addEventListener('click',()=>{rv.classList.add('hidden');auv.classList.remove('hidden');});
+br.addEventListener('click',async()=>{const e=re.value.trim();if(!e){rm.textContent='❌ Ingresa tu correo';return}br.disabled=true;try{await sendPasswordResetEmail(auth,e);rm.textContent='✅ Enviado';re.value='';}catch(err){rm.textContent='❌ Error';}br.disabled=false;});
 
-tabLogin.addEventListener('click',()=>{sonidoClick();tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
-tabRegister.addEventListener('click',()=>{sonidoClick();tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
-btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
-btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
-btnRecovery.addEventListener('click',async()=>{const e=recoveryEmail.value.trim();if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return}btnRecovery.disabled=true;try{await sendPasswordResetEmail(auth,e);recoveryMsg.textContent='✅ Enviado';recoveryEmail.value='';}catch(err){recoveryMsg.textContent='❌ Error';}btnRecovery.disabled=false;});
+async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};cdA=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';ash.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');js.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jst.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){cdA='4927';}}
+ba.addEventListener('click',async()=>{const c=ac.value.trim();if(!c||c.length!==4){ae.textContent='Ingresa 4 dígitos';return}if(c===cdA){ae.textContent='';av.classList.add('hidden');gv.classList.remove('hidden');bN.classList.remove('hidden');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('[data-section="sectionJuego"]')?.classList.add('active');sf();mT('✅ Acceso concedido','success');}else{ae.textContent='Código incorrecto';ac.value='';}});
+ac.addEventListener('keypress',e=>{if(e.key==='Enter')ba.click();});
 
-async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';accessSchedule.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}}
-btnAccess.addEventListener('click',async()=>{const c=accessCode.value.trim();if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');bottomNav.classList.remove('hidden');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('[data-section="sectionJuego"]')?.classList.add('active');sonidoFichas();mostrarToast('✅ Acceso concedido','success');}else{accessError.textContent='Código incorrecto';accessCode.value='';}});
-accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
+bRC.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
+bRM.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
+bRA.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
 
-btnResetComision.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
-btnResetMovido.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
-btnResetAll.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
+function updPot(c){if(pA)pA.textContent='$'+(apAct*c).toLocaleString('es-CO')}
+m1.addEventListener('click',()=>{if(eP)return;sc();m1.classList.add('selected');m3.classList.remove('selected');mJ='1v1';updPot(2);updTbl();});
+m3.addEventListener('click',()=>{if(eP)return;sc();m3.classList.add('selected');m1.classList.remove('selected');mJ='3p';updPot(3);updTbl();});
+bCs.forEach(ch=>{ch.addEventListener('click',()=>{if(eP)return;sc();bCs.forEach(c=>c.classList.remove('selected'));ch.classList.add('selected');apAct=parseInt(ch.dataset.apuesta);updPot(MJ[mJ]);})});
+function updTbl(){if(eP)return;const m=MJ[mJ];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div style="font-size:1rem;color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tC.innerHTML=h+'</div>';}
+updPot(2);
 
-function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO')}
-mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
-mode3p.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
-betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego]);})});
+function genCart(){const a=new Uint32Array(2);crypto.getRandomValues(a);return{peso:a[0]%nC.length,texto:nC[a[0]%nC.length],pinta:pintas[a[1]%pintas.length]};}
+function rSearch(e,t){let h='<div class="cards-row" style="gap:20px">';for(let i=0;i<t;i++){const o=i<e;h+=`<div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px">${i===0?'Tú':(o?'Jugador':'Buscando')}</div></div>`;}h+=`</div>`;tC.innerHTML=h;sI.classList.remove('hidden');lP.classList.add('visible');}
+function rGame(jO){const reo=[],labs=[],yo=jO.find(j=>j.uid===cU);if(yo){reo.push(yo);labs.push('Tú');}jO.forEach(j=>{if(j.uid!==cU){reo.push(j);labs.push(j.alias||'Oponente');}});let h='<div class="cards-row">';reo.forEach((p,i)=>{const et=p.uid===cU;h+=`<div class="card-slot ${et?'tu-carta':'oponente'}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div style="font-size:1rem;color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${labs[i]||''}</div></div>`;});h+='</div>';tC.innerHTML=h;sI.classList.add('hidden');lP.classList.remove('visible');}
+function updLobby(jugs){let h='';jugs.forEach(j=>{const et=j.uid===cU;h+=`<div class="lobby-player-item"><span class="lobby-player-dot"></span>${et?'Tú (':''}${j.alias||'Jugador'}${et?')':''}</div>`;});lPL.innerHTML=h;}
 
-function updateTablePreview(){if(esperandoPartida)return;const m=MAX_JUGADORES[modoJuego];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div style="font-size:1rem;color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tableContent.innerHTML=h+'</div>';}
-updatePotDisplay(2);
-
-function generarCarta(){const a=new Uint32Array(2);crypto.getRandomValues(a);return{peso:a[0]%nombresCartas.length,texto:nombresCartas[a[0]%nombresCartas.length],pinta:pintas[a[1]%pintas.length]};}
-
-function renderSearchUI(e,t){let h='<div class="cards-row" style="gap:20px">';for(let i=0;i<t;i++){const o=i<e;h+=`<div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px">${i===0?'Tú':(o?'Jugador':'Buscando')}</div></div>`;}h+=`</div>`;tableContent.innerHTML=h;searchingIndicator.classList.remove('hidden');lobbyPlayers.classList.add('visible');}
-
-function renderGameCards(jO){const reo=[],labs=[],yo=jO.find(j=>j.uid===currentUserId);if(yo){reo.push(yo);labs.push('Tú');}jO.forEach(j=>{if(j.uid!==currentUserId){reo.push(j);labs.push(j.alias||'Oponente');}});let h='<div class="cards-row">';reo.forEach((p,i)=>{const et=p.uid===currentUserId;h+=`<div class="card-slot ${et?'tu-carta':'oponente'}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div style="font-size:1rem;color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${labs[i]||''}</div></div>`;});h+='</div>';tableContent.innerHTML=h;searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');}
-
-function updLobby(jugs){let h='';jugs.forEach(j=>{const et=j.uid===currentUserId;h+=`<div class="lobby-player-item"><span class="lobby-player-dot"></span>${et?'Tú (':''}${j.alias||'Jugador'}${et?')':''}</div>`;});lobbyPlayersList.innerHTML=h;}
-
-// ✅ SALAS CORREGIDAS - Versión simplificada
-let lobbyPath=null,salaId=null;
+let lPath=null,sId=null;
 
 async function encontrarOSala(modo,monto,maxJ){
     const basePath=`lobbies/${modo}_${monto}`;
     const baseRef=ref(db,basePath);
     const snapActual=await get(baseRef);
     const lobbies=snapActual.val()||{};
-    
-    for(const sId in lobbies){
-        const sala=lobbies[sId];
+    for(const sId2 in lobbies){
+        const sala=lobbies[sId2];
         if(sala&&sala.estado==='esperando'&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.length<maxJ){
-            const yaEsta=sala.jugadores.some(j=>j.uid===currentUserId);
+            const yaEsta=sala.jugadores.some(j=>j.uid===cU);
             if(!yaEsta){
-                const salaRef=ref(db,basePath+'/'+sId);
+                const salaRef=ref(db,basePath+'/'+sId2);
                 await runTransaction(salaRef,(salaActual)=>{
                     if(salaActual&&salaActual.estado==='esperando'&&salaActual.jugadores&&salaActual.jugadores.length<maxJ){
-                        const yaEsta2=salaActual.jugadores.some(j=>j.uid===currentUserId);
-                        if(!yaEsta2){
-                            salaActual.jugadores.push({uid:currentUserId,alias:currentAlias});
-                            if(salaActual.jugadores.length===maxJ){
-                                salaActual.estado='jugando';
-                                salaActual.cartas={};
-                                salaActual.jugadores.forEach(j=>{salaActual.cartas[j.uid]=generarCarta();});
-                            }
-                        }
+                        const yaEsta2=salaActual.jugadores.some(j=>j.uid===cU);
+                        if(!yaEsta2){salaActual.jugadores.push({uid:cU,alias:cAlias});if(salaActual.jugadores.length===maxJ){salaActual.estado='jugando';salaActual.cartas={};salaActual.jugadores.forEach(j=>{salaActual.cartas[j.uid]=genCart();});}}
                     }
                     return salaActual;
                 });
-                return{salaId:sId,basePath};
+                return{salaId:sId2,basePath};
             }
         }
     }
-    
     const nuevaId='s'+Date.now().toString(36)+Math.random().toString(36).substr(2,3);
-    await set(ref(db,basePath+'/'+nuevaId),{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()});
+    await set(ref(db,basePath+'/'+nuevaId),{host:cU,jugadores:[{uid:cU,alias:cAlias}],estado:'esperando',creado:Date.now()});
     return{salaId:nuevaId,basePath};
 }
 
-btnPlay.addEventListener('click',async()=>{
-    if(!currentUserId||ejecutandoPartida)return;initAudio();
-    const saldoReal=await cargarSaldo(currentUserId);
-    if(saldoReal<=0)return mostrarToast('❌ Saldo en $0','error');
-    if(saldoReal<apuestaActual)return mostrarToast(`❌ Necesitas $${apuestaActual.toLocaleString('es-CO')}`,'error');
-    const ap=Number(apuestaActual),maxJ=MAX_JUGADORES[modoJuego];
-    
-    if(esperandoPartida){
-        btnPlay.disabled=true;btnPlay.textContent='Cancelando...';
-        if(lobbyPath&&salaId){try{await set(ref(db,lobbyPath+'/'+salaId),null);}catch(e){}}
-        await update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
-        esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';
-        btnPlay.classList.remove('canceling','cooldown');searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');
-        updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();lobbyPath=null;salaId=null;
+bP.addEventListener('click',async()=>{
+    if(!cU||ePart)return;initAudio();
+    const sReal=await cSald(cU);
+    if(sReal<=0)return mT('❌ Saldo en $0','error');
+    if(sReal<apAct)return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`,'error');
+    const ap=Number(apAct),maxJ=MJ[mJ];
+    if(eP){
+        bP.disabled=true;bP.textContent='Cancelando...';
+        if(lPath&&sId){try{await set(ref(db,lPath+'/'+sId),null);}catch(e){}}
+        await update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});
+        eP=false;bP.disabled=false;bP.textContent='Buscar Partida';
+        bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');
+        updPot(MJ[mJ]);updTbl();lPath=null;sId=null;
         return;
     }
-    
-    const conf=await mostrarConfirmacion('Iniciar búsqueda',`¿Buscar ${modoJuego} por $${ap.toLocaleString('es-CO')}?`);
+    const conf=await mC('Iniciar búsqueda',`¿Buscar ${mJ} por $${ap.toLocaleString('es-CO')}?`);
     if(!conf)return;
-    
-    sonidoBusqueda();btnPlay.disabled=true;btnPlay.classList.add('canceling');btnPlay.textContent='Buscando...';esperandoPartida=true;
-    await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias}).catch(()=>{});
-    renderSearchUI(1,maxJ);updatePotDisplay(1);
-    
-    let lobbyListener=null,timeoutId=null,partidaIniciada=false;
-    
+    sb();bP.disabled=true;bP.classList.add('canceling');bP.textContent='Buscando...';eP=true;
+    await update(ref(db,`presencia/${cU}`),{status:'waiting',alias:cAlias}).catch(()=>{});
+    rSearch(1,maxJ);updPot(1);
+    let lobbyL=null,tOut=null,pIni=false;
     try{
-        const enc=await encontrarOSala(modoJuego,ap,maxJ);
-        if(!enc){resetSearch();return mostrarToast('Error al encontrar sala','error');}
-        salaId=enc.salaId;lobbyPath=enc.basePath;
-        const salaRef=ref(db,lobbyPath+'/'+salaId);
+        const enc=await encontrarOSala(mJ,ap,maxJ);
+        if(!enc){resetSearch();return mT('Error al encontrar sala','error');}
+        sId=enc.salaId;lPath=enc.basePath;
+        const salaRef=ref(db,lPath+'/'+sId);
         const snapSala=await get(salaRef);const sData=snapSala.val();
-        if(!sData||!sData.jugadores){resetSearch();return mostrarToast('Error en sala','error');}
+        if(!sData||!sData.jugadores){resetSearch();return mT('Error en sala','error');}
         updLobby(sData.jugadores);
-        
-        lobbyListener=onValue(salaRef,async(snap)=>{
-            if(partidaIniciada)return;
-            const data=snap.val();
-            if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyListener)off(salaRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();return;}
-            renderSearchUI(data.jugadores.length,maxJ);updLobby(data.jugadores);updatePotDisplay(data.jugadores.length);
-            
+        lobbyL=onValue(salaRef,async(snap)=>{
+            if(pIni)return;const data=snap.val();
+            if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();return;}
+            rSearch(data.jugadores.length,maxJ);updLobby(data.jugadores);updPot(data.jugadores.length);
             if(data.estado==='jugando'&&data.jugadores.length===maxJ){
-                partidaIniciada=true;if(lobbyListener)off(salaRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);sonidoMatch();
-                if(!data.matchId){const matchId=push(ref(db,'matches')).key;const mData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:ap,modalidad:modoJuego,creado:Date.now()};await set(ref(db,`matches/${matchId}`),mData);await update(salaRef,{matchId});data.matchId=matchId;}
-                if(!partidasProcesadas.has(data.matchId)){partidasProcesadas.add(data.matchId);ejecutandoPartida=true;await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,ap,lobbyPath,salaId);ejecutandoPartida=false;}
+                pIni=true;if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);sm();
+                if(!data.matchId){const matchId=push(ref(db,'matches')).key;const mData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:genCart()})),apuesta:ap,modalidad:mJ,creado:Date.now()};await set(ref(db,`matches/${matchId}`),mData);await update(salaRef,{matchId});data.matchId=matchId;}
+                if(!pP.has(data.matchId)){pP.add(data.matchId);ePart=true;await update(ref(db,`presencia/${cU}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,ap,lPath,sId);ePart=false;}
             }
         });
-        
-        timeoutId=setTimeout(async()=>{if(partidaIniciada)return;if(lobbyListener)off(salaRef,'value',lobbyListener);const snap=await get(salaRef);const data=snap.val();if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}if(!ejecutandoPartida)resetSearch();},90000);
-    }catch(error){if(lobbyListener&&lobbyPath&&salaId)off(ref(db,lobbyPath+'/'+salaId),'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();mostrarToast('Error de conexión','error');}
+        tOut=setTimeout(async()=>{if(pIni)return;if(lobbyL)off(salaRef,'value',lobbyL);const snap=await get(salaRef);const data=snap.val();if(data&&data.estado==='esperando'&&data.host===cU&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}if(!ePart)resetSearch();},90000);
+    }catch(error){if(lobbyL&&lPath&&sId)off(ref(db,lPath+'/'+sId),'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();mT('Error de conexión','error');}
 });
 
-function resetSearch(){esperandoPartida=false;btnPlay.disabled=false;btnPlay.textContent='Buscar Partida';btnPlay.classList.remove('canceling','cooldown');searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});lobbyPath=null;salaId=null;}
+function resetSearch(){eP=false;bP.disabled=false;bP.textContent='Buscar Partida';bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');updPot(MJ[mJ]);updTbl();update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});lPath=null;sId=null;}
 
-async function ejecutarPartida(matchId,lData,ap,lPath,sId){
-    currentMatchId=matchId;btnPlay.textContent='Repartiendo...';btnPlay.classList.remove('canceling');btnPlay.classList.add('cooldown');btnPlay.disabled=true;
+async function ejecutarPartida(matchId,lData,ap,lPath2,sId2){
+    cMId=matchId;bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');bP.disabled=true;
     try{
         const mSnap=await get(ref(db,`matches/${matchId}`));let mData=mSnap.val();
-        if(!mData||!mData.jugadores){const jgs=(lData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lData.cartas?lData.cartas[j.uid]:generarCarta()}));mData={jugadores:jgs,apuesta:ap,modalidad:modoJuego};await set(ref(db,`matches/${matchId}`),mData).catch(()=>{});}
-        const jgs=mData.jugadores;const mi=jgs.findIndex(j=>j.uid===currentUserId);if(mi===-1){resetSearch();return;}
-        const tPot=ap*jgs.length;updatePotDisplay(jgs.length);renderGameCards(jgs);
-        sonidoCartas();await esperar(1500);btnPlay.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
-        await esperar(1200);btnPlay.textContent='Calculando...';
+        if(!mData||!mData.jugadores){const jgs=(lData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lData.cartas?lData.cartas[j.uid]:genCart()}));mData={jugadores:jgs,apuesta:ap,modalidad:mJ};await set(ref(db,`matches/${matchId}`),mData).catch(()=>{});}
+        const jgs=mData.jugadores;const mi=jgs.findIndex(j=>j.uid===cU);if(mi===-1){resetSearch();return;}
+        const tPot=ap*jgs.length;updPot(jgs.length);rGame(jgs);
+        scart();await esp(1500);bP.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
+        await esp(1200);bP.textContent='Calculando...';
         const pesos=jgs.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let gan=jgs.filter(j=>j.carta.peso===maxP)[0];
         if(jgs.filter(j=>j.carta.peso===maxP).length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};gan=jgs.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}
-        const yG=gan.uid===currentUserId;const com=jgs.length===2?Math.floor(ap*0.05):Math.floor(ap*0.10);const gnr=(tPot-ap)-com;
-        if(yG){sonidoGanar();}else{sonidoPerder();}
-        if(yG&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
-        const reo=[];reo.push(jgs.find(j=>j.uid===currentUserId));jgs.forEach(j=>{if(j.uid!==currentUserId)reo.push(j);});
-        reo.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===gan.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===currentUserId?'Tú':(j.alias||'Oponente'));}else if(j.uid===currentUserId){lbl.classList.add('loser');}});
-        try{if(yG){await modificarSaldo(currentUserId,gnr,'Ganó partida',matchId);mostrarToast(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`,'success');}else{await modificarSaldo(currentUserId,-ap,'Perdió partida',matchId);mostrarToast(`😔 Perdiste $${ap.toLocaleString('es-CO')}`,'warning');}await update(ref(db,'adminData'),{total_comisiones:increment(com),dinero_movido:increment(tPot),partidas_jugando:increment(1)}).catch(()=>{});}catch(e){}
-        btnPlay.textContent=yG?'🎉 ¡Ganaste!':'😔 Perdiste';await esperar(4000);
-        try{await set(ref(db,`matches/${matchId}`),null);if(lPath&&sId)await set(ref(db,lPath+'/'+sId),null);}catch(e){}
+        const yG=gan.uid===cU;const com=jgs.length===2?Math.floor(ap*0.05):Math.floor(ap*0.10);const gnr=(tPot-ap)-com;
+        if(yG){sg();}else{sp();}
+        if(yG&&pA){pA.classList.add('pot-won');setTimeout(()=>pA.classList.remove('pot-won'),600);}
+        const reo=[];reo.push(jgs.find(j=>j.uid===cU));jgs.forEach(j=>{if(j.uid!==cU)reo.push(j);});
+        reo.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===gan.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===cU?'Tú':(j.alias||'Oponente'));}else if(j.uid===cU){lbl.classList.add('loser');}});
+        try{if(yG){await mSald(cU,gnr,'Ganó partida',matchId);mT(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`,'success');}else{await mSald(cU,-ap,'Perdió partida',matchId);mT(`😔 Perdiste $${ap.toLocaleString('es-CO')}`,'warning');}await update(ref(db,'adminData'),{total_comisiones:increment(com),dinero_movido:increment(tPot),partidas_jugando:increment(1)}).catch(()=>{});}catch(e){}
+        bP.textContent=yG?'🎉 ¡Ganaste!':'😔 Perdiste';await esp(4000);
+        try{await set(ref(db,`matches/${matchId}`),null);if(lPath2&&sId2)await set(ref(db,lPath2+'/'+sId2),null);}catch(e){}
     }catch(error){}finally{resetSearch();}
 }
 
 onAuthStateChanged(auth,async(user)=>{
     if(user){
-        currentUserId=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};currentUsername=user.email.split('@')[0];currentAlias=uData.alias||currentUsername;
-        const isAdmin=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
-        authView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');gameView.classList.add('hidden');bottomNav.classList.add('hidden');adminPanel.classList.add('hidden');salasPanel.classList.add('hidden');
-        if(isAdmin){gameView.classList.remove('hidden');bottomNav.classList.remove('hidden');adminPanel.classList.remove('hidden');salasPanel.classList.remove('hidden');initSalas();document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');}else{await verificarAcceso();accessView.classList.remove('hidden');}
-        txtUsername.textContent=currentAlias;userAvatar.textContent=currentAlias.charAt(0).toUpperCase();updateTablePreview();
-        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,alias:currentAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
-        if(isAdmin){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});btnAdminRecargar.onclick=async()=>{const eb=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!eb||!monto||monto<1000)return mostrarToast('❌ Datos inválidos','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;break;}}if(!uidE)return mostrarToast('❌ No encontrado','error');await modificarSaldo(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidE,email:emailE,monto,timestamp:Date.now()});sonidoFichas();mostrarToast(`✅ $${monto.toLocaleString('es-CO')} a ${emailE}`,'success');adminUserEmail.value='';adminMontoRecarga.value='';}catch(error){mostrarToast('❌ Error','error');}};}
-        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!';}});
+        cU=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;
+        const isA=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
+        auv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');gv.classList.add('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');
+        if(isA){gv.classList.remove('hidden');bN.classList.remove('hidden');aP.classList.remove('hidden');salP.classList.remove('hidden');initSalas();document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');}else{await verificarAcceso();av.classList.remove('hidden');}
+        tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();
+        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
+        if(isA){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});bAR.onclick=async()=>{const eb=aUE.value.trim().toLowerCase(),monto=parseInt(aMR.value);if(!eb||!monto||monto<1000)return mT('❌ Datos inválidos','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;break;}}if(!uidE)return mT('❌ No encontrado','error');await mSald(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:cU,userId:uidE,email:emailE,monto,timestamp:Date.now()});sf();mT(`✅ $${monto.toLocaleString('es-CO')} a ${emailE}`,'success');aUE.value='';aMR.value='';}catch(error){mT('❌ Error','error');}};}
+        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{sAct=snap.val()||0;sd.textContent='$'+sAct.toLocaleString('es-CO');sd.classList.remove('zero');if(sAct<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}});
         onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
-        initChat();initRanking();initStats();
-    }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');bottomNav.classList.add('hidden');adminPanel.classList.add('hidden');salasPanel.classList.add('hidden');if(chatListener)off(ref(db,'chat/global'),'value',chatListener);if(chatCleanupInterval)clearInterval(chatCleanupInterval);}
+        initChat();initRanking();initStats();initHistorial();
+    }else{gv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');auv.classList.remove('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');if(chatL)off(ref(db,'chat/global'),'value',chatL);if(chatCI)clearInterval(chatCI);if(histCI)clearInterval(histCI);}
 });
 
-btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return mostrarToast('Completa los campos','error');if(pw.length<6)return mostrarToast('Mínimo 6 caracteres','error');if(tabRegister.classList.contains('active')&&!alias)return mostrarToast('Elige un alias','error');btnAction.disabled=true;try{if(tabLogin.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mostrarToast('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mostrarToast('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mostrarToast('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}btnAction.disabled=false;});
-btnLogout.addEventListener('click',()=>signOut(auth));
-btnRecargar.addEventListener('click',()=>{sonidoClick();nequiModal.classList.remove('hidden');});
-btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
-btnWaConfirm.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High.`)}`,'_blank');nequiModal.classList.add('hidden');mostrarToast('📱 Redirigiendo...','info');});
-btnRetirar.addEventListener('click',async()=>{sonidoClick();if(saldoActual<=0)return mostrarToast('❌ Sin saldo','error');const c=await mostrarConfirmacion('Retirar',`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`);if(c){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Nequi:`)}`,'_blank');mostrarToast('📱 Redirigiendo...','info');}});
+bA.addEventListener('click',async()=>{const em=ei.value.trim(),alias=ai.value.trim(),pw=pi.value;if(!em||!pw)return mT('Completa los campos','error');if(pw.length<6)return mT('Mínimo 6 caracteres','error');if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');bA.disabled=true;try{if(tl.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mT('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mT('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mT('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}bA.disabled=false;});
+bL.addEventListener('click',()=>signOut(auth));
+bRec.addEventListener('click',()=>{sc();nM.classList.remove('hidden');});
+bMC.addEventListener('click',()=>nM.classList.add('hidden'));
+bWC.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${cAlias}. Solicito recarga en Royal High.`)}`,'_blank');nM.classList.add('hidden');mT('📱 Redirigiendo...','info');});
+bRet.addEventListener('click',async()=>{sc();if(sAct<=0)return mT('❌ Sin saldo','error');const c=await mC('Retirar',`¿Retirar $${sAct.toLocaleString('es-CO')}?`);if(c){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${sAct.toLocaleString('es-CO')}. Mi Nequi:`)}`,'_blank');mT('📱 Redirigiendo...','info');}});
 
-window.addEventListener('beforeunload',()=>{if(currentUserId)set(ref(db,`presencia/${currentUserId}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
+window.addEventListener('beforeunload',()=>{if(cU)set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
 </script>
 </body>
 </html>
