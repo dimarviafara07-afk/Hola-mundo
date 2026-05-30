@@ -51,7 +51,6 @@
         .forgot-link{display:block;margin-top:14px;font-size:.72rem;color:var(--text-muted);cursor:pointer;transition:color .2s;background:none;border:none;text-decoration:underline}
         .forgot-link:hover{color:var(--primary)}
 
-        /* ✅ NUEVO: Toast de notificaciones */
         .toast-container{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;width:90%;max-width:400px}
         .toast{padding:12px 16px;border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;text-align:center;animation:slideDown .3s ease-out;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
         .toast.success{background:#065f46;color:#6ee7b7;border:1px solid #059669}
@@ -60,7 +59,6 @@
         .toast.warning{background:#78350f;color:#fcd34d;border:1px solid #f59e0b}
         @keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 
-        /* ✅ NUEVO: Indicador de búsqueda animado */
         .searching-indicator{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:8px}
         .searching-dot{width:6px;height:6px;border-radius:50%;background:var(--warning);animation:bounce 0.6s infinite alternate}
         .searching-dot:nth-child(2){animation-delay:0.2s}.searching-dot:nth-child(3){animation-delay:0.4s}
@@ -87,7 +85,6 @@
         .comm-dot.amber{background:var(--warning);box-shadow:0 0 6px rgba(245,158,11,0.5)}.membership-mini{margin-left:auto;font-size:.68rem;color:var(--text-muted);white-space:nowrap}
         .membership-mini strong{color:var(--primary)}
 
-        /* ✅ NUEVO: Sección de jugadores en el lobby */
         .lobby-players{background:var(--bg-card);border-radius:var(--radius-md);padding:10px 14px;margin-bottom:10px;border:1px solid var(--gold-border);display:none}
         .lobby-players.visible{display:block}
         .lobby-players-title{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:8px}
@@ -179,7 +176,6 @@
     </style>
 </head>
 <body>
-<!-- ✅ NUEVO: Contenedor de notificaciones toast -->
 <div class="toast-container" id="toastContainer"></div>
 
 <div class="app-container">
@@ -190,17 +186,14 @@
         <div id="adminPanel" class="admin-panel hidden"><div class="admin-title">✦ Panel de Control</div><div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisiones</div><div class="admin-stat-value" id="adminComision">$0</div><button class="admin-stat-reset" id="btnResetComision">↺</button></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div><button class="admin-stat-reset" id="btnResetMovido">↺</button></div></div><div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email del usuario" style="max-width:160px;"><input type="number" id="adminMontoRecarga" placeholder="Monto" min="1000" style="max-width:85px;"><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div><div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetAll">🔄 Reiniciar todos a $0</button></div><div class="admin-config"><div class="admin-config-title">⚙️ Jornada</div><div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4"></div><div class="config-row"><label>Inicio:</label><input type="time" id="configHoraInicio"></div><div class="config-row"><label>Fin:</label><input type="time" id="configHoraFin"></div><div class="config-row"><label>Activa:</label><input type="checkbox" id="configJornadaActiva" checked style="width:auto;flex:0;"></div><button id="btnConfigSave" class="btn-config-save">💾 Guardar</button></div></div>
         <div class="unified-header"><div class="avatar" id="userAvatar">R</div><div class="user-info"><div class="user-name" id="txtUsername">Usuario</div><div class="user-status"><span class="status-dot"></span>En línea</div></div><div class="balance-mini"><div class="balance-mini-label">Saldo</div><div class="balance-mini-amount" id="saldoDisplay">$0</div></div><div class="header-actions"><button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button><button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button><button id="btnLogout" class="btn-sm btn-out">Salir</button></div></div>
         <div class="community-bar"><div class="comm-stats"><div class="comm-stat"><span class="comm-dot green"></span><span id="statOnline">0</span> en línea</div><div class="comm-stat"><span class="comm-dot blue"></span><span id="statPlaying">0</span> jugando</div><div class="comm-stat"><span class="comm-dot amber"></span><span id="statWaiting">0</span> esperando</div></div><div class="membership-mini">Cupos: <strong id="membershipText">0/50</strong></div></div>
-        <!-- ✅ NUEVO: Panel de jugadores en lobby -->
         <div class="lobby-players" id="lobbyPlayers"><div class="lobby-players-title">👥 Jugadores en la sala</div><div id="lobbyPlayersList"></div></div>
         <div class="pot-container"><div class="pot-label">Pozo acumulado</div><div class="pot-amount" id="potAmount">$0</div></div>
         <div class="game-table-main"><div class="table-felt"><div id="tableContent"><div class="table-empty-msg">Selecciona modalidad<br><strong>Buscar Partida</strong></div></div></div></div>
-        <!-- ✅ NUEVO: Indicador de búsqueda -->
         <div class="searching-indicator hidden" id="searchingIndicator"><span class="searching-dot"></span><span class="searching-dot"></span><span class="searching-dot"></span></div>
         <div class="controls-section"><div class="section-label">Modalidad</div><div class="mode-row"><div class="mode-chip selected" id="mode1v1" data-mode="1v1">⚔️ 1 VS 1</div><div class="mode-chip" id="mode3p" data-mode="3p">👥 3 Jugadores</div></div><div class="section-label">Apuesta</div><div class="bet-row"><div class="bet-chip selected" data-apuesta="2000">$2K</div><div class="bet-chip" data-apuesta="4000">$4K</div><div class="bet-chip" data-apuesta="8000">$8K</div><div class="bet-chip" data-apuesta="16000">$16K</div><div class="bet-chip" data-apuesta="32000">$32K</div></div><button id="btnPlay" class="btn-cta">Buscar Partida</button></div>
         <div class="history-collapsible"><div class="history-header"><span class="history-title">📊 Historial</span><span class="history-arrow">▼</span></div><div class="history-body"><table class="history-table"><thead><tr><th>Resultado</th><th>Mesa</th><th>Monto</th></tr></thead><tbody id="historialBody"></tbody></table></div></div>
     </div>
     <div id="nequiModal" class="modal-overlay hidden"><div class="modal-content"><div class="modal-title">Recargar Saldo</div><p style="font-size:.78rem;color:var(--text-muted);">Transfiere a esta cuenta:</p><div class="nequi-number"><span class="nequi-logo">NEQUI</span> 3219401352</div><button id="btnWaConfirm" class="btn-wa">📱 Enviar Comprobante</button><button id="btnModalCerrar" class="btn-modal-close">Cancelar</button></div></div>
-    <!-- ✅ NUEVO: Modal de confirmación -->
     <div id="confirmModal" class="modal-overlay hidden"><div class="modal-content"><div class="modal-title" id="confirmTitle">¿Confirmar?</div><p style="font-size:.78rem;color:var(--text-muted);margin-bottom:16px" id="confirmMsg"></p><button id="btnConfirmYes" class="btn-primary" style="margin-bottom:8px">Sí, continuar</button><button id="btnConfirmNo" class="btn-modal-close">Cancelar</button></div></div>
 </div>
 
@@ -212,6 +205,34 @@ import{getDatabase,ref,onValue,off,set,push,update,increment,onDisconnect,runTra
 const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 const CORREO_ADMIN="dimarviafara07@gmail.com",WHATSAPP="573219401352",MAX_MIEMBROS=50;
+
+// ✅ SISTEMA DE SONIDO (Web Audio API - sin archivos externos)
+const AudioContext=window.AudioContext||window.webkitAudioContext;
+let audioCtx=null;
+
+function initAudio(){if(!audioCtx)audioCtx=new AudioContext();}
+
+function playBeep(frecuencia,duracion,tipo='sine',volumen=0.1){
+    if(!audioCtx)initAudio();
+    const oscillator=audioCtx.createOscillator();
+    const gainNode=audioCtx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+    oscillator.frequency.value=frecuencia;
+    oscillator.type=tipo;
+    gainNode.gain.setValueAtTime(volumen,audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+duracion);
+    oscillator.start(audioCtx.currentTime);
+    oscillator.stop(audioCtx.currentTime+duracion);
+}
+
+function sonidoClick(){playBeep(800,0.1,'sine',0.08);}
+function sonidoBusqueda(){playBeep(600,0.3,'triangle',0.1);setTimeout(()=>playBeep(800,0.3,'triangle',0.1),300);}
+function sonidoMatch(){playBeep(523,0.15,'sine',0.12);setTimeout(()=>playBeep(659,0.15,'sine',0.12),150);setTimeout(()=>playBeep(784,0.3,'sine',0.15),300);}
+function sonidoCartas(){playBeep(200,0.4,'triangle',0.08);setTimeout(()=>playBeep(300,0.2,'triangle',0.08),400);}
+function sonidoGanar(){playBeep(523,0.2,'sine',0.15);setTimeout(()=>playBeep(659,0.2,'sine',0.15),200);setTimeout(()=>playBeep(784,0.2,'sine',0.15),400);setTimeout(()=>playBeep(1047,0.5,'sine',0.2),600);}
+function sonidoPerder(){playBeep(400,0.3,'sawtooth',0.08);setTimeout(()=>playBeep(300,0.3,'sawtooth',0.08),300);setTimeout(()=>playBeep(200,0.5,'sawtooth',0.06),600);}
+function sonidoFichas(){playBeep(1000,0.05,'sine',0.1);setTimeout(()=>playBeep(1200,0.05,'sine',0.1),50);setTimeout(()=>playBeep(1400,0.08,'sine',0.1),100);}
 
 const recoveryView=document.getElementById('recoveryView'),accessView=document.getElementById('accessView'),authView=document.getElementById('authView'),gameView=document.getElementById('gameView');
 const recoveryEmail=document.getElementById('recoveryEmail'),recoveryMsg=document.getElementById('recoveryMsg'),btnRecovery=document.getElementById('btnRecovery'),btnBackToLogin=document.getElementById('btnBackToLogin');
@@ -233,16 +254,13 @@ let ejecutandoPartida=false;
 
 const esperar=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
 
-// ✅ NUEVO: Sistema de notificaciones toast
 function mostrarToast(mensaje,tipo='info'){
     const toast=document.createElement('div');
-    toast.className=`toast ${tipo}`;
-    toast.textContent=mensaje;
+    toast.className=`toast ${tipo}`;toast.textContent=mensaje;
     toastContainer.appendChild(toast);
     setTimeout(()=>{toast.style.opacity='0';toast.style.transition='opacity .3s';setTimeout(()=>toast.remove(),300);},3000);
 }
 
-// ✅ NUEVO: Modal de confirmación genérico
 function mostrarConfirmacion(titulo,mensaje){return new Promise((resolve)=>{confirmTitle.textContent=titulo;confirmMsg.textContent=mensaje;confirmModal.classList.remove('hidden');btnConfirmYes.onclick=()=>{confirmModal.classList.add('hidden');resolve(true);};btnConfirmNo.onclick=()=>{confirmModal.classList.add('hidden');resolve(false);};});}
 
 async function cargarSaldo(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
@@ -250,17 +268,17 @@ async function cargarSaldo(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`
 async function modificarSaldo(uid,monto,concepto,matchId=null){
     const saldoRef=ref(db,`usuarios/${uid}/saldo`);
     await runTransaction(saldoRef,(s)=>{const nuevo=(s||0)+monto;if(nuevo<0)throw new Error('Saldo insuficiente');return nuevo;});
-    try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});await push(ref(db,`auditoria/${uid}`),{monto,concepto,timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}
+    try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}
 }
 
-tabLogin.addEventListener('click',()=>{tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
-tabRegister.addEventListener('click',()=>{tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
+tabLogin.addEventListener('click',()=>{sonidoClick();tabLogin.classList.add('active');tabRegister.classList.remove('active');aliasInput.classList.add('hidden');btnAction.textContent='Ingresar';});
+tabRegister.addEventListener('click',()=>{sonidoClick();tabRegister.classList.add('active');tabLogin.classList.remove('active');aliasInput.classList.remove('hidden');btnAction.textContent='Registrarse';});
 btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden');recoveryView.classList.remove('hidden');recoveryEmail.value=emailInput.value;});
 btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
 btnRecovery.addEventListener('click',async()=>{const e=recoveryEmail.value.trim();if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return}btnRecovery.disabled=true;btnRecovery.textContent='Enviando...';try{await sendPasswordResetEmail(auth,e);recoveryMsg.textContent='✅ Correo enviado.';recoveryEmail.value='';}catch(err){recoveryMsg.textContent=err.code==='auth/user-not-found'?'❌ No existe':'❌ Error';}btnRecovery.disabled=false;btnRecovery.textContent='Enviar enlace';});
 
 async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';accessSchedule.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}}
-btnAccess.addEventListener('click',async()=>{const c=accessCode.value.trim();if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');mostrarToast('✅ Acceso concedido','success');}else{accessError.textContent='Código incorrecto';accessCode.value='';accessCode.focus();}});
+btnAccess.addEventListener('click',async()=>{const c=accessCode.value.trim();if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');sonidoFichas();mostrarToast('✅ Acceso concedido','success');}else{accessError.textContent='Código incorrecto';accessCode.value='';accessCode.focus();}});
 accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
 btnResetComision.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
@@ -270,14 +288,13 @@ btnConfigSave.addEventListener('click',async()=>{await set(ref(db,'configuracion
 
 function updatePotDisplay(c){if(potAmount)potAmount.textContent='$'+(apuestaActual*c).toLocaleString('es-CO')}
 historyHeader.addEventListener('click',()=>historyCollapsible.classList.toggle('open'));
-mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
-mode3p.addEventListener('click',()=>{if(esperandoPartida)return;mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
-betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego]);})});
+mode1v1.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();mode1v1.classList.add('selected');mode3p.classList.remove('selected');modoJuego='1v1';updatePotDisplay(2);updateTablePreview();});
+mode3p.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();mode3p.classList.add('selected');mode1v1.classList.remove('selected');modoJuego='3p';updatePotDisplay(3);updateTablePreview();});
+betChips.forEach(chip=>{chip.addEventListener('click',()=>{if(esperandoPartida)return;sonidoClick();betChips.forEach(c=>c.classList.remove('selected'));chip.classList.add('selected');apuestaActual=parseInt(chip.dataset.apuesta);updatePotDisplay(MAX_JUGADORES[modoJuego]);})});
 
 function updateTablePreview(){if(esperandoPartida)return;const m=MAX_JUGADORES[modoJuego];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div class="card-back-pattern">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div class="card-suit" style="color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tableContent.innerHTML=h+'</div>';}
 updatePotDisplay(2);
 
-// ===== AUTH STATE =====
 onAuthStateChanged(auth,async(user)=>{
     if(user){
         currentUserId=user.uid;const userSnap=await get(ref(db,`usuarios/${user.uid}`));const userData=userSnap.val()||{};currentUsername=user.email.split('@')[0];currentAlias=userData.alias||currentUsername;
@@ -285,7 +302,7 @@ onAuthStateChanged(auth,async(user)=>{
         if(isAdmin){gameView.classList.remove('hidden');}else{await verificarAcceso();accessView.classList.remove('hidden');}
         txtUsername.textContent=currentAlias;userAvatar.textContent=currentAlias.charAt(0).toUpperCase();updateTablePreview();
         const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:currentUsername,alias:currentAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
-        if(isAdmin){adminPanel.classList.remove('hidden');onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});const cfg=(await get(ref(db,'configuracion'))).val()||{};configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break;}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});mostrarToast(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`,'success');adminUserEmail.value='';adminMontoRecarga.value='';}catch(error){alert('❌ Error: '+error.message);}};}else{adminPanel.classList.add('hidden');}
+        if(isAdmin){adminPanel.classList.remove('hidden');onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});const cfg=(await get(ref(db,'configuracion'))).val()||{};configCodigo.value=cfg.codigo_acceso||'4927';configHoraInicio.value=cfg.hora_inicio||'20:00';configHoraFin.value=cfg.hora_fin||'22:00';configJornadaActiva.checked=cfg.jornada_activa!==false;btnAdminRecargar.onclick=async()=>{const emailBuscar=adminUserEmail.value.trim().toLowerCase(),monto=parseInt(adminMontoRecarga.value);if(!emailBuscar||!monto||monto<1000)return alert('❌ Email válido y monto mínimo $1.000');try{const usersSnapshot=await get(ref(db,'usuarios')),users=usersSnapshot.val()||{};let uidEncontrado=null,emailEncontrado='';for(const uid in users){if(users[uid].email&&users[uid].email.toLowerCase()===emailBuscar){uidEncontrado=uid;emailEncontrado=users[uid].email;break;}}if(!uidEncontrado)return alert('❌ Usuario no encontrado');await modificarSaldo(uidEncontrado,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:currentUserId,userId:uidEncontrado,email:emailEncontrado,monto,timestamp:Date.now()});sonidoFichas();mostrarToast(`✅ $${monto.toLocaleString('es-CO')} acreditados a ${emailEncontrado}`,'success');adminUserEmail.value='';adminMontoRecarga.value='';}catch(error){alert('❌ Error: '+error.message);}};}else{adminPanel.classList.add('hidden');}
         onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('low','zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!';}else if(saldoActual<apuestaActual){saldoDisplay.classList.add('low');}});
         onValue(ref(db,`usuarios/${user.uid}/historial`),snap=>{historialBody.innerHTML='';const d=snap.val();if(d){Object.values(d).reverse().slice(0,10).forEach(i=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';historialBody.innerHTML+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});}else historialBody.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';});
         onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
@@ -294,10 +311,10 @@ onAuthStateChanged(auth,async(user)=>{
 
 btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return alert('Completa los campos');if(pw.length<6)return alert('Mínimo 6 caracteres');if(tabRegister.classList.contains('active')&&!alias)return alert('Elige un alias');btnAction.disabled=true;try{if(tabLogin.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mostrarToast('✅ Bienvenido de nuevo','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mostrarToast('🎉 ¡Bienvenido a Royal High, '+alias+'!','success');}}catch(e){mostrarToast('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}btnAction.disabled=false;});
 btnLogout.addEventListener('click',()=>signOut(auth));
-btnRecargar.addEventListener('click',()=>nequiModal.classList.remove('hidden'));
+btnRecargar.addEventListener('click',()=>{sonidoClick();nequiModal.classList.remove('hidden');});
 btnModalCerrar.addEventListener('click',()=>nequiModal.classList.add('hidden'));
 btnWaConfirm.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${currentAlias}. Solicito recarga en Royal High. Adjunto comprobante.`)}`,'_blank');nequiModal.classList.add('hidden');mostrarToast('📱 Redirigiendo a WhatsApp...','info');});
-btnRetirar.addEventListener('click',async()=>{if(saldoActual<=0)return mostrarToast('❌ Sin saldo disponible','error');const confirmado=await mostrarConfirmacion('Confirmar retiro',`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`);if(confirmado){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank');mostrarToast('📱 Redirigiendo a WhatsApp...','info');}});
+btnRetirar.addEventListener('click',async()=>{sonidoClick();if(saldoActual<=0)return mostrarToast('❌ Sin saldo disponible','error');const confirmado=await mostrarConfirmacion('Confirmar retiro',`¿Retirar $${saldoActual.toLocaleString('es-CO')}?`);if(confirmado){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Solicito retiro de $${saldoActual.toLocaleString('es-CO')} en Royal High. Mi Nequi:`)}`,'_blank');mostrarToast('📱 Redirigiendo a WhatsApp...','info');}});
 
 function generarCarta(){const array=new Uint32Array(2);crypto.getRandomValues(array);const vi=array[0]%nombresCartas.length;const pi=array[1]%pintas.length;return{peso:vi,texto:nombresCartas[vi],pinta:pintas[pi]};}
 
@@ -320,12 +337,14 @@ function renderGameCards(jugadoresOriginales){
     lobbyPlayers.classList.remove('visible');
 }
 
-// ✅ NUEVO: Actualizar lista de jugadores en el lobby
 function updateLobbyPlayers(jugadores){
     let h='';
     jugadores.forEach(j=>{const esTu=j.uid===currentUserId;h+=`<div class="lobby-player-item"><span class="lobby-player-dot"></span>${esTu?'Tú (':''}${j.alias||'Jugador'}${esTu?')':''}</div>`;});
     lobbyPlayersList.innerHTML=h;
 }
+
+// ✅ CORRECCIÓN: limpiar lobby guardando la clave usada
+let lobbyActualPath=null;
 
 async function limpiarLobbySiEsProblematico(lobbyRef){
     const snap=await get(lobbyRef);const lobby=snap.val();if(!lobby)return;
@@ -333,12 +352,12 @@ async function limpiarLobbySiEsProblematico(lobbyRef){
     if(!lobby.jugadores||!Array.isArray(lobby.jugadores))problema='sin jugadores';
     else if(lobby.estado==='jugando'&&!lobby.matchId)problema='jugando sin matchId';
     else if(lobby.creado&&(ahora-lobby.creado>120000))problema='abandonado';
-    if(problema){await set(lobbyRef,null);}
+    if(problema){console.log('🧹 Auto-limpiando lobby:',problema);await set(lobbyRef,null);}
 }
 
-// ✅ MEJORADO: Bloqueo anti-jugarse-a-sí-mismo
 btnPlay.addEventListener('click',async()=>{
     if(!currentUserId||ejecutandoPartida)return;
+    initAudio();
     
     const saldoReal=await cargarSaldo(currentUserId);
     if(saldoReal<=0)return mostrarToast('❌ Saldo en $0. Recarga para jugar.','error');
@@ -346,6 +365,7 @@ btnPlay.addEventListener('click',async()=>{
 
     const apuesta=Number(apuestaActual);
     const lobbyPath=`lobbies/${modoJuego}_${apuesta}`;
+    lobbyActualPath=lobbyPath; // Guardar para limpiar después
     const lobbyRef=ref(db,lobbyPath);
     const maxJ=MAX_JUGADORES[modoJuego];
 
@@ -357,13 +377,14 @@ btnPlay.addEventListener('click',async()=>{
         btnPlay.classList.remove('canceling','cooldown');
         searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');
         updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();
+        lobbyActualPath=null;
         return;
     }
 
-    // ✅ Confirmación antes de apostar
     const confirmado=await mostrarConfirmacion('Iniciar búsqueda',`¿Buscar partida ${modoJuego} por $${apuesta.toLocaleString('es-CO')}?`);
     if(!confirmado)return;
 
+    sonidoBusqueda();
     btnPlay.disabled=true;btnPlay.classList.add('canceling');
     btnPlay.textContent='Buscando oponente...';esperandoPartida=true;
     await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias}).catch(()=>{});
@@ -399,14 +420,30 @@ btnPlay.addEventListener('click',async()=>{
             updatePotDisplay(data.jugadores.length);
             
             if(data.estado==='jugando'&&data.jugadores.length===maxJ){
-                partidaIniciada=true;if(lobbyListener)off(lobbyRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);
+                partidaIniciada=true;
+                if(lobbyListener)off(lobbyRef,'value',lobbyListener);
+                if(timeoutId)clearTimeout(timeoutId);
+                
+                sonidoMatch();
+                
                 if(!data.matchId){const matchId=push(ref(db,'matches')).key;const matchData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:apuesta,modalidad:modoJuego,creado:Date.now()};await set(ref(db,`matches/${matchId}`),matchData);await update(lobbyRef,{matchId:matchId});data.matchId=matchId;}
-                if(!partidasProcesadas.has(data.matchId)){partidasProcesadas.add(data.matchId);ejecutandoPartida=true;await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,apuesta);ejecutandoPartida=false;}
+                if(!partidasProcesadas.has(data.matchId)){partidasProcesadas.add(data.matchId);ejecutandoPartida=true;await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,apuesta,lobbyPath);ejecutandoPartida=false;}
             }
         });
 
-        timeoutId=setTimeout(async()=>{if(partidaIniciada)return;if(lobbyListener)off(lobbyRef,'value',lobbyListener);const snap=await get(lobbyRef);const data=snap.val();if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores&&data.jugadores.length<maxJ){await set(lobbyRef,null).catch(()=>{});}if(!ejecutandoPartida)resetSearch();},90000);
-    }catch(error){if(lobbyListener)off(lobbyRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();mostrarToast('Error de conexión. Intenta de nuevo.','error');}
+        timeoutId=setTimeout(async()=>{
+            if(partidaIniciada)return;
+            if(lobbyListener)off(lobbyRef,'value',lobbyListener);
+            const snap=await get(lobbyRef);const data=snap.val();
+            if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores&&data.jugadores.length<maxJ){await set(lobbyRef,null).catch(()=>{});}
+            if(!ejecutandoPartida)resetSearch();
+        },90000);
+    }catch(error){
+        if(lobbyListener)off(lobbyRef,'value',lobbyListener);
+        if(timeoutId)clearTimeout(timeoutId);
+        if(!ejecutandoPartida)resetSearch();
+        mostrarToast('Error de conexión. Intenta de nuevo.','error');
+    }
 });
 
 function resetSearch(){
@@ -415,10 +452,13 @@ function resetSearch(){
     searchingIndicator.classList.add('hidden');lobbyPlayers.classList.remove('visible');
     updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();
     update(ref(db,`presencia/${currentUserId}`),{status:'online'}).catch(()=>{});
+    lobbyActualPath=null;
 }
 
-async function ejecutarPartida(matchId,lobbyData,apuesta){
-    currentMatchId=matchId;btnPlay.textContent='Repartiendo cartas...';
+// ✅ CORREGIDO: ejecutarPartida recibe y usa lobbyPath correctamente
+async function ejecutarPartida(matchId,lobbyData,apuesta,lobbyPath){
+    currentMatchId=matchId;
+    btnPlay.textContent='Repartiendo cartas...';
     btnPlay.classList.remove('canceling');btnPlay.classList.add('cooldown');btnPlay.disabled=true;
     try{
         const matchSnap=await get(ref(db,`matches/${matchId}`));let matchData=matchSnap.val();
@@ -426,17 +466,35 @@ async function ejecutarPartida(matchId,lobbyData,apuesta){
         const jugadores=matchData.jugadores;const miIdx=jugadores.findIndex(j=>j.uid===currentUserId);
         if(miIdx===-1){resetSearch();return;}
         const totalPot=apuesta*jugadores.length;updatePotDisplay(jugadores.length);renderGameCards(jugadores);
+        
+        sonidoCartas();
         await esperar(1500);btnPlay.textContent='Revelando cartas...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));
         await esperar(1200);btnPlay.textContent='Calculando resultados...';
+        
         const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let ganador=jugadores.filter(j=>j.carta.peso===maxP)[0];
         if(jugadores.filter(j=>j.carta.peso===maxP).length>1){const prioridadPinta={'♠':4,'♥':3,'♦':2,'♣':1};ganador=jugadores.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(prioridadPinta[b.carta.pinta.icon]||0)>(prioridadPinta[a.carta.pinta.icon]||0)?b:a);}
         const yoGane=ganador.uid===currentUserId;const comision=jugadores.length===2?Math.floor(apuesta*0.05):Math.floor(apuesta*0.10);const gananciaNetaReal=(totalPot-apuesta)-comision;
+        
+        if(yoGane){sonidoGanar();}else{sonidoPerder();}
         if(yoGane&&potAmount){potAmount.classList.add('pot-won');setTimeout(()=>potAmount.classList.remove('pot-won'),600);}
+        
         const reordenados=[];reordenados.push(jugadores.find(j=>j.uid===currentUserId));jugadores.forEach(j=>{if(j.uid!==currentUserId)reordenados.push(j);});
         reordenados.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===ganador.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===currentUserId?'Tú':(j.alias||'Oponente'));}else if(j.uid===currentUserId){lbl.classList.add('loser');}});
-        try{if(yoGane){await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida',matchId);mostrarToast(`🎉 ¡Ganaste $${gananciaNetaReal.toLocaleString('es-CO')}!`,'success');}else{await modificarSaldo(currentUserId,-apuesta,'Perdió partida',matchId);mostrarToast(`😔 Perdiste $${apuesta.toLocaleString('es-CO')}`,'warning');}await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}).catch(()=>{});}catch(e){}
-        btnPlay.textContent=yoGane?'🎉 ¡Ganaste! - Limpiando mesa...':'😔 Perdiste - Limpiando mesa...';await esperar(4000);
-        try{await set(ref(db,`matches/${matchId}`),null);await set(ref(db,lobbyPath),null);}catch(e){}
+        
+        try{
+            if(yoGane){await modificarSaldo(currentUserId,gananciaNetaReal,'Ganó partida',matchId);mostrarToast(`🎉 ¡Ganaste $${gananciaNetaReal.toLocaleString('es-CO')}!`,'success');}
+            else{await modificarSaldo(currentUserId,-apuesta,'Perdió partida',matchId);mostrarToast(`😔 Perdiste $${apuesta.toLocaleString('es-CO')}`,'warning');}
+            await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(totalPot),partidas_jugando:increment(1)}).catch(()=>{});
+        }catch(e){}
+        
+        btnPlay.textContent=yoGane?'🎉 ¡Ganaste! - Limpiando mesa...':'😔 Perdiste - Limpiando mesa...';
+        await esperar(4000);
+        
+        // ✅ CORREGIDO: Limpiar usando lobbyPath pasado como parámetro
+        try{
+            await set(ref(db,`matches/${matchId}`),null);
+            if(lobbyPath)await set(ref(db,lobbyPath),null);
+        }catch(e){}
     }catch(error){}finally{resetSearch();}
 }
 
