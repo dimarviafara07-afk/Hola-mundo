@@ -139,7 +139,6 @@
         .nequi-number{background:var(--bg-input);padding:12px;border-radius:var(--radius-sm);font-size:1.2rem;font-weight:700;color:#E11D48;margin:10px 0;border:1.5px solid #E11D48}
         .btn-wa{width:100%;padding:12px;background:var(--success);color:#fff;border:none;border-radius:var(--radius-sm);font-weight:700;cursor:pointer}
         .btn-modal-close{background:none;border:none;color:var(--text-muted);margin-top:8px;cursor:pointer;font-size:.72rem}
-
         .table-empty-msg{color:var(--text-muted);font-size:.75rem;text-align:center}.table-empty-msg strong{color:var(--primary)}
 
         @media(max-width:360px){.card-wrapper{width:56px;height:80px}.card-value{font-size:1.1rem}}
@@ -232,9 +231,49 @@ async function modificarSaldo(uid,monto,concepto,matchId=null){const sRef=ref(db
 function cambiarSeccion(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector(`[data-section="${id}"]`)?.classList.add('active');}
 document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sonidoClick();cambiarSeccion(item.dataset.section);});});
 
+// ✅ CHAT CON AUTO-ELIMINACIÓN DE MENSAJES VIEJOS (>5 min)
+const TIEMPO_VIDA_CHAT=300000; // 5 minutos en milisegundos
 let chatListener=null;
-function initChat(){if(chatListener)off(ref(db,'chat/global'),'value',chatListener);chatListener=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();chatContainer.innerHTML='';if(ms){Object.values(ms).slice(-40).forEach(m=>{const em=m.uid===currentUserId;chatContainer.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}chatContainer.scrollTop=chatContainer.scrollHeight;});}
-chatSend.addEventListener('click',async()=>{const t=chatInput.value.trim();if(!t||!currentUserId)return;await push(ref(db,'chat/global'),{uid:currentUserId,alias:currentAlias,texto:t,timestamp:Date.now()});chatInput.value='';});
+let chatCleanupInterval=null;
+
+function initChat(){
+    if(chatListener)off(ref(db,'chat/global'),'value',chatListener);
+    
+    chatListener=onValue(ref(db,'chat/global'),snap=>{
+        const ms=snap.val();
+        chatContainer.innerHTML='';
+        if(ms){
+            const ahora=Date.now();
+            const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);
+            mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);
+            mensajes.forEach(([id,m])=>{
+                const em=m.uid===currentUserId;
+                chatContainer.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;
+            });
+        }
+        chatContainer.scrollTop=chatContainer.scrollHeight;
+    });
+    
+    // Limpiar mensajes viejos cada 2 minutos
+    if(chatCleanupInterval)clearInterval(chatCleanupInterval);
+    chatCleanupInterval=setInterval(async()=>{
+        const snap=await get(ref(db,'chat/global'));
+        const ms=snap.val()||{};
+        const ahora=Date.now();
+        for(const id in ms){
+            if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){
+                await set(ref(db,`chat/global/${id}`),null);
+            }
+        }
+    },120000);
+}
+
+chatSend.addEventListener('click',async()=>{
+    const t=chatInput.value.trim();
+    if(!t||!currentUserId)return;
+    await push(ref(db,'chat/global'),{uid:currentUserId,alias:currentAlias,texto:t,timestamp:Date.now()});
+    chatInput.value='';
+});
 chatInput.addEventListener('keypress',e=>{if(e.key==='Enter')chatSend.click();});
 
 function initRanking(){onValue(ref(db,'usuarios'),snap=>{const us=snap.val()||{};const rank=[];for(const uid in us){const u=us[uid];if(u.historial){let g=0;Object.values(u.historial).forEach(h=>{if(h.resultado==='GANÓ')g+=h.monto||0;else if(h.resultado==='PERDIÓ')g-=(h.monto||0);});rank.push({alias:u.alias||'Anónimo',ganancias:g});}}rank.sort((a,b)=>b.ganancias-a.ganancias);let h='';rank.slice(0,15).forEach((r,i)=>{const p=i+1;h+=`<div class="ranking-item"><div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div><div style="flex:1">${r.alias}</div><div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});rankingList.innerHTML=h||'<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Sin datos</div>';});}
@@ -249,9 +288,7 @@ btnForgotPassword.addEventListener('click',()=>{authView.classList.add('hidden')
 btnBackToLogin.addEventListener('click',()=>{recoveryView.classList.add('hidden');authView.classList.remove('hidden');recoveryMsg.textContent='';});
 btnRecovery.addEventListener('click',async()=>{const e=recoveryEmail.value.trim();if(!e){recoveryMsg.textContent='❌ Ingresa tu correo';return}btnRecovery.disabled=true;try{await sendPasswordResetEmail(auth,e);recoveryMsg.textContent='✅ Enviado';recoveryEmail.value='';}catch(err){recoveryMsg.textContent='❌ Error';}btnRecovery.disabled=false;});
 
-async function verificarAcceso(){
-    try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';accessSchedule.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}
-}
+async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};codigoAcceso=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';accessSchedule.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');jornadaStatus.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jornadaStatusText.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){codigoAcceso='4927';}}
 btnAccess.addEventListener('click',async()=>{const c=accessCode.value.trim();if(!c||c.length!==4){accessError.textContent='Ingresa 4 dígitos';return}if(c===codigoAcceso){accessError.textContent='';accessView.classList.add('hidden');gameView.classList.remove('hidden');bottomNav.classList.remove('hidden');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('[data-section="sectionJuego"]')?.classList.add('active');sonidoFichas();mostrarToast('✅ Acceso concedido','success');}else{accessError.textContent='Código incorrecto';accessCode.value='';}});
 accessCode.addEventListener('keypress',e=>{if(e.key==='Enter')btnAccess.click();});
 
@@ -275,30 +312,43 @@ function renderGameCards(jO){const reo=[],labs=[],yo=jO.find(j=>j.uid===currentU
 
 function updLobby(jugs){let h='';jugs.forEach(j=>{const et=j.uid===currentUserId;h+=`<div class="lobby-player-item"><span class="lobby-player-dot"></span>${et?'Tú (':''}${j.alias||'Jugador'}${et?')':''}</div>`;});lobbyPlayersList.innerHTML=h;}
 
+// ✅ SALAS CORREGIDAS - Versión simplificada
 let lobbyPath=null,salaId=null;
 
 async function encontrarOSala(modo,monto,maxJ){
     const basePath=`lobbies/${modo}_${monto}`;
     const baseRef=ref(db,basePath);
-    const result=await runTransaction(baseRef,(lobbies)=>{
-        if(!lobbies)lobbies={};
-        for(const sId in lobbies){
-            const sala=lobbies[sId];
-            if(sala&&sala.estado==='esperando'&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.length<maxJ){
-                const yaEsta=sala.jugadores.some(j=>j.uid===currentUserId);
-                if(!yaEsta)return lobbies;
+    const snapActual=await get(baseRef);
+    const lobbies=snapActual.val()||{};
+    
+    for(const sId in lobbies){
+        const sala=lobbies[sId];
+        if(sala&&sala.estado==='esperando'&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.length<maxJ){
+            const yaEsta=sala.jugadores.some(j=>j.uid===currentUserId);
+            if(!yaEsta){
+                const salaRef=ref(db,basePath+'/'+sId);
+                await runTransaction(salaRef,(salaActual)=>{
+                    if(salaActual&&salaActual.estado==='esperando'&&salaActual.jugadores&&salaActual.jugadores.length<maxJ){
+                        const yaEsta2=salaActual.jugadores.some(j=>j.uid===currentUserId);
+                        if(!yaEsta2){
+                            salaActual.jugadores.push({uid:currentUserId,alias:currentAlias});
+                            if(salaActual.jugadores.length===maxJ){
+                                salaActual.estado='jugando';
+                                salaActual.cartas={};
+                                salaActual.jugadores.forEach(j=>{salaActual.cartas[j.uid]=generarCarta();});
+                            }
+                        }
+                    }
+                    return salaActual;
+                });
+                return{salaId:sId,basePath};
             }
         }
-        const nuevaId='s'+Date.now().toString(36)+Math.random().toString(36).substr(2,3);
-        lobbies[nuevaId]={host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()};
-        return lobbies;
-    });
-    const lobbiesData=result.snapshot.val()||{};
-    for(const sId in lobbiesData){
-        const sala=lobbiesData[sId];
-        if(sala&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.some(j=>j.uid===currentUserId)){return{salaId:sId,basePath};}
     }
-    return null;
+    
+    const nuevaId='s'+Date.now().toString(36)+Math.random().toString(36).substr(2,3);
+    await set(ref(db,basePath+'/'+nuevaId),{host:currentUserId,jugadores:[{uid:currentUserId,alias:currentAlias}],estado:'esperando',creado:Date.now()});
+    return{salaId:nuevaId,basePath};
 }
 
 btnPlay.addEventListener('click',async()=>{
@@ -307,6 +357,7 @@ btnPlay.addEventListener('click',async()=>{
     if(saldoReal<=0)return mostrarToast('❌ Saldo en $0','error');
     if(saldoReal<apuestaActual)return mostrarToast(`❌ Necesitas $${apuestaActual.toLocaleString('es-CO')}`,'error');
     const ap=Number(apuestaActual),maxJ=MAX_JUGADORES[modoJuego];
+    
     if(esperandoPartida){
         btnPlay.disabled=true;btnPlay.textContent='Cancelando...';
         if(lobbyPath&&salaId){try{await set(ref(db,lobbyPath+'/'+salaId),null);}catch(e){}}
@@ -316,39 +367,38 @@ btnPlay.addEventListener('click',async()=>{
         updatePotDisplay(MAX_JUGADORES[modoJuego]);updateTablePreview();lobbyPath=null;salaId=null;
         return;
     }
+    
     const conf=await mostrarConfirmacion('Iniciar búsqueda',`¿Buscar ${modoJuego} por $${ap.toLocaleString('es-CO')}?`);
     if(!conf)return;
+    
     sonidoBusqueda();btnPlay.disabled=true;btnPlay.classList.add('canceling');btnPlay.textContent='Buscando...';esperandoPartida=true;
     await update(ref(db,`presencia/${currentUserId}`),{status:'waiting',alias:currentAlias}).catch(()=>{});
     renderSearchUI(1,maxJ);updatePotDisplay(1);
+    
     let lobbyListener=null,timeoutId=null,partidaIniciada=false;
+    
     try{
         const enc=await encontrarOSala(modoJuego,ap,maxJ);
         if(!enc){resetSearch();return mostrarToast('Error al encontrar sala','error');}
         salaId=enc.salaId;lobbyPath=enc.basePath;
         const salaRef=ref(db,lobbyPath+'/'+salaId);
-        await runTransaction(salaRef,(sala)=>{
-            if(!sala||!sala.jugadores)return sala;
-            if(sala.estado==='esperando'&&sala.jugadores.length<maxJ){
-                const yaEsta=sala.jugadores.some(j=>j.uid===currentUserId);
-                if(!yaEsta){sala.jugadores.push({uid:currentUserId,alias:currentAlias});if(sala.jugadores.length===maxJ){sala.estado='jugando';sala.cartas={};sala.jugadores.forEach(j=>{sala.cartas[j.uid]=generarCarta();});}}
-            }
-            return sala;
-        });
         const snapSala=await get(salaRef);const sData=snapSala.val();
         if(!sData||!sData.jugadores){resetSearch();return mostrarToast('Error en sala','error');}
         updLobby(sData.jugadores);
+        
         lobbyListener=onValue(salaRef,async(snap)=>{
             if(partidaIniciada)return;
             const data=snap.val();
             if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyListener)off(salaRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();return;}
             renderSearchUI(data.jugadores.length,maxJ);updLobby(data.jugadores);updatePotDisplay(data.jugadores.length);
+            
             if(data.estado==='jugando'&&data.jugadores.length===maxJ){
                 partidaIniciada=true;if(lobbyListener)off(salaRef,'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);sonidoMatch();
                 if(!data.matchId){const matchId=push(ref(db,'matches')).key;const mData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:generarCarta()})),apuesta:ap,modalidad:modoJuego,creado:Date.now()};await set(ref(db,`matches/${matchId}`),mData);await update(salaRef,{matchId});data.matchId=matchId;}
                 if(!partidasProcesadas.has(data.matchId)){partidasProcesadas.add(data.matchId);ejecutandoPartida=true;await update(ref(db,`presencia/${currentUserId}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,ap,lobbyPath,salaId);ejecutandoPartida=false;}
             }
         });
+        
         timeoutId=setTimeout(async()=>{if(partidaIniciada)return;if(lobbyListener)off(salaRef,'value',lobbyListener);const snap=await get(salaRef);const data=snap.val();if(data&&data.estado==='esperando'&&data.host===currentUserId&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}if(!ejecutandoPartida)resetSearch();},90000);
     }catch(error){if(lobbyListener&&lobbyPath&&salaId)off(ref(db,lobbyPath+'/'+salaId),'value',lobbyListener);if(timeoutId)clearTimeout(timeoutId);if(!ejecutandoPartida)resetSearch();mostrarToast('Error de conexión','error');}
 });
@@ -389,7 +439,7 @@ onAuthStateChanged(auth,async(user)=>{
         onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{saldoActual=snap.val()||0;saldoDisplay.textContent='$'+saldoActual.toLocaleString('es-CO');saldoDisplay.classList.remove('zero');if(saldoActual<=0){saldoDisplay.classList.add('zero');saldoDisplay.textContent='$0 - ¡Recarga!';}});
         onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
         initChat();initRanking();initStats();
-    }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');bottomNav.classList.add('hidden');adminPanel.classList.add('hidden');salasPanel.classList.add('hidden');if(chatListener)off(ref(db,'chat/global'),'value',chatListener);}
+    }else{gameView.classList.add('hidden');recoveryView.classList.add('hidden');accessView.classList.add('hidden');authView.classList.remove('hidden');bottomNav.classList.add('hidden');adminPanel.classList.add('hidden');salasPanel.classList.add('hidden');if(chatListener)off(ref(db,'chat/global'),'value',chatListener);if(chatCleanupInterval)clearInterval(chatCleanupInterval);}
 });
 
 btnAction.addEventListener('click',async()=>{const em=emailInput.value.trim(),alias=aliasInput.value.trim(),pw=passInput.value;if(!em||!pw)return mostrarToast('Completa los campos','error');if(pw.length<6)return mostrarToast('Mínimo 6 caracteres','error');if(tabRegister.classList.contains('active')&&!alias)return mostrarToast('Elige un alias','error');btnAction.disabled=true;try{if(tabLogin.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mostrarToast('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mostrarToast('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mostrarToast('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}btnAction.disabled=false;});
