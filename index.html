@@ -140,13 +140,16 @@
         .admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px}
         .admin-stat{background:var(--bg-input);padding:6px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);font-size:.6rem;text-align:center}
         .admin-stat-label{color:var(--text-muted);font-size:.5rem}.admin-stat-value{font-weight:700;font-size:.75rem;margin-top:1px}
-        .admin-recarga{display:flex;gap:4px;margin-bottom:6px}
+        .admin-recarga{display:flex;gap:4px;margin-bottom:4px}
         .admin-recarga input{flex:1;padding:6px 7px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.65rem;min-width:0}
         .btn-admin-recargar{padding:6px 8px;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-xs);font-weight:600;font-size:.6rem;cursor:pointer;white-space:nowrap}
-        .admin-reset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+        .btn-admin-ver{padding:6px 8px;background:var(--warning);color:#000;border:none;border-radius:var(--radius-xs);font-weight:600;font-size:.55rem;cursor:pointer;white-space:nowrap}
+        .admin-saldo-info{font-size:.58rem;color:var(--text-muted);margin-bottom:6px;min-height:16px}
+        .admin-reset-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
         .btn-reset-contadores{flex:1;min-width:50px;padding:5px;background:rgba(220,38,38,0.1);color:var(--danger);border:1px solid rgba(220,38,38,0.2);border-radius:var(--radius-xs);font-weight:600;font-size:.55rem;cursor:pointer;text-align:center}
         .btn-clean-ranking{flex:1;min-width:50px;padding:5px;background:rgba(245,158,11,0.12);color:var(--warning);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-xs);font-weight:600;font-size:.55rem;cursor:pointer;text-align:center}
-        .config-section{background:var(--bg-input);padding:8px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle)}
+        .btn-reset-saldo{width:100%;padding:7px;background:rgba(220,38,38,0.25);color:#fff;border:1px solid rgba(220,38,38,0.5);border-radius:var(--radius-xs);font-weight:700;font-size:.6rem;cursor:pointer;text-align:center;margin-top:4px}
+        .config-section{background:var(--bg-input);padding:8px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:6px}
         .config-title{font-size:.55rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
         .config-row{display:flex;gap:4px;align-items:center;margin-bottom:4px;flex-wrap:wrap}
         .config-row label{font-size:.55rem;color:var(--text-secondary);min-width:35px}
@@ -180,8 +183,10 @@
             <div id="adminPanel" class="admin-panel hidden">
                 <div class="admin-title">Panel Admin</div>
                 <div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisión</div><div class="admin-stat-value" id="adminComision">$0</div></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div></div>
-                <div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email"><input type="number" id="adminMontoRecarga" placeholder="$Monto" min="1000"><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div>
-                <div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetComision">↺ Com</button><button class="btn-reset-contadores" id="btnResetMovido">↺ Mov</button><button class="btn-reset-contadores" id="btnResetAll">🔄 Todo</button><button class="btn-clean-ranking" id="btnCleanRanking">🧹 Ranking</button></div>
+                <div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email usuario" style="flex:2"><input type="number" id="adminMontoRecarga" placeholder="$Monto" min="1000" style="flex:1"><button id="btnAdminVerSaldo" class="btn-admin-ver">🔍 Ver</button><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div>
+                <div class="admin-saldo-info" id="adminSaldoInfo"></div>
+                <div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetComision">↺ Com</button><button class="btn-reset-contadores" id="btnResetMovido">↺ Mov</button><button class="btn-reset-contadores" id="btnResetAll">🔄 Contadores</button><button class="btn-clean-ranking" id="btnCleanRanking">🧹 Ranking</button></div>
+                <button class="btn-reset-saldo" id="btnResetAllSaldo">💀 Resetear TODOS los saldos a $0</button>
                 <div class="config-section">
                     <div class="config-title">⚙️ Configurar Jornada</div>
                     <div class="config-row"><label>Código:</label><input type="text" id="configCodigo" maxlength="4"></div>
@@ -212,15 +217,7 @@
         <button class="nav-item" data-section="sectionStats"><span class="nav-icon">📊</span>Stats</button>
     </div>
 
-    <div id="nequiModal" class="modal-overlay hidden">
-        <div class="modal-content">
-            <div style="font-weight:700;margin-bottom:10px">💰 Recargar Saldo</div>
-            <p style="font-size:.7rem;color:var(--text-muted);margin-bottom:12px">Transfiere por <strong style="color:var(--llave-color)">Llave</strong> y envía el comprobante</p>
-            <div class="llave-number"><span class="llave-logo">LLAVE</span> @3219401352</div>
-            <button id="btnWaConfirm" class="btn-wa llave">📱 Enviar Comprobante por WhatsApp</button>
-            <button id="btnModalCerrar" class="btn-modal-close">Cancelar</button>
-        </div>
-    </div>
+    <div id="nequiModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-weight:700;margin-bottom:10px">💰 Recargar Saldo</div><p style="font-size:.7rem;color:var(--text-muted);margin-bottom:12px">Transfiere por <strong style="color:var(--llave-color)">Llave</strong> y envía el comprobante</p><div class="llave-number"><span class="llave-logo">LLAVE</span> @3219401352</div><button id="btnWaConfirm" class="btn-wa llave">📱 Enviar Comprobante por WhatsApp</button><button id="btnModalCerrar" class="btn-modal-close">Cancelar</button></div></div>
     <div id="confirmModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-weight:700;margin-bottom:8px" id="confirmTitle"></div><p style="font-size:.7rem;color:var(--text-muted);margin-bottom:12px" id="confirmMsg"></p><button id="btnConfirmYes" class="btn-primary" style="margin-bottom:6px">Sí</button><button id="btnConfirmNo" class="btn-modal-close">Cancelar</button></div></div>
 </div>
 
@@ -244,7 +241,6 @@ function sg(){playBeep(523,0.2);setTimeout(()=>playBeep(659,0.2),200);setTimeout
 function sp(){playBeep(400,0.3,'sawtooth',0.08);setTimeout(()=>playBeep(300,0.3,'sawtooth',0.08),300);setTimeout(()=>playBeep(200,0.5,'sawtooth',0.06),600)}
 function sf(){playBeep(1000,0.05);setTimeout(()=>playBeep(1200,0.05),50);setTimeout(()=>playBeep(1400,0.08),100)}
 
-// DOM elements
 const rv=document.getElementById('recoveryView'),av=document.getElementById('accessView'),auv=document.getElementById('authView'),gv=document.getElementById('gameView');
 const re=document.getElementById('recoveryEmail'),rm=document.getElementById('recoveryMsg'),br=document.getElementById('btnRecovery'),bl=document.getElementById('btnBackToLogin');
 const ac=document.getElementById('accessCode'),ae=document.getElementById('accessError'),ba=document.getElementById('btnAccess'),js=document.getElementById('jornadaStatus'),jst=document.getElementById('jornadaStatusText'),ash=document.getElementById('accessSchedule');
@@ -253,22 +249,17 @@ const tu=document.getElementById('txtUsername'),ua=document.getElementById('user
 const nM=document.getElementById('nequiModal'),bWC=document.getElementById('btnWaConfirm'),bMC=document.getElementById('btnModalCerrar');
 const cM=document.getElementById('confirmModal'),cT=document.getElementById('confirmTitle'),cMsg=document.getElementById('confirmMsg'),bCY=document.getElementById('btnConfirmYes'),bCN=document.getElementById('btnConfirmNo');
 const aP=document.getElementById('adminPanel'),aUE=document.getElementById('adminUserEmail'),aMR=document.getElementById('adminMontoRecarga'),bAR=document.getElementById('btnAdminRecargar');
-const bRC=document.getElementById('btnResetComision'),bRM=document.getElementById('btnResetMovido'),bRA=document.getElementById('btnResetAll'),bCR=document.getElementById('btnCleanRanking');
+const bRC=document.getElementById('btnResetComision'),bRM=document.getElementById('btnResetMovido'),bRA=document.getElementById('btnResetAll'),bCR=document.getElementById('btnCleanRanking'),bRAS=document.getElementById('btnResetAllSaldo');
 const m1=document.getElementById('mode1v1'),m3=document.getElementById('mode3p'),bCs=document.querySelectorAll('.bet-chip');
 const sI=document.getElementById('searchingIndicator'),lP=document.getElementById('lobbyPlayers'),lPL=document.getElementById('lobbyPlayersList');
-const tCon=document.getElementById('toastContainer');
-const bN=document.getElementById('bottomNav');
+const tCon=document.getElementById('toastContainer');const bN=document.getElementById('bottomNav');
 const cCon=document.getElementById('chatContainer'),cI=document.getElementById('chatInput'),cS=document.getElementById('chatSend');
 const rL=document.getElementById('rankingList');
 const sGan=document.getElementById('statGanancias'),sPar=document.getElementById('statPartidas'),sVic=document.getElementById('statVictorias'),sDer=document.getElementById('statDerrotas'),sD=document.getElementById('statsDetail');
 const salP=document.getElementById('salasPanel'),salR=document.getElementById('salasRow');
 const histH=document.getElementById('historyHeaderJuego'),histColl=document.querySelector('.history-collapsible');
-// ✅ Elementos de configuración
-const configCodigo=document.getElementById('configCodigo');
-const configHoraInicio=document.getElementById('configHoraInicio');
-const configHoraFin=document.getElementById('configHoraFin');
-const configJornadaActiva=document.getElementById('configJornadaActiva');
-const btnConfigSave=document.getElementById('btnConfigSave');
+const configCodigo=document.getElementById('configCodigo'),configHoraInicio=document.getElementById('configHoraInicio'),configHoraFin=document.getElementById('configHoraFin'),configJornadaActiva=document.getElementById('configJornadaActiva'),btnConfigSave=document.getElementById('btnConfigSave');
+const btnAdminVerSaldo=document.getElementById('btnAdminVerSaldo'),adminSaldoInfo=document.getElementById('adminSaldoInfo');
 
 let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cMId=null,cdA='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
@@ -285,46 +276,23 @@ function cambiarSeccion(id){document.querySelectorAll('.section').forEach(s=>s.c
 document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sc();cambiarSeccion(item.dataset.section);});});
 histH.addEventListener('click',()=>histColl.classList.toggle('open'));
 
-// ✅ CHAT
 let chatL=null,chatCI=null;
-function initChat(){
-    if(chatL)off(ref(db,'chat/global'),'value',chatL);
-    chatL=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();cCon.innerHTML='';if(ms){const ahora=Date.now();const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);mensajes.forEach(([id,m])=>{const em=m.uid===cU;cCon.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}cCon.scrollTop=cCon.scrollHeight;});
-    if(chatCI)clearInterval(chatCI);
-    chatCI=setInterval(async()=>{const snap=await get(ref(db,'chat/global'));const ms=snap.val()||{};const ahora=Date.now();for(const id in ms){if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){await set(ref(db,`chat/global/${id}`),null);}}},120000);
-}
+function initChat(){if(chatL)off(ref(db,'chat/global'),'value',chatL);chatL=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();cCon.innerHTML='';if(ms){const ahora=Date.now();const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);mensajes.forEach(([id,m])=>{const em=m.uid===cU;cCon.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}cCon.scrollTop=cCon.scrollHeight;});if(chatCI)clearInterval(chatCI);chatCI=setInterval(async()=>{const snap=await get(ref(db,'chat/global'));const ms=snap.val()||{};const ahora=Date.now();for(const id in ms){if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){await set(ref(db,`chat/global/${id}`),null);}}},120000);}
 cS.addEventListener('click',async()=>{const t=cI.value.trim();if(!t||!cU)return;await push(ref(db,'chat/global'),{uid:cU,alias:cAlias,texto:t,timestamp:Date.now()});cI.value='';});
 cI.addEventListener('keypress',e=>{if(e.key==='Enter')cS.click();});
 
-// ✅ RANKING
 function initRanking(){onValue(ref(db,'usuarios'),snap=>{const us=snap.val()||{};const rank=[];const ahora=Date.now();for(const uid in us){const u=us[uid];if(u.historial){let g=0,p=0;Object.values(u.historial).forEach(h=>{if(!h.timestamp||(ahora-h.timestamp)>TIEMPO_VIDA_RANKING)return;if(h.resultado==='RECARGA')return;p++;if(h.resultado==='GANÓ')g+=h.monto||0;else if(h.resultado==='PERDIÓ')g-=(h.monto||0);});if(p>0)rank.push({alias:u.alias||'Anónimo',ganancias:g,partidas:p});}}rank.sort((a,b)=>b.ganancias-a.ganancias);let h='';if(rank.length>0){rank.slice(0,15).forEach((r,i)=>{const p=i+1;h+=`<div class="ranking-item"><div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div><div style="flex:1">${r.alias}</div><div style="font-size:.6rem;color:var(--text-muted);margin-right:8px">${r.partidas} jug</div><div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});}else{h='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Aún no hay partidas</div>';}rL.innerHTML=h;});}
 
-// ✅ ESTADÍSTICAS
 function initStats(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const h=snap.val()||{};let g=0,p=0,v=0,d=0;Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;p++;if(r.resultado==='GANÓ'){v++;g+=r.monto||0;}else{d++;g-=r.monto||0;}});sGan.textContent='$'+g.toLocaleString('es-CO');sPar.textContent=p;sVic.textContent=v;sDer.textContent=d;const wr=p>0?Math.round((v/p)*100):0;sD.innerHTML=`<div style="display:flex;justify-content:space-around;padding:10px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:8px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.55rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">$${p>0?Math.round(g/p).toLocaleString('es-CO'):'0'}</div><div style="font-size:.55rem;color:var(--text-muted)">Promedio</div></div></div>`;});}
 
-// ✅ HISTORIAL
 let histCI=null;
 function initHistorial(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const d=snap.val();const ahora=Date.now();if(d){const partidas=Object.entries(d).filter(([id,h])=>h.timestamp&&(ahora-h.timestamp)<TIEMPO_VIDA_HISTORIAL).sort((a,b)=>b[1].timestamp-a[1].timestamp).slice(0,10);if(partidas.length>0){let html='';partidas.forEach(([id,i])=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';html+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});hB.innerHTML=html;}else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas recientes</td></tr>';}}else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';}});if(histCI)clearInterval(histCI);histCI=setInterval(async()=>{if(!cU)return;const snap=await get(ref(db,`usuarios/${cU}/historial`));const h=snap.val()||{};const ahora=Date.now();for(const id in h){if(h[id].timestamp&&(ahora-h[id].timestamp)>TIEMPO_VIDA_HISTORIAL){await set(ref(db,`usuarios/${cU}/historial/${id}`),null);}}},120000);}
 
-// ✅ SALAS
 function initSalas(){const montos=[2000,4000,8000,16000,32000];onValue(ref(db,'lobbies'),snap=>{const lobbies=snap.val()||{};let h='';for(const monto of montos){let total=0;for(const mod of['1v1','3p']){const key=`${mod}_${monto}`;if(lobbies[key])total+=Object.keys(lobbies[key]).length;}const k=monto/1000;h+=`<div class="sala-chip ${total>0?'activa':''}"><div class="val">${total}</div><div class="lbl">$${k}K</div></div>`;}salR.innerHTML=h;});}
-
 async function limpiarLobbiesFantasmas(){const snap=await get(ref(db,'lobbies'));const lobbies=snap.val()||{};const ahora=Date.now();for(const key in lobbies){const salas=lobbies[key]||{};for(const sId in salas){const sala=salas[sId];if(!sala)continue;const abandonada=sala.creado&&(ahora-sala.creado)>120000&&sala.estado==='esperando';const corrupta=sala.estado==='jugando'&&!sala.matchId;if(abandonada||corrupta||!sala.jugadores||!Array.isArray(sala.jugadores)){await set(ref(db,`lobbies/${key}/${sId}`),null);}}}}
 
-// ✅ CONFIGURACIÓN DE JORNADA
-btnConfigSave.addEventListener('click',async()=>{
-    const nuevoCodigo=configCodigo.value.trim()||'4927';
-    await set(ref(db,'configuracion'),{
-        codigo_acceso:nuevoCodigo,
-        jornada_activa:configJornadaActiva.checked,
-        hora_inicio:configHoraInicio.value||'20:00',
-        hora_fin:configHoraFin.value||'22:00'
-    });
-    cdA=nuevoCodigo;
-    mT('✅ Configuración guardada. Código: '+nuevoCodigo,'success');
-});
+btnConfigSave.addEventListener('click',async()=>{const nc=configCodigo.value.trim()||'4927';await set(ref(db,'configuracion'),{codigo_acceso:nc,jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});cdA=nc;mT('✅ Configuración guardada. Código: '+nc,'success');});
 
-// Tabs
 tl.addEventListener('click',()=>{sc();tl.classList.add('active');tr.classList.remove('active');ai.classList.add('hidden');bA.textContent='Ingresar';});
 tr.addEventListener('click',()=>{sc();tr.classList.add('active');tl.classList.remove('active');ai.classList.remove('hidden');bA.textContent='Registrarse';});
 bf.addEventListener('click',()=>{auv.classList.add('hidden');rv.classList.remove('hidden');re.value=ei.value;});
@@ -338,7 +306,16 @@ ac.addEventListener('keypress',e=>{if(e.key==='Enter')ba.click();});
 bRC.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
 bRM.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
 bRA.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
-bCR.addEventListener('click',async()=>{if(!confirm('¿Limpiar TODOS los datos del ranking? Esto borrará el historial de todos los usuarios.'))return;const snap=await get(ref(db,'usuarios'));const us=snap.val()||{};for(const uid in us){if(us[uid].historial){await set(ref(db,`usuarios/${uid}/historial`),null);}}mT('✅ Ranking limpiado','success');});
+bCR.addEventListener('click',async()=>{if(!confirm('¿Limpiar TODOS los datos del ranking?'))return;const snap=await get(ref(db,'usuarios'));const us=snap.val()||{};for(const uid in us){if(us[uid].historial){await set(ref(db,`usuarios/${uid}/historial`),null);}}mT('✅ Ranking limpiado','success');});
+
+// ✅ VER SALDO
+btnAdminVerSaldo.addEventListener('click',async()=>{const eb=aUE.value.trim().toLowerCase();if(!eb){adminSaldoInfo.textContent='❌ Ingresa un email';return;}adminSaldoInfo.textContent='🔍 Buscando...';try{const usS=await get(ref(db,'usuarios'));const us=usS.val()||{};let encontrado=null;for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){encontrado={uid,alias:us[uid].alias||'Sin alias',saldo:us[uid].saldo||0};break;}}if(encontrado){adminSaldoInfo.innerHTML=`✅ <strong>${encontrado.alias}</strong> - Saldo: <strong style="color:var(--gold)">$${encontrado.saldo.toLocaleString('es-CO')}</strong>`;}else{adminSaldoInfo.textContent='❌ Usuario no encontrado';}}catch(e){adminSaldoInfo.textContent='❌ Error al buscar';}});
+
+// ✅ RESETEAR TODOS LOS SALDOS A $0
+bRAS.addEventListener('click',async()=>{if(!confirm('⚠️ ¿Estás SEGURO? Esto pondrá TODOS los saldos en $0.\n\nSolo haz esto al FINAL de la jornada cuando ya hayas entregado el dinero.'))return;if(!confirm('⛔ ULTIMA ADVERTENCIA: Se resetearán TODOS los saldos a cero. ¿Continuar?'))return;bRAS.disabled=true;bRAS.textContent='⏳ Reseteando...';try{const usS=await get(ref(db,'usuarios'));const us=usS.val()||{};let cont=0;for(const uid in us){if(us[uid].saldo&&us[uid].saldo>0){await set(ref(db,`usuarios/${uid}/saldo`),0);cont++;}}mT(`✅ ${cont} cuentas reseteadas a $0`,'success');}catch(e){mT('❌ Error al resetear','error');}bRAS.disabled=false;bRAS.textContent='💀 Resetear TODOS los saldos a $0';});
+
+// ✅ RECARGAR
+bAR.onclick=async()=>{const eb=aUE.value.trim().toLowerCase(),monto=parseInt(aMR.value);if(!eb||!monto||monto<1000)return mT('❌ Email y monto mínimo $1.000','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='',aliasE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;aliasE=us[uid].alias||'Usuario';break;}}if(!uidE)return mT('❌ Usuario no encontrado','error');await mSald(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:cU,userId:uidE,email:emailE,alias:aliasE,monto,timestamp:Date.now()});sf();const nuevoSaldo=await cSald(uidE);adminSaldoInfo.innerHTML=`✅ <strong>${aliasE}</strong> - Nuevo saldo: <strong style="color:var(--gold)">$${nuevoSaldo.toLocaleString('es-CO')}</strong>`;mT(`✅ $${monto.toLocaleString('es-CO')} a ${aliasE}`,'success');aMR.value='';}catch(error){mT('❌ Error al recargar','error');}};
 
 function updPot(c){if(pA)pA.textContent='$'+(apAct*c).toLocaleString('es-CO')}
 m1.addEventListener('click',()=>{if(eP)return;sc();m1.classList.add('selected');m3.classList.remove('selected');mJ='1v1';updPot(2);updTbl();});
@@ -353,61 +330,21 @@ function rGame(jO){const reo=[],labs=[],yo=jO.find(j=>j.uid===cU);if(yo){reo.pus
 function updLobby(jugs){let h='';jugs.forEach(j=>{const et=j.uid===cU;h+=`<div class="lobby-player-item"><span class="lobby-player-dot"></span>${et?'Tú (':''}${j.alias||'Jugador'}${et?')':''}</div>`;});lPL.innerHTML=h;}
 
 let lPath=null,sId=null;
-
 async function encontrarOSala(modo,monto,maxJ){const basePath=`lobbies/${modo}_${monto}`;const baseRef=ref(db,basePath);const snapActual=await get(baseRef);const lobbies=snapActual.val()||{};for(const sId2 in lobbies){const sala=lobbies[sId2];if(sala&&sala.estado==='esperando'&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.length<maxJ){const yaEsta=sala.jugadores.some(j=>j.uid===cU);if(!yaEsta){const salaRef=ref(db,basePath+'/'+sId2);await runTransaction(salaRef,(salaActual)=>{if(salaActual&&salaActual.estado==='esperando'&&salaActual.jugadores&&salaActual.jugadores.length<maxJ){const yaEsta2=salaActual.jugadores.some(j=>j.uid===cU);if(!yaEsta2){salaActual.jugadores.push({uid:cU,alias:cAlias});if(salaActual.jugadores.length===maxJ){salaActual.estado='jugando';salaActual.cartas={};salaActual.jugadores.forEach(j=>{salaActual.cartas[j.uid]=genCart();});}}}return salaActual;});return{salaId:sId2,basePath};}}}const nuevaId='s'+Date.now().toString(36)+Math.random().toString(36).substr(2,3);await set(ref(db,basePath+'/'+nuevaId),{host:cU,jugadores:[{uid:cU,alias:cAlias}],estado:'esperando',creado:Date.now()});return{salaId:nuevaId,basePath};}
 
 bP.addEventListener('click',async()=>{if(!cU||ePart)return;initAudio();const sReal=await cSald(cU);if(sReal<=0)return mT('❌ Saldo en $0','error');if(sReal<apAct)return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`,'error');const ap=Number(apAct),maxJ=MJ[mJ];if(eP){bP.disabled=true;bP.textContent='Cancelando...';if(lPath&&sId){try{await set(ref(db,lPath+'/'+sId),null);}catch(e){}}await update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});eP=false;bP.disabled=false;bP.textContent='Buscar Partida';bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');updPot(MJ[mJ]);updTbl();lPath=null;sId=null;return;}const conf=await mC('Iniciar búsqueda',`¿Buscar ${mJ} por $${ap.toLocaleString('es-CO')}?`);if(!conf)return;sb();bP.disabled=true;bP.classList.add('canceling');bP.textContent='Buscando...';eP=true;await update(ref(db,`presencia/${cU}`),{status:'waiting',alias:cAlias}).catch(()=>{});rSearch(1,maxJ);updPot(1);let lobbyL=null,tOut=null,pIni=false;try{const enc=await encontrarOSala(mJ,ap,maxJ);if(!enc){resetSearch();return mT('Error al encontrar sala','error');}sId=enc.salaId;lPath=enc.basePath;const salaRef=ref(db,lPath+'/'+sId);const snapSala=await get(salaRef);const sData=snapSala.val();if(!sData||!sData.jugadores){resetSearch();return mT('Error en sala','error');}updLobby(sData.jugadores);lobbyL=onValue(salaRef,async(snap)=>{if(pIni)return;const data=snap.val();if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();return;}rSearch(data.jugadores.length,maxJ);updLobby(data.jugadores);updPot(data.jugadores.length);if(data.estado==='jugando'&&data.jugadores.length===maxJ){pIni=true;if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);sm();if(!data.matchId){const matchId=push(ref(db,'matches')).key;const mData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:genCart()})),apuesta:ap,modalidad:mJ,creado:Date.now()};await set(ref(db,`matches/${matchId}`),mData);await update(salaRef,{matchId});data.matchId=matchId;}if(!pP.has(data.matchId)){pP.add(data.matchId);ePart=true;await update(ref(db,`presencia/${cU}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,ap,lPath,sId);ePart=false;}}});tOut=setTimeout(async()=>{if(pIni)return;if(lobbyL)off(salaRef,'value',lobbyL);const snap=await get(salaRef);const data=snap.val();if(data&&data.estado==='esperando'&&data.host===cU&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}if(!ePart)resetSearch();},90000);}catch(error){if(lobbyL&&lPath&&sId)off(ref(db,lPath+'/'+sId),'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();mT('Error de conexión','error');}});
 
 function resetSearch(){eP=false;bP.disabled=false;bP.textContent='Buscar Partida';bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');updPot(MJ[mJ]);updTbl();update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});lPath=null;sId=null;}
 
-async function ejecutarPartida(matchId,lData,ap,lPath2,sId2){cMId=matchId;bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');bP.disabled=true;try{const mSnap=await get(ref(db,`matches/${matchId}`));let mData=mSnap.val();if(!mData||!mData.jugadores){const jgs=(lData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lData.cartas?lData.cartas[j.uid]:genCart()}));mData={jugadores:jgs,apuesta:ap,modalidad:mJ};await set(ref(db,`matches/${matchId}`),mData).catch(()=>{});}const jgs=mData.jugadores;const mi=jgs.findIndex(j=>j.uid===cU);if(mi===-1){resetSearch();return;}const tPot=ap*jgs.length;updPot(jgs.length);rGame(jgs);scart();await esp(1500);bP.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));await esp(1200);bP.textContent='Calculando...';const pesos=jgs.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let gan=jgs.filter(j=>j.carta.peso===maxP)[0];if(jgs.filter(j=>j.carta.peso===maxP).length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};gan=jgs.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}const yG=gan.uid===cU;const com=jgs.length===2?Math.floor(ap*0.05):Math.floor(ap*0.10);const gnr=(tPot-ap)-com;if(yG){sg();}else{sp();}if(yG&&pA){pA.classList.add('pot-won');setTimeout(()=>pA.classList.remove('pot-won'),600);}const reo=[];reo.push(jgs.find(j=>j.uid===cU));jgs.forEach(j=>{if(j.uid!==cU)reo.push(j);});reo.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===gan.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===cU?'Tú':(j.alias||'Oponente'));}else if(j.uid===cU){lbl.classList.add('loser');}});try{if(yG){await mSald(cU,gnr,'Ganó partida',matchId);mT(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`,'success');}else{await mSald(cU,-ap,'Perdió partida',matchId);mT(`😔 Perdiste $${ap.toLocaleString('es-CO')}`,'warning');}await update(ref(db,'adminData'),{total_comisiones:increment(com),dinero_movido:increment(tPot),partidas_jugando:increment(1)}).catch(()=>{});}catch(e){}bP.textContent=yG?'🎉 ¡Ganaste!':'😔 Perdiste';await esp(4000);try{await set(ref(db,`matches/${matchId}`),null);if(lPath2&&sId2)await set(ref(db,lPath2+'/'+sId2),null);}catch(e){}}catch(error){}finally{resetSearch();}}
+// ✅ CORREGIDO: Solo el ganador incrementa contadores
+async function ejecutarPartida(matchId,lData,ap,lPath2,sId2){cMId=matchId;bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');bP.disabled=true;try{const mSnap=await get(ref(db,`matches/${matchId}`));let mData=mSnap.val();if(!mData||!mData.jugadores){const jgs=(lData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lData.cartas?lData.cartas[j.uid]:genCart()}));mData={jugadores:jgs,apuesta:ap,modalidad:mJ};await set(ref(db,`matches/${matchId}`),mData).catch(()=>{});}const jgs=mData.jugadores;const mi=jgs.findIndex(j=>j.uid===cU);if(mi===-1){resetSearch();return;}const tPot=ap*jgs.length;updPot(jgs.length);rGame(jgs);scart();await esp(1500);bP.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));await esp(1200);bP.textContent='Calculando...';const pesos=jgs.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let gan=jgs.filter(j=>j.carta.peso===maxP)[0];if(jgs.filter(j=>j.carta.peso===maxP).length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};gan=jgs.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}const yG=gan.uid===cU;const com=jgs.length===2?Math.floor(ap*0.05):Math.floor(ap*0.10);const gnr=(tPot-ap)-com;if(yG){sg();}else{sp();}if(yG&&pA){pA.classList.add('pot-won');setTimeout(()=>pA.classList.remove('pot-won'),600);}const reo=[];reo.push(jgs.find(j=>j.uid===cU));jgs.forEach(j=>{if(j.uid!==cU)reo.push(j);});reo.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===gan.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===cU?'Tú':(j.alias||'Oponente'));}else if(j.uid===cU){lbl.classList.add('loser');}});try{if(yG){await mSald(cU,gnr,'Ganó partida',matchId);mT(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`,'success');await update(ref(db,'adminData'),{total_comisiones:increment(com),dinero_movido:increment(tPot),partidas_jugando:increment(1)}).catch(()=>{});}else{await mSald(cU,-ap,'Perdió partida',matchId);mT(`😔 Perdiste $${ap.toLocaleString('es-CO')}`,'warning');}}catch(e){}bP.textContent=yG?'🎉 ¡Ganaste!':'😔 Perdiste';await esp(4000);try{await set(ref(db,`matches/${matchId}`),null);if(lPath2&&sId2)await set(ref(db,lPath2+'/'+sId2),null);}catch(e){}}catch(error){}finally{resetSearch();}}
 
-// ✅ AUTH STATE - CORREGIDO
-onAuthStateChanged(auth,async(user)=>{
-    if(user){
-        cU=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;const isA=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
-        auv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');gv.classList.add('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');
-        
-        if(isA){
-            gv.classList.remove('hidden');bN.classList.remove('hidden');aP.classList.remove('hidden');salP.classList.remove('hidden');
-            initSalas();limpiarLobbiesFantasmas();
-            document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-            document.getElementById('sectionJuego').classList.add('active');
-            // ✅ Cargar configuración en el panel
-            const cfg=(await get(ref(db,'configuracion'))).val()||{};
-            if(configCodigo)configCodigo.value=cfg.codigo_acceso||'4927';
-            if(configHoraInicio)configHoraInicio.value=cfg.hora_inicio||'20:00';
-            if(configHoraFin)configHoraFin.value=cfg.hora_fin||'22:00';
-            if(configJornadaActiva)configJornadaActiva.checked=cfg.jornada_activa!==false;
-        }else{
-            await verificarAcceso();av.classList.remove('hidden');
-        }
-        
-        tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();
-        const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
-        
-        if(isA){
-            onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});
-            onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});
-            bAR.onclick=async()=>{const eb=aUE.value.trim().toLowerCase(),monto=parseInt(aMR.value);if(!eb||!monto||monto<1000)return mT('❌ Datos inválidos','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;break;}}if(!uidE)return mT('❌ No encontrado','error');await mSald(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:cU,userId:uidE,email:emailE,monto,timestamp:Date.now()});sf();mT(`✅ $${monto.toLocaleString('es-CO')} a ${emailE}`,'success');aUE.value='';aMR.value='';}catch(error){mT('❌ Error','error');}};
-        }
-        
-        onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{sAct=snap.val()||0;sd.textContent='$'+sAct.toLocaleString('es-CO');sd.classList.remove('zero');if(sAct<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}});
-        onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
-        initChat();initRanking();initStats();initHistorial();
-    }else{
-        gv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');auv.classList.remove('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');
-        if(chatL)off(ref(db,'chat/global'),'value',chatL);if(chatCI)clearInterval(chatCI);if(histCI)clearInterval(histCI);
-    }
-});
+onAuthStateChanged(auth,async(user)=>{if(user){cU=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;const isA=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();auv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');gv.classList.add('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');if(isA){gv.classList.remove('hidden');bN.classList.remove('hidden');aP.classList.remove('hidden');salP.classList.remove('hidden');initSalas();limpiarLobbiesFantasmas();document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');const cfg=(await get(ref(db,'configuracion'))).val()||{};if(configCodigo)configCodigo.value=cfg.codigo_acceso||'4927';if(configHoraInicio)configHoraInicio.value=cfg.hora_inicio||'20:00';if(configHoraFin)configHoraFin.value=cfg.hora_fin||'22:00';if(configJornadaActiva)configJornadaActiva.checked=cfg.jornada_activa!==false;}else{await verificarAcceso();av.classList.remove('hidden');}tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});if(isA){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});}onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{sAct=snap.val()||0;sd.textContent='$'+sAct.toLocaleString('es-CO');sd.classList.remove('zero');if(sAct<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}});onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});initChat();initRanking();initStats();initHistorial();}else{gv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');auv.classList.remove('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');if(chatL)off(ref(db,'chat/global'),'value',chatL);if(chatCI)clearInterval(chatCI);if(histCI)clearInterval(histCI);}});
 
-bA.addEventListener('click',async()=>{const em=ei.value.trim(),alias=ai.value.trim(),pw=pi.value;if(!em||!pw)return mT('Completa los campos','error');if(pw.length<6)return mT('Mínimo 6 caracteres','error');if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');bA.disabled=true;try{if(tl.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mT('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});mT('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mT('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}bA.disabled=false;});
-bL.addEventListener('click',()=>signOut(auth));
-bRec.addEventListener('click',()=>{sc();nM.classList.remove('hidden');});
-bMC.addEventListener('click',()=>nM.classList.add('hidden'));
+bA.addEventListener('click',async()=>{const em=ei.value.trim(),alias=ai.value.trim(),pw=pi.value;if(!em||!pw)return mT('Completa los campos','error');if(pw.length<6)return mT('Mínimo 6 caracteres','error');if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');bA.disabled=true;try{if(tl.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mT('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});await set(ref(db,`indice/${em.replace(/\./g,',')}`),r.user.uid);mT('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mT('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}bA.disabled=false;});
+bL.addEventListener('click',()=>signOut(auth));bRec.addEventListener('click',()=>{sc();nM.classList.remove('hidden');});bMC.addEventListener('click',()=>nM.classList.add('hidden'));
 bWC.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${cAlias}. Solicito recarga en Royal High. Adjunto comprobante de transferencia por Llave a ${LLAVE_ADMIN}`)}`,'_blank');nM.classList.add('hidden');mT('📱 Envía tu comprobante por WhatsApp','info');});
 bRet.addEventListener('click',async()=>{sc();if(sAct<=0)return mT('❌ Sin saldo','error');const llave=prompt('📱 Ingresa tu Llave Bre-B (ej: @tucelular, @tucorreo) para recibir el pago:');if(!llave||llave.trim().length<4)return mT('❌ Debes ingresar una Llave válida','error');const c=await mC('Confirmar retiro',`¿Retirar $${sAct.toLocaleString('es-CO')} a tu Llave?\n${llave.trim()}`);if(c){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`💸 Solicito retiro de $${sAct.toLocaleString('es-CO')} en Royal High. Mi Llave: ${llave.trim()}`)}`,'_blank');mT('📱 Solicitud enviada','info');}});
-
 window.addEventListener('beforeunload',()=>{if(cU)set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
 </script>
 </body>
