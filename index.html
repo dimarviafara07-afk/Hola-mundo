@@ -105,6 +105,7 @@
 
         .recarga-banner{background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:1px solid var(--gold);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:8px;font-size:.7rem;color:var(--text-secondary);text-align:center;animation:fadeInUp .5s ease-out}
         .recarga-banner strong{color:var(--gold)}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
         .controls-section{background:var(--bg-card);border-radius:var(--radius-lg);padding:12px;margin-bottom:8px;border:1px solid var(--border-subtle)}
         .section-label{font-size:.62rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;font-weight:600}
@@ -177,7 +178,7 @@
         .btn-modal-close{background:none;border:none;color:var(--text-muted);margin-top:10px;cursor:pointer;font-size:.78rem}
         .table-empty-msg{color:var(--text-muted);font-size:.75rem;text-align:center}.table-empty-msg strong{color:var(--primary)}
 
-        .tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+        .tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
         .tutorial-container{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;max-width:420px;width:100%;text-align:center;border:2px solid var(--gold);animation:fadeInUp .5s ease-out}
         @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
         .tutorial-header{font-size:1.8rem;margin-bottom:8px}.tutorial-title{font-size:1.1rem;font-weight:700;color:var(--gold);margin-bottom:16px}
@@ -333,20 +334,59 @@ const tutorialData=[
   {title:"¿Listo para jugar? 🎮",highlight:"",steps:[{num:"7",text:"Elige <strong>modalidad</strong> (1vs1 o 3 jugadores) y el <strong>monto</strong> a apostar."},{num:"8",text:"Presiona <strong>Buscar Partida</strong>. Las cartas se reparten una a una y se revelan con suspenso."}]}
 ];
 let tutStep=0;
-function mostrarTutorial(){tutStep=0;tutorialOverlay.classList.remove('hidden');renderTutorialStep();}
+
+function mostrarTutorial(){
+  tutStep=0;
+  tutorialOverlay.style.display='flex';
+  tutorialOverlay.classList.remove('hidden');
+  renderTutorialStep();
+}
+
 function renderTutorialStep(){
   const data=tutorialData[tutStep];
   tutorialTitle.textContent=data.title;
-  if(data.highlight){tutorialHighlight.innerHTML=data.highlight;tutorialHighlight.classList.remove('hidden');}else{tutorialHighlight.classList.add('hidden');}
-  let dots='';for(let i=0;i<tutorialData.length;i++)dots+=`<div class="tutorial-dot ${i===tutStep?'active':''}"></div>`;
+  if(data.highlight){
+    tutorialHighlight.innerHTML=data.highlight;
+    tutorialHighlight.classList.remove('hidden');
+  }else{
+    tutorialHighlight.classList.add('hidden');
+  }
+  let dots='';
+  for(let i=0;i<tutorialData.length;i++){
+    dots+=`<div class="tutorial-dot ${i===tutStep?'active':''}"></div>`;
+  }
   tutorialProgress.innerHTML=dots;
-  let stepsHTML='';data.steps.forEach(s=>{stepsHTML+=`<div class="tutorial-step"><div class="tutorial-step-num">${s.num}</div><div class="tutorial-step-text">${s.text}</div></div>`;});
+  let stepsHTML='';
+  data.steps.forEach(s=>{
+    stepsHTML+=`<div class="tutorial-step"><div class="tutorial-step-num">${s.num}</div><div class="tutorial-step-text">${s.text}</div></div>`;
+  });
   tutorialSteps.innerHTML=stepsHTML;
   tutorialBtn.textContent=tutStep<tutorialData.length-1?'Siguiente →':'¡A jugar! 🎮';
 }
-tutorialBtn.addEventListener('click',()=>{sc();if(tutStep<tutorialData.length-1){tutStep++;renderTutorialStep();}else{cerrarTutorial();}});
-tutorialSkip.addEventListener('click',cerrarTutorial);
-function cerrarTutorial(){tutorialOverlay.classList.add('hidden');localStorage.setItem('tutorialVisto','true');sm();mT('🎮 ¡A jugar! Elige modalidad y presiona Buscar Partida.','info');}
+
+tutorialBtn.addEventListener('click',()=>{
+  sc();
+  if(tutStep<tutorialData.length-1){
+    tutStep++;
+    renderTutorialStep();
+  }else{
+    cerrarTutorial();
+  }
+});
+
+tutorialSkip.addEventListener('click',()=>{
+  cerrarTutorial();
+});
+
+function cerrarTutorial(){
+  tutorialOverlay.style.display='none';
+  tutorialOverlay.classList.add('hidden');
+  localStorage.setItem('tutorialVisto','true');
+  sm();
+  setTimeout(()=>{
+    mT('🎮 ¡A jugar! Elige modalidad y presiona Buscar Partida.','info');
+  },500);
+}
 
 // ✅ UTILIDADES
 function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;tCon.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
