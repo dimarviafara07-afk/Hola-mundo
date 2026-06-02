@@ -71,10 +71,18 @@
         .avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#e8c97a);display:flex;align-items:center;justify-content:center;font-weight:700;color:#0B1121;flex-shrink:0;font-size:.9rem}
         .user-name{font-weight:600;font-size:.85rem}.user-status{font-size:.68rem;color:var(--success);display:flex;align-items:center;gap:4px}
         .status-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse-dot 2s infinite;box-shadow:0 0 6px rgba(22,163,74,0.4)}
-        .balance-mini-amount{font-size:1.1rem;font-weight:700;color:var(--gold)}.balance-mini-amount.zero{color:#ef4444;animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
-        .header-actions{display:flex;gap:5px;width:100%;margin-top:8px}
-        .btn-sm{flex:1;padding:8px 6px;border-radius:var(--radius-xs);font-weight:600;font-size:.68rem;cursor:pointer;border:none;text-align:center;text-transform:uppercase}
+        .balance-mini-amount{font-size:1.1rem;font-weight:700;color:var(--gold);transition:all .3s}
+        .balance-mini-amount.zero{color:#ef4444;animation:blink 1s infinite}
+        .balance-mini-amount.up{animation:balanceUp .5s ease-out}
+        .balance-mini-amount.down{animation:balanceDown .5s ease-out}
+        @keyframes balanceUp{0%{transform:scale(1);color:var(--gold)}50%{transform:scale(1.2);color:var(--success)}100%{transform:scale(1);color:var(--gold)}}
+        @keyframes balanceDown{0%{transform:scale(1);color:var(--gold)}50%{transform:scale(1.15);color:var(--danger)}100%{transform:scale(1);color:var(--gold)}}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+        .header-actions{display:flex;gap:5px;width:100%;margin-top:8px;flex-wrap:wrap}
+        .btn-sm{flex:1;padding:8px 6px;border-radius:var(--radius-xs);font-weight:600;font-size:.68rem;cursor:pointer;border:none;text-align:center;text-transform:uppercase;min-width:60px}
         .btn-dep{background:rgba(22,163,74,0.15);color:var(--success)}.btn-wit{background:rgba(220,38,38,0.15);color:var(--danger)}.btn-out{background:transparent;color:var(--text-muted);border:1px solid var(--border-subtle)}
+        .btn-register{background:var(--gold);color:#0B1121;font-weight:700;animation:glow 2s infinite}
+        @keyframes glow{0%,100%{box-shadow:0 0 5px rgba(201,168,76,0.3)}50%{box-shadow:0 0 15px rgba(201,168,76,0.6)}}
 
         .community-bar{background:var(--bg-card);border-radius:var(--radius-md);padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;gap:8px;border:1px solid var(--border-subtle);font-size:.68rem;flex-wrap:wrap}
         .comm-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}.comm-dot.green{background:var(--success);box-shadow:0 0 4px rgba(22,163,74,0.4)}.comm-dot.blue{background:var(--primary)}.comm-dot.amber{background:var(--warning)}
@@ -180,7 +188,6 @@
 
         .tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
         .tutorial-container{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;max-width:420px;width:100%;text-align:center;border:2px solid var(--gold);animation:fadeInUp .5s ease-out}
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
         .tutorial-header{font-size:1.8rem;margin-bottom:8px}.tutorial-title{font-size:1.1rem;font-weight:700;color:var(--gold);margin-bottom:16px}
         .tutorial-highlight{background:rgba(22,163,74,0.1);border:1px solid var(--success);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;font-size:.7rem;color:var(--success);font-weight:600}
         .tutorial-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;text-align:left}
@@ -243,7 +250,7 @@
                 </div>
             </div>
             <div id="recargaBanner" class="recarga-banner hidden"></div>
-            <div class="unified-header"><div class="avatar" id="userAvatar">R</div><div style="flex:1;min-width:0"><div class="user-name" id="txtUsername">Invitado</div><div class="user-status"><span class="status-dot"></span>Modo práctica</div></div><div style="text-align:right"><div style="font-size:.55rem;color:var(--text-muted)">BONO</div><div class="balance-mini-amount" id="saldoDisplay">$15,000</div></div><div class="header-actions"><button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button><button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button><button id="btnLogout" class="btn-sm btn-out">Salir</button></div></div>
+            <div class="unified-header"><div class="avatar" id="userAvatar">R</div><div style="flex:1;min-width:0"><div class="user-name" id="txtUsername">Invitado</div><div class="user-status"><span class="status-dot"></span>Modo práctica</div></div><div style="text-align:right"><div style="font-size:.55rem;color:var(--text-muted)">BONO</div><div class="balance-mini-amount" id="saldoDisplay">$15,000</div></div><div class="header-actions"><button id="btnRegistrarse" class="btn-sm btn-register">📝 Registrarse</button><button id="btnRecargar" class="btn-sm btn-dep">+ Recargar</button><button id="btnRetirar" class="btn-sm btn-wit">- Retirar</button><button id="btnLogout" class="btn-sm btn-out">Salir</button></div></div>
             <div class="community-bar"><span class="comm-dot green"></span><span id="statOnline">0</span> online<span class="comm-dot blue" style="margin-left:8px"></span><span id="statPlaying">0</span> jugando<span class="comm-dot amber" style="margin-left:8px"></span><span id="statWaiting">0</span> esperando<span style="margin-left:auto;font-size:.6rem">Cupos: <strong id="membershipText">0/50</strong></span></div>
             <div class="lobby-players" id="lobbyPlayers"><div class="lobby-players-title">Jugadores en sala</div><div id="lobbyPlayersList"></div></div>
             <div class="pot-container"><div class="pot-label">Pozo acumulado</div><div class="pot-amount" id="potAmount">$0</div></div>
@@ -298,6 +305,7 @@ const re=document.getElementById('recoveryEmail'),rm=document.getElementById('re
 const ac=document.getElementById('accessCode'),ae=document.getElementById('accessError'),ba=document.getElementById('btnAccess'),js=document.getElementById('jornadaStatus'),jst=document.getElementById('jornadaStatusText'),ash=document.getElementById('accessSchedule');
 const tl=document.getElementById('tabLogin'),tr=document.getElementById('tabRegister'),bA=document.getElementById('btnAction'),ei=document.getElementById('email'),ai=document.getElementById('aliasInput'),pi=document.getElementById('pass'),bf=document.getElementById('btnForgotPassword');
 const tu=document.getElementById('txtUsername'),ua=document.getElementById('userAvatar'),sd=document.getElementById('saldoDisplay'),bL=document.getElementById('btnLogout'),bRec=document.getElementById('btnRecargar'),bRet=document.getElementById('btnRetirar'),bP=document.getElementById('btnPlay'),tC=document.getElementById('tableContent'),pA=document.getElementById('potAmount'),hB=document.getElementById('historialBody'),tF=document.getElementById('tableFelt');
+const bReg=document.getElementById('btnRegistrarse');
 const nM=document.getElementById('nequiModal'),bWC=document.getElementById('btnWaConfirm'),bMC=document.getElementById('btnModalCerrar');
 const cM=document.getElementById('confirmModal'),cT=document.getElementById('confirmTitle'),cMsg=document.getElementById('confirmMsg'),bCY=document.getElementById('btnConfirmYes'),bCN=document.getElementById('btnConfirmNo');
 const aP=document.getElementById('adminPanel'),aUE=document.getElementById('adminUserEmail'),aMR=document.getElementById('adminMontoRecarga'),bAR=document.getElementById('btnAdminRecargar');
@@ -315,6 +323,7 @@ const btnAdminVerSaldo=document.getElementById('btnAdminVerSaldo'),adminSaldoInf
 const tutorialOverlay=document.getElementById('tutorialOverlay'),tutorialSteps=document.getElementById('tutorialSteps'),tutorialProgress=document.getElementById('tutorialProgress'),tutorialBtn=document.getElementById('tutorialBtn'),tutorialSkip=document.getElementById('tutorialSkip'),tutorialTitle=document.getElementById('tutorialTitle'),tutorialHighlight=document.getElementById('tutorialHighlight');
 
 let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cdA='';
+let saldoInvitado=BONO_INVITADO;
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
 const esp=(ms)=>new Promise(r=>setTimeout(r,ms));
 let mazoVirtual=[];
@@ -325,6 +334,26 @@ function resetMazo(){mazoVirtual=barajarMazo(crearMazo());}
 
 const BOTS_DISPONIBLES=[{alias:'Carlos',avatar:'C'},{alias:'Ana',avatar:'A'},{alias:'Luis',avatar:'L'},{alias:'Maria',avatar:'M'},{alias:'Jorge',avatar:'J'},{alias:'Laura',avatar:'L'},{alias:'Pedro',avatar:'P'},{alias:'Sofia',avatar:'S'}];
 function seleccionarBotsAleatorios(cantidad){const shuffled=[...BOTS_DISPONIBLES].sort(()=>0.5-Math.random());return shuffled.slice(0,cantidad);}
+
+function actualizarSaldoInvitado(){
+  sd.textContent='$'+saldoInvitado.toLocaleString('es-CO');
+  sd.classList.remove('zero');
+  if(saldoInvitado<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}
+}
+
+function actualizarVisibilidadBotones(){
+  if(!cU){
+    bReg.style.display='block';
+    bL.style.display='none';
+    bRec.style.display='none';
+    bRet.style.display='none';
+  }else{
+    bReg.style.display='none';
+    bL.style.display='block';
+    bRec.style.display='block';
+    bRet.style.display='block';
+  }
+}
 
 // ✅ TUTORIAL
 const tutorialData=[
@@ -345,48 +374,26 @@ function mostrarTutorial(){
 function renderTutorialStep(){
   const data=tutorialData[tutStep];
   tutorialTitle.textContent=data.title;
-  if(data.highlight){
-    tutorialHighlight.innerHTML=data.highlight;
-    tutorialHighlight.classList.remove('hidden');
-  }else{
-    tutorialHighlight.classList.add('hidden');
-  }
-  let dots='';
-  for(let i=0;i<tutorialData.length;i++){
-    dots+=`<div class="tutorial-dot ${i===tutStep?'active':''}"></div>`;
-  }
+  if(data.highlight){tutorialHighlight.innerHTML=data.highlight;tutorialHighlight.classList.remove('hidden');}else{tutorialHighlight.classList.add('hidden');}
+  let dots='';for(let i=0;i<tutorialData.length;i++)dots+=`<div class="tutorial-dot ${i===tutStep?'active':''}"></div>`;
   tutorialProgress.innerHTML=dots;
-  let stepsHTML='';
-  data.steps.forEach(s=>{
-    stepsHTML+=`<div class="tutorial-step"><div class="tutorial-step-num">${s.num}</div><div class="tutorial-step-text">${s.text}</div></div>`;
-  });
+  let stepsHTML='';data.steps.forEach(s=>{stepsHTML+=`<div class="tutorial-step"><div class="tutorial-step-num">${s.num}</div><div class="tutorial-step-text">${s.text}</div></div>`;});
   tutorialSteps.innerHTML=stepsHTML;
   tutorialBtn.textContent=tutStep<tutorialData.length-1?'Siguiente →':'¡A jugar! 🎮';
 }
+tutorialBtn.addEventListener('click',()=>{sc();if(tutStep<tutorialData.length-1){tutStep++;renderTutorialStep();}else{cerrarTutorial();}});
+tutorialSkip.addEventListener('click',cerrarTutorial);
+function cerrarTutorial(){tutorialOverlay.style.display='none';tutorialOverlay.classList.add('hidden');localStorage.setItem('tutorialVisto','true');sm();setTimeout(()=>{mT('🎮 ¡A jugar! Elige modalidad y presiona Buscar Partida.','info');},500);}
 
-tutorialBtn.addEventListener('click',()=>{
+// ✅ BOTÓN REGISTRARSE
+bReg.addEventListener('click',()=>{
   sc();
-  if(tutStep<tutorialData.length-1){
-    tutStep++;
-    renderTutorialStep();
-  }else{
-    cerrarTutorial();
-  }
+  gv.classList.add('hidden');
+  bN.classList.add('hidden');
+  auv.classList.remove('hidden');
+  tr.click();
+  mT('📝 Crea tu cuenta gratis y compite por dinero real.','info');
 });
-
-tutorialSkip.addEventListener('click',()=>{
-  cerrarTutorial();
-});
-
-function cerrarTutorial(){
-  tutorialOverlay.style.display='none';
-  tutorialOverlay.classList.add('hidden');
-  localStorage.setItem('tutorialVisto','true');
-  sm();
-  setTimeout(()=>{
-    mT('🎮 ¡A jugar! Elige modalidad y presiona Buscar Partida.','info');
-  },500);
-}
 
 // ✅ UTILIDADES
 function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;tCon.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
@@ -464,26 +471,12 @@ function activarPsicologiaInvitado(){
       const msg=MENSAJES_RECARGA[Math.floor(Math.random()*MENSAJES_RECARGA.length)];
       rb.innerHTML=`💡 ${msg} <strong style="color:var(--gold);cursor:pointer" id="bannerRegistrate">Regístrate aquí</strong>`;
       rb.classList.remove('hidden');
-      setTimeout(()=>{
-        document.getElementById('bannerRegistrate')?.addEventListener('click',()=>{
-          gv.classList.add('hidden');bN.classList.add('hidden');auv.classList.remove('hidden');
-        });
-      },100);
+      setTimeout(()=>{document.getElementById('bannerRegistrate')?.addEventListener('click',()=>{gv.classList.add('hidden');bN.classList.add('hidden');auv.classList.remove('hidden');tr.click();});},100);
       setTimeout(()=>rb.classList.add('hidden'),15000);
     }
   },60000);
-
   let partidasJugadas=0;
-  setInterval(()=>{
-    const btn=bP.textContent;
-    if((btn==='🎉 ¡Ganaste!'||btn==='😔 Perdiste')&&!cU){
-      partidasJugadas++;
-      if(partidasJugadas>=3){
-        setTimeout(()=>mT('💎 ¿Te gusta el juego? Regístrate y compite por dinero real contra otras personas.','info'),3000);
-        partidasJugadas=0;
-      }
-    }
-  },2000);
+  setInterval(()=>{const btn=bP.textContent;if((btn==='🎉 ¡Ganaste!'||btn==='😔 Perdiste')&&!cU){partidasJugadas++;if(partidasJugadas>=3){setTimeout(()=>mT('💎 ¿Te gusta el juego? Regístrate y compite por dinero real contra otras personas.','info'),3000);partidasJugadas=0;}}},2000);
 }
 
 // ✅ JUEGO UI
@@ -506,47 +499,29 @@ async function animarReparto(jugadores){
     deckCard.className='deck-card';
     const angle=(i-jugadores.length/2)*15;
     const targetX=(i-jugadores.length/2)*80;
-    deckCard.style.setProperty('--dx','0px');
-    deckCard.style.setProperty('--dy','-80px');
-    deckCard.style.setProperty('--dr','0deg');
-    deckCard.style.setProperty('--fx',targetX+'px');
-    deckCard.style.setProperty('--fy','0px');
-    deckCard.style.setProperty('--fr',angle+'deg');
-    tF.appendChild(deckCard);
-    sDeal();
-    await esp(500);
-    deckCard.remove();
+    deckCard.style.setProperty('--dx','0px');deckCard.style.setProperty('--dy','-80px');deckCard.style.setProperty('--dr','0deg');
+    deckCard.style.setProperty('--fx',targetX+'px');deckCard.style.setProperty('--fy','0px');deckCard.style.setProperty('--fr',angle+'deg');
+    tF.appendChild(deckCard);sDeal();
+    await esp(500);deckCard.remove();
     const slot=document.createElement('div');
     slot.className='card-slot'+(et?' tu-carta':'');
     slot.innerHTML=`<div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p.carta.pinta.color}">${p.carta.texto}</div><div style="font-size:1rem;color:${p.carta.pinta.color}">${p.carta.pinta.icon}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${et?'Tú':(p.es_bot?'🤖 '+p.alias:p.alias)}</div>`;
     row.appendChild(slot);
   }
 }
-
-async function animarVolteo(){
-  const wrappers=document.querySelectorAll('.card-wrapper');
-  for(let i=0;i<wrappers.length;i++){
-    await esp(400);
-    wrappers[i].classList.add('flipped');
-    sFlip();
-  }
-}
+async function animarVolteo(){const wrappers=document.querySelectorAll('.card-wrapper');for(let i=0;i<wrappers.length;i++){await esp(400);wrappers[i].classList.add('flipped');sFlip();}}
 
 // ✅ BOTÓN JUGAR
 bP.addEventListener('click',async()=>{
   if(eP){bP.disabled=true;bP.textContent='Cancelando...';bP.classList.add('canceling');if(cU){await update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});}resetSearch();return;}
   if(!cU){
-    const guestId=localStorage.getItem('guestId')||'guest_'+Date.now()+'_'+Math.random().toString(36).substr(2,5);
-    localStorage.setItem('guestId',guestId);
-    const snap=await get(ref(db,`invitados/${guestId}`));
-    const invitado=snap.val()||{saldo_bonus:BONO_INVITADO};
-    if(invitado.saldo_bonus<apAct)return mT('❌ Saldo insuficiente. Bono máximo $'+BONO_INVITADO.toLocaleString('es-CO'),'error');
+    if(saldoInvitado<apAct)return mT('❌ Saldo insuficiente. Bono máximo $'+BONO_INVITADO.toLocaleString('es-CO'),'error');
     const conf=await mC('Modo Invitado',`¿Jugar ${mJ} con bots?`);
     if(!conf)return;
     eP=true;bP.disabled=true;bP.textContent='Buscando...';bP.classList.add('canceling');
     sI.classList.remove('hidden');rSearch(1,MJ[mJ]);
     await esp(800);
-    await ejecutarPartidaInvitado(guestId);
+    await ejecutarPartidaInvitado();
     return;
   }
   if(!await verificarLimiteGanancias(cU)){return mT('⚠️ Límite de $'+LIMITE_GANANCIAS_SIN_RECARGA.toLocaleString()+' sin recarga. Recarga para seguir.','warning');}
@@ -568,21 +543,14 @@ async function ejecutarPartidaConBots(){
   const jugadores=[{uid:cU,alias:cAlias,carta:cartas[0],es_bot:false},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
   sI.classList.add('hidden');lP.classList.remove('visible');
   bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
-  await animarReparto(jugadores);
-  scart();
-  await esp(800);
-  bP.textContent='Revelando...';
-  await animarVolteo();
-  await esp(800);
+  await animarReparto(jugadores);scart();await esp(800);
+  bP.textContent='Revelando...';await animarVolteo();await esp(800);
   bP.textContent='Calculando...';
-  const pesos=jugadores.map(j=>j.carta.peso);
-  const maxP=Math.max(...pesos);
-  let ganadores=jugadores.filter(j=>j.carta.peso===maxP);
-  let ganador=ganadores[0];
+  const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);
+  let ganadores=jugadores.filter(j=>j.carta.peso===maxP);let ganador=ganadores[0];
   if(ganadores.length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};ganador=ganadores.reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}
   const yoGane=ganador.uid===cU;
-  const tPot=apAct*maxJ;
-  const comision=maxJ===2?Math.floor(apAct*0.05):Math.floor(apAct*0.10);
+  const tPot=apAct*maxJ;const comision=maxJ===2?Math.floor(apAct*0.05):Math.floor(apAct*0.10);
   const gananciaNeta=(tPot-apAct)-comision;
   if(yoGane){sg();const recargaPrevia=await verificarRecargaPrevia(cU);if(!recargaPrevia){await actualizarGananciasSinRecarga(cU,gananciaNeta);}await mSald(cU,gananciaNeta,'Ganó partida','bot_match');mT(`🎉 ¡Ganaste $${gananciaNeta.toLocaleString('es-CO')}!`,'success');bP.textContent='🎉 ¡Ganaste!';}
   else{sp();await mSald(cU,-apAct,'Perdió partida','bot_match');mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}. ${ganador.alias} ganó con ${ganador.carta.texto}${ganador.carta.pinta.icon}`,'warning');bP.textContent='😔 Perdiste';}
@@ -591,32 +559,29 @@ async function ejecutarPartidaConBots(){
   await esp(4000);resetSearch();
 }
 
-async function ejecutarPartidaInvitado(guestId){
+async function ejecutarPartidaInvitado(){
   const maxJ=MJ[mJ];resetMazo();
   const cartas=repartirCartas(maxJ);
   const botsSeleccionados=seleccionarBotsAleatorios(maxJ-1);
-  const jugadores=[{uid:'invitado_'+guestId,alias:'Tú',carta:cartas[0],es_invitado:true},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
+  const jugadores=[{uid:'invitado',alias:'Tú',carta:cartas[0],es_invitado:true},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
   sI.classList.add('hidden');lP.classList.remove('visible');
   bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
-  await animarReparto(jugadores);
-  scart();
-  await esp(800);
-  bP.textContent='Revelando...';
-  await animarVolteo();
-  await esp(800);
+  await animarReparto(jugadores);scart();await esp(800);
+  bP.textContent='Revelando...';await animarVolteo();await esp(800);
   bP.textContent='Calculando...';
-  const pesos=jugadores.map(j=>j.carta.peso);
-  const maxP=Math.max(...pesos);
-  let ganadores=jugadores.filter(j=>j.carta.peso===maxP);
-  let ganador=ganadores[0];
+  const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);
+  let ganadores=jugadores.filter(j=>j.carta.peso===maxP);let ganador=ganadores[0];
   if(ganadores.length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};ganador=ganadores.reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}
   const yoGane=ganador.es_invitado;
-  const snap=await get(ref(db,`invitados/${guestId}`));
-  const invitado=snap.val()||{saldo_bonus:BONO_INVITADO};
-  let nuevoSaldo=invitado.saldo_bonus;
-  if(yoGane){sg();const ganancia=apAct*(maxJ-1);nuevoSaldo+=ganancia;mT(`🎉 ¡Ganaste $${ganancia.toLocaleString('es-CO')}!`,'success');bP.textContent='🎉 ¡Ganaste!';}
-  else{sp();nuevoSaldo-=apAct;mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}`,'warning');bP.textContent='😔 Perdiste';}
-  await set(ref(db,`invitados/${guestId}/saldo_bonus`),Math.max(0,nuevoSaldo));
+  if(yoGane){
+    sg();const ganancia=apAct*(maxJ-1);saldoInvitado+=ganancia;
+    mT(`🎉 ¡Ganaste $${ganancia.toLocaleString('es-CO')}!`,'success');bP.textContent='🎉 ¡Ganaste!';
+  }else{
+    sp();saldoInvitado-=apAct;
+    mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}`,'warning');bP.textContent='😔 Perdiste';
+  }
+  if(saldoInvitado<0)saldoInvitado=0;
+  actualizarSaldoInvitado();
   document.querySelectorAll('.card-label').forEach((label,i)=>{if(jugadores[i]?.uid===ganador.uid)label.classList.add('winner');else if(jugadores[i]?.es_invitado&&!yoGane)label.classList.add('loser');});
   await esp(4000);resetSearch();
 }
@@ -641,6 +606,7 @@ onAuthStateChanged(auth,async(user)=>{
     else{await verificarAcceso();av.classList.remove('hidden');}
     tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();
     document.querySelector('.user-status').innerHTML='<span class="status-dot"></span>En línea';
+    actualizarVisibilidadBotones();
     const pr=ref(db,`presencia/${user.uid}`);
     onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
     if(isA){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});}
@@ -687,8 +653,10 @@ setTimeout(()=>{
     document.getElementById('sectionJuego').classList.add('active');
     tu.textContent='Invitado';
     ua.textContent='👤';
-    sd.textContent='$'+BONO_INVITADO.toLocaleString('es-CO');
+    saldoInvitado=BONO_INVITADO;
+    actualizarSaldoInvitado();
     document.querySelector('.user-status').innerHTML='<span style="font-size:.6rem;color:var(--text-muted)">Modo práctica</span>';
+    actualizarVisibilidadBotones();
     activarPsicologiaInvitado();
   }
 },500);
