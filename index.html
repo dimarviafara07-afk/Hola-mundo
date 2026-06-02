@@ -137,7 +137,7 @@
 
         .admin-panel{background:var(--bg-card);border:1.5px solid var(--gold);border-radius:var(--radius-md);padding:10px;margin-bottom:8px}
         .admin-title{color:var(--gold);font-weight:700;font-size:.7rem;text-transform:uppercase;margin-bottom:6px}
-        .admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px}
+        .admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:4px;margin-bottom:8px}
         .admin-stat{background:var(--bg-input);padding:6px;border-radius:var(--radius-xs);border:1px solid var(--border-subtle);font-size:.6rem;text-align:center}
         .admin-stat-label{color:var(--text-muted);font-size:.5rem}.admin-stat-value{font-weight:700;font-size:.75rem;margin-top:1px}
         .admin-recarga{display:flex;gap:4px;margin-bottom:4px}
@@ -182,10 +182,25 @@
             <div id="salasPanel" class="salas-panel hidden"><div class="salas-title">Salas activas</div><div class="salas-row" id="salasRow"></div></div>
             <div id="adminPanel" class="admin-panel hidden">
                 <div class="admin-title">Panel Admin</div>
-                <div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div><div class="admin-stat"><div class="admin-stat-label">Comisión</div><div class="admin-stat-value" id="adminComision">$0</div></div><div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div></div>
+                <div class="admin-stats">
+                    <div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
+                    <div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
+                    <div class="admin-stat"><div class="admin-stat-label">Comisión</div><div class="admin-stat-value" id="adminComision">$0</div></div>
+                    <div class="admin-stat"><div class="admin-stat-label">Movido</div><div class="admin-stat-value" id="adminMovido">$0</div></div>
+                    <!-- ✅ NUEVO: FONDO DE RESERVA -->
+                    <div class="admin-stat" style="border-color:var(--gold);background:var(--gold-soft)">
+                        <div class="admin-stat-label">💰 Reserva</div>
+                        <div class="admin-stat-value" id="adminReserva" style="color:var(--gold)">$0</div>
+                    </div>
+                </div>
                 <div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email usuario" style="flex:2"><input type="number" id="adminMontoRecarga" placeholder="$Monto" min="1000" style="flex:1"><button id="btnAdminVerSaldo" class="btn-admin-ver">🔍 Ver</button><button id="btnAdminRecargar" class="btn-admin-recargar">Recargar</button></div>
                 <div class="admin-saldo-info" id="adminSaldoInfo"></div>
                 <div class="admin-reset-row"><button class="btn-reset-contadores" id="btnResetComision">↺ Com</button><button class="btn-reset-contadores" id="btnResetMovido">↺ Mov</button><button class="btn-reset-contadores" id="btnResetAll">🔄 Contadores</button><button class="btn-clean-ranking" id="btnCleanRanking">🧹 Ranking</button></div>
+                <!-- ✅ NUEVOS BOTONES PARA COLA DE RETIROS -->
+                <div style="display:flex;gap:4px;margin-top:4px">
+                    <button class="btn-reset-contadores" id="btnProcesarCola" style="flex:1;background:rgba(22,163,74,0.1);color:var(--success);border:1px solid rgba(22,163,74,0.2)">📦 Procesar cola</button>
+                    <button class="btn-reset-contadores" id="btnVerCola" style="flex:1;background:rgba(59,130,246,0.1);color:var(--primary);border:1px solid rgba(59,130,246,0.2)">📋 Ver cola</button>
+                </div>
                 <button class="btn-reset-saldo" id="btnResetAllSaldo">💀 Resetear TODOS los saldos a $0</button>
                 <div class="config-section">
                     <div class="config-title">⚙️ Configurar Jornada</div>
@@ -229,6 +244,7 @@ import{getDatabase,ref,onValue,off,set,push,update,increment,onDisconnect,runTra
 const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 const CORREO_ADMIN="dimarviafara07@gmail.com",WHATSAPP="573219401352",LLAVE_ADMIN="@3219401352",MAX_MIEMBROS=50;
+const LIMITE_GANANCIAS_SIN_RECARGA = 100000; // $100,000
 const TIEMPO_VIDA_CHAT=300000,TIEMPO_VIDA_HISTORIAL=300000,TIEMPO_VIDA_RANKING=300000;
 
 const AudioContext=window.AudioContext||window.webkitAudioContext;let audioCtx=null;
@@ -261,43 +277,105 @@ const histH=document.getElementById('historyHeaderJuego'),histColl=document.quer
 const configCodigo=document.getElementById('configCodigo'),configHoraInicio=document.getElementById('configHoraInicio'),configHoraFin=document.getElementById('configHoraFin'),configJornadaActiva=document.getElementById('configJornadaActiva'),btnConfigSave=document.getElementById('btnConfigSave');
 const btnAdminVerSaldo=document.getElementById('btnAdminVerSaldo'),adminSaldoInfo=document.getElementById('adminSaldoInfo');
 
+// Variables globales
 let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cMId=null,cdA='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
 const pP=new Set();let ePart=false;
 const esp=(ms)=>new Promise(r=>setTimeout(r,ms));
 
-// ✅ NUEVO SISTEMA DE MAZO VIRTUAL
+// ✅ SISTEMA DE MAZO VIRTUAL
 let mazoVirtual=[];
 function crearMazo(){const m=[];for(let vi=0;vi<nC.length;vi++){for(let pi=0;pi<pintas.length;pi++){m.push({peso:vi,texto:nC[vi],pinta:pintas[pi]});}}return m;}
 function barajarMazo(mazo){const mc=[...mazo];for(let i=mc.length-1;i>0;i--){const a=new Uint32Array(1);crypto.getRandomValues(a);const j=a[0]%(i+1);[mc[i],mc[j]]=[mc[j],mc[i]];}return mc;}
 function repartirCartas(cantidad){if(mazoVirtual.length<cantidad){mazoVirtual=barajarMazo(crearMazo());}return mazoVirtual.splice(0,cantidad);}
 function resetMazo(){mazoVirtual=barajarMazo(crearMazo());}
 
+// ✅ BOTS DISPONIBLES
+const BOTS_DISPONIBLES = [
+  { alias: 'Carlos', avatar: 'C' },
+  { alias: 'Ana', avatar: 'A' },
+  { alias: 'Luis', avatar: 'L' },
+  { alias: 'Maria', avatar: 'M' },
+  { alias: 'Jorge', avatar: 'J' },
+  { alias: 'Laura', avatar: 'L' },
+  { alias: 'Pedro', avatar: 'P' },
+  { alias: 'Sofia', avatar: 'S' }
+];
+
+// ✅ SISTEMA DE OFERTAS AUTOMÁTICAS
+let ofertaActual = null;
+const OFERTAS = [
+  { id: 'oferta_1', monto_minimo: 20000, bono: 5000, duracion: 30 * 60 * 1000, activa: false },
+  { id: 'oferta_2', monto_minimo: 50000, bono: 15000, duracion: 60 * 60 * 1000, activa: false }
+];
+
+function activarOfertaAleatoria() {
+  if (ofertaActual) return;
+  const oferta = OFERTAS[Math.floor(Math.random() * OFERTAS.length)];
+  oferta.activa = true;
+  oferta.inicio = Date.now();
+  oferta.fin = Date.now() + oferta.duracion;
+  ofertaActual = oferta;
+  
+  mostrarBannerOferta(oferta);
+  setTimeout(() => {
+    oferta.activa = false;
+    ofertaActual = null;
+    ocultarBannerOferta();
+  }, oferta.duracion);
+}
+
+function mostrarBannerOferta(oferta) {
+  const banner = document.createElement('div');
+  banner.id = 'bannerOferta';
+  banner.style.cssText = 'background:var(--gold);color:#0B1121;padding:10px;border-radius:var(--radius-sm);text-align:center;font-weight:600;font-size:.75rem;margin-bottom:8px;animation:slideDown .3s ease-out';
+  banner.textContent = `🎁 OFERTA: Recarga $${(oferta.monto_minimo).toLocaleString()} y recibe $${(oferta.bono).toLocaleString()} extra. Solo por ${Math.floor(oferta.duracion / 60000)} minutos.`;
+  document.getElementById('sectionJuego').prepend(banner);
+}
+
+function ocultarBannerOferta() {
+  const banner = document.getElementById('bannerOferta');
+  if (banner) banner.remove();
+}
+
+// Activar oferta cada 2-4 horas
+setInterval(() => {
+  if (Math.random() < 0.5) activarOfertaAleatoria();
+}, 2 * 60 * 60 * 1000);
+
+// ✅ FUNCIONES DE UTILIDAD
 function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;tCon.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
 function mC(t,m){return new Promise(r=>{cT.textContent=t;cMsg.textContent=m;cM.classList.remove('hidden');bCY.onclick=()=>{cM.classList.add('hidden');r(true);};bCN.onclick=()=>{cM.classList.add('hidden');r(false);};});}
 
 async function cSald(uid){const s=await get(ref(db,`usuarios/${uid}/saldo`));return s.val()||0;}
+async function cSaldBonus(uid){const s=await get(ref(db,`usuarios/${uid}/saldo_bonus`));return s.val()||0;}
 async function mSald(uid,monto,concepto,matchId=null){const sRef=ref(db,`usuarios/${uid}/saldo`);await runTransaction(sRef,(s)=>{const n=(s||0)+monto;if(n<0)throw new Error('Saldo insuficiente');return n;});try{await push(ref(db,`usuarios/${uid}/historial`),{mesa:matchId?'N1':'ADMIN',resultado:monto>0?'GANÓ':(monto<0?'PERDIÓ':'RECARGA'),monto:Math.abs(monto),timestamp:Date.now(),matchId:matchId||'admin'});}catch(e){}}
 
 function cambiarSeccion(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector(`[data-section="${id}"]`)?.classList.add('active');}
 document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sc();cambiarSeccion(item.dataset.section);});});
 histH.addEventListener('click',()=>histColl.classList.toggle('open'));
 
+// ✅ CHAT
 let chatL=null,chatCI=null;
 function initChat(){if(chatL)off(ref(db,'chat/global'),'value',chatL);chatL=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();cCon.innerHTML='';if(ms){const ahora=Date.now();const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);mensajes.forEach(([id,m])=>{const em=m.uid===cU;cCon.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}cCon.scrollTop=cCon.scrollHeight;});if(chatCI)clearInterval(chatCI);chatCI=setInterval(async()=>{const snap=await get(ref(db,'chat/global'));const ms=snap.val()||{};const ahora=Date.now();for(const id in ms){if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){await set(ref(db,`chat/global/${id}`),null);}}},120000);}
 cS.addEventListener('click',async()=>{const t=cI.value.trim();if(!t||!cU)return;await push(ref(db,'chat/global'),{uid:cU,alias:cAlias,texto:t,timestamp:Date.now()});cI.value='';});
 cI.addEventListener('keypress',e=>{if(e.key==='Enter')cS.click();});
 
+// ✅ RANKING
 function initRanking(){onValue(ref(db,'usuarios'),snap=>{const us=snap.val()||{};const rank=[];const ahora=Date.now();for(const uid in us){const u=us[uid];if(u.historial){let g=0,p=0;Object.values(u.historial).forEach(h=>{if(!h.timestamp||(ahora-h.timestamp)>TIEMPO_VIDA_RANKING)return;if(h.resultado==='RECARGA')return;p++;if(h.resultado==='GANÓ')g+=h.monto||0;else if(h.resultado==='PERDIÓ')g-=(h.monto||0);});if(p>0)rank.push({alias:u.alias||'Anónimo',ganancias:g,partidas:p});}}rank.sort((a,b)=>b.ganancias-a.ganancias);let h='';if(rank.length>0){rank.slice(0,15).forEach((r,i)=>{const p=i+1;h+=`<div class="ranking-item"><div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div><div style="flex:1">${r.alias}</div><div style="font-size:.6rem;color:var(--text-muted);margin-right:8px">${r.partidas} jug</div><div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});}else{h='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Aún no hay partidas</div>';}rL.innerHTML=h;});}
 
+// ✅ ESTADÍSTICAS
 function initStats(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const h=snap.val()||{};let g=0,p=0,v=0,d=0;Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;p++;if(r.resultado==='GANÓ'){v++;g+=r.monto||0;}else{d++;g-=r.monto||0;}});sGan.textContent='$'+g.toLocaleString('es-CO');sPar.textContent=p;sVic.textContent=v;sDer.textContent=d;const wr=p>0?Math.round((v/p)*100):0;sD.innerHTML=`<div style="display:flex;justify-content:space-around;padding:10px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:8px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.55rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">$${p>0?Math.round(g/p).toLocaleString('es-CO'):'0'}</div><div style="font-size:.55rem;color:var(--text-muted)">Promedio</div></div></div>`;});}
 
+// ✅ HISTORIAL
 let histCI=null;
 function initHistorial(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const d=snap.val();const ahora=Date.now();if(d){const partidas=Object.entries(d).filter(([id,h])=>h.timestamp&&(ahora-h.timestamp)<TIEMPO_VIDA_HISTORIAL).sort((a,b)=>b[1].timestamp-a[1].timestamp).slice(0,10);if(partidas.length>0){let html='';partidas.forEach(([id,i])=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';html+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>Mesa ${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});hB.innerHTML=html;}else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas recientes</td></tr>';}}else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';}});if(histCI)clearInterval(histCI);histCI=setInterval(async()=>{if(!cU)return;const snap=await get(ref(db,`usuarios/${cU}/historial`));const h=snap.val()||{};const ahora=Date.now();for(const id in h){if(h[id].timestamp&&(ahora-h[id].timestamp)>TIEMPO_VIDA_HISTORIAL){await set(ref(db,`usuarios/${cU}/historial/${id}`),null);}}},120000);}
 
+// ✅ SALAS
 function initSalas(){const montos=[2000,4000,8000,16000,32000];onValue(ref(db,'lobbies'),snap=>{const lobbies=snap.val()||{};let h='';for(const monto of montos){let total=0;for(const mod of['1v1','3p']){const key=`${mod}_${monto}`;if(lobbies[key])total+=Object.keys(lobbies[key]).length;}const k=monto/1000;h+=`<div class="sala-chip ${total>0?'activa':''}"><div class="val">${total}</div><div class="lbl">$${k}K</div></div>`;}salR.innerHTML=h;});}
 async function limpiarLobbiesFantasmas(){const snap=await get(ref(db,'lobbies'));const lobbies=snap.val()||{};const ahora=Date.now();for(const key in lobbies){const salas=lobbies[key]||{};for(const sId in salas){const sala=salas[sId];if(!sala)continue;const abandonada=sala.creado&&(ahora-sala.creado)>120000&&sala.estado==='esperando';const corrupta=sala.estado==='jugando'&&!sala.matchId;if(abandonada||corrupta||!sala.jugadores||!Array.isArray(sala.jugadores)){await set(ref(db,`lobbies/${key}/${sId}`),null);}}}}
 
+// ✅ CONFIGURACIÓN ADMIN
 btnConfigSave.addEventListener('click',async()=>{const nc=configCodigo.value.trim()||'4927';await set(ref(db,'configuracion'),{codigo_acceso:nc,jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});cdA=nc;mT('✅ Configuración guardada. Código: '+nc,'success');});
 
 tl.addEventListener('click',()=>{sc();tl.classList.add('active');tr.classList.remove('active');ai.classList.add('hidden');bA.textContent='Ingresar';});
@@ -306,10 +384,12 @@ bf.addEventListener('click',()=>{auv.classList.add('hidden');rv.classList.remove
 bl.addEventListener('click',()=>{rv.classList.add('hidden');auv.classList.remove('hidden');});
 br.addEventListener('click',async()=>{const e=re.value.trim();if(!e){rm.textContent='❌ Ingresa tu correo';return}br.disabled=true;try{await sendPasswordResetEmail(auth,e);rm.textContent='✅ Enviado';re.value='';}catch(err){rm.textContent='❌ Error';}br.disabled=false;});
 
+// ✅ VERIFICACIÓN DE ACCESO
 async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};cdA=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';ash.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');js.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jst.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){cdA='4927';}}
 ba.addEventListener('click',async()=>{const c=ac.value.trim();if(!c||c.length!==4){ae.textContent='Ingresa 4 dígitos';return}if(c===cdA){ae.textContent='';av.classList.add('hidden');gv.classList.remove('hidden');bN.classList.remove('hidden');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('[data-section="sectionJuego"]')?.classList.add('active');sf();mT('✅ Acceso concedido','success');}else{ae.textContent='Código incorrecto';ac.value='';}});
 ac.addEventListener('keypress',e=>{if(e.key==='Enter')ba.click();});
 
+// ✅ ADMIN - BOTONES DE RESET
 bRC.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
 bRM.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
 bRA.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
@@ -319,35 +399,623 @@ btnAdminVerSaldo.addEventListener('click',async()=>{const eb=aUE.value.trim().to
 
 bRAS.addEventListener('click',async()=>{if(!confirm('⚠️ ¿Estás SEGURO? Esto pondrá TODOS los saldos en $0.\n\nSolo haz esto al FINAL de la jornada cuando ya hayas entregado el dinero.'))return;if(!confirm('⛔ ULTIMA ADVERTENCIA: Se resetearán TODOS los saldos a cero. ¿Continuar?'))return;bRAS.disabled=true;bRAS.textContent='⏳ Reseteando...';try{const usS=await get(ref(db,'usuarios'));const us=usS.val()||{};let cont=0;for(const uid in us){if(us[uid].saldo&&us[uid].saldo>0){await set(ref(db,`usuarios/${uid}/saldo`),0);cont++;}}mT(`✅ ${cont} cuentas reseteadas a $0`,'success');}catch(e){mT('❌ Error al resetear','error');}bRAS.disabled=false;bRAS.textContent='💀 Resetear TODOS los saldos a $0';});
 
+// ✅ ADMIN - RECARGA MANUAL
 bAR.onclick=async()=>{const eb=aUE.value.trim().toLowerCase(),monto=parseInt(aMR.value);if(!eb||!monto||monto<1000)return mT('❌ Email y monto mínimo $1.000','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='',aliasE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;aliasE=us[uid].alias||'Usuario';break;}}if(!uidE)return mT('❌ Usuario no encontrado','error');await mSald(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:cU,userId:uidE,email:emailE,alias:aliasE,monto,timestamp:Date.now()});sf();const nuevoSaldo=await cSald(uidE);adminSaldoInfo.innerHTML=`✅ <strong>${aliasE}</strong> - Nuevo saldo: <strong style="color:var(--gold)">$${nuevoSaldo.toLocaleString('es-CO')}</strong>`;mT(`✅ $${monto.toLocaleString('es-CO')} a ${aliasE}`,'success');aMR.value='';}catch(error){mT('❌ Error al recargar','error');}};
 
+// ✅ JUEGO - ACTUALIZAR POZO
 function updPot(c){if(pA)pA.textContent='$'+(apAct*c).toLocaleString('es-CO')}
+
+// ✅ JUEGO - MODALIDAD
 m1.addEventListener('click',()=>{if(eP)return;sc();m1.classList.add('selected');m3.classList.remove('selected');mJ='1v1';updPot(2);updTbl();});
 m3.addEventListener('click',()=>{if(eP)return;sc();m3.classList.add('selected');m1.classList.remove('selected');mJ='3p';updPot(3);updTbl();});
 bCs.forEach(ch=>{ch.addEventListener('click',()=>{if(eP)return;sc();bCs.forEach(c=>c.classList.remove('selected'));ch.classList.add('selected');apAct=parseInt(ch.dataset.apuesta);updPot(MJ[mJ]);})});
+
+// ✅ JUEGO - ACTUALIZAR TABLERO
 function updTbl(){if(eP)return;const m=MJ[mJ];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div style="font-size:1rem;color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tC.innerHTML=h+'</div>';}
 updPot(2);
 
+// ✅ JUEGO - RENDERIZAR BÚSQUEDA
 function rSearch(e,t){let h='<div class="cards-row" style="gap:20px">';for(let i=0;i<t;i++){const o=i<e;h+=`<div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px">${i===0?'Tú':(o?'Jugador':'Buscando')}</div></div>`;}h+=`</div>`;tC.innerHTML=h;sI.classList.remove('hidden');lP.classList.add('visible');}
-function rGame(jO){const reo=[],labs=[],yo=jO.find(j=>j.uid===cU);if(yo){reo.push(yo);labs.push('Tú');}jO.forEach(j=>{if(j.uid!==cU){reo.push(j);labs.push(j.alias||'Oponente');}});let h='<div class="cards-row">';reo.forEach((p,i)=>{const et=p.uid===cU;h+=`<div class="card-slot ${et?'tu-carta':'oponente'}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div style="font-size:1rem;color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${labs[i]||''}</div></div>`;});h+='</div>';tC.innerHTML=h;sI.classList.add('hidden');lP.classList.remove('visible');}
+
+// ✅ JUEGO - RENDERIZAR PARTIDA
+function rGame(jO){const reo=[],labs=[],yo=jO.find(j=>j.uid===cU);if(yo){reo.push(yo);labs.push('Tú');}jO.forEach(j=>{if(j.uid!==cU){reo.push(j);labs.push(j.es_bot?'🤖 '+(j.alias||'Bot'):(j.alias||'Oponente'));}});let h='<div class="cards-row">';reo.forEach((p,i)=>{const et=p.uid===cU;h+=`<div class="card-slot ${et?'tu-carta':''}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.texto||''}</div><div style="font-size:1rem;color:${p?.carta?.pinta?.color||'#000'}">${p?.carta?.pinta?.icon||''}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${labs[i]||''}</div></div>`;});h+='</div>';tC.innerHTML=h;sI.classList.add('hidden');lP.classList.remove('visible');}
+
+// ✅ JUEGO - ACTUALIZAR LOBBY
 function updLobby(jugs){let h='';jugs.forEach(j=>{const et=j.uid===cU;h+=`<div class="lobby-player-item"><span class="lobby-player-dot"></span>${et?'Tú (':''}${j.alias||'Jugador'}${et?')':''}</div>`;});lPL.innerHTML=h;}
 
+// ✅ JUEGO - BUSCAR PARTIDA (CON BOTS)
 let lPath=null,sId=null;
-async function encontrarOSala(modo,monto,maxJ){const basePath=`lobbies/${modo}_${monto}`;const baseRef=ref(db,basePath);const snapActual=await get(baseRef);const lobbies=snapActual.val()||{};for(const sId2 in lobbies){const sala=lobbies[sId2];if(sala&&sala.estado==='esperando'&&sala.jugadores&&Array.isArray(sala.jugadores)&&sala.jugadores.length<maxJ){const yaEsta=sala.jugadores.some(j=>j.uid===cU);if(!yaEsta){const salaRef=ref(db,basePath+'/'+sId2);await runTransaction(salaRef,(salaActual)=>{if(salaActual&&salaActual.estado==='esperando'&&salaActual.jugadores&&salaActual.jugadores.length<maxJ){const yaEsta2=salaActual.jugadores.some(j=>j.uid===cU);if(!yaEsta2){salaActual.jugadores.push({uid:cU,alias:cAlias});if(salaActual.jugadores.length===maxJ){salaActual.estado='jugando';resetMazo();salaActual.cartas={};const cartasRepartidas=repartirCartas(salaActual.jugadores.length);salaActual.jugadores.forEach((j,i)=>{salaActual.cartas[j.uid]=cartasRepartidas[i];});}}}return salaActual;});return{salaId:sId2,basePath};}}}const nuevaId='s'+Date.now().toString(36)+Math.random().toString(36).substr(2,3);await set(ref(db,basePath+'/'+nuevaId),{host:cU,jugadores:[{uid:cU,alias:cAlias}],estado:'esperando',creado:Date.now()});return{salaId:nuevaId,basePath};}
 
-bP.addEventListener('click',async()=>{if(!cU||ePart)return;initAudio();const sReal=await cSald(cU);if(sReal<=0)return mT('❌ Saldo en $0','error');if(sReal<apAct)return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`,'error');const ap=Number(apAct),maxJ=MJ[mJ];if(eP){bP.disabled=true;bP.textContent='Cancelando...';if(lPath&&sId){try{await set(ref(db,lPath+'/'+sId),null);}catch(e){}}await update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});eP=false;bP.disabled=false;bP.textContent='Buscar Partida';bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');updPot(MJ[mJ]);updTbl();lPath=null;sId=null;return;}const conf=await mC('Iniciar búsqueda',`¿Buscar ${mJ} por $${ap.toLocaleString('es-CO')}?`);if(!conf)return;sb();bP.disabled=true;bP.classList.add('canceling');bP.textContent='Buscando...';eP=true;await update(ref(db,`presencia/${cU}`),{status:'waiting',alias:cAlias}).catch(()=>{});rSearch(1,maxJ);updPot(1);let lobbyL=null,tOut=null,pIni=false;try{const enc=await encontrarOSala(mJ,ap,maxJ);if(!enc){resetSearch();return mT('Error al encontrar sala','error');}sId=enc.salaId;lPath=enc.basePath;const salaRef=ref(db,lPath+'/'+sId);const snapSala=await get(salaRef);const sData=snapSala.val();if(!sData||!sData.jugadores){resetSearch();return mT('Error en sala','error');}updLobby(sData.jugadores);lobbyL=onValue(salaRef,async(snap)=>{if(pIni)return;const data=snap.val();if(!data||!data.jugadores||!Array.isArray(data.jugadores)){if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();return;}rSearch(data.jugadores.length,maxJ);updLobby(data.jugadores);updPot(data.jugadores.length);if(data.estado==='jugando'&&data.jugadores.length===maxJ){pIni=true;if(lobbyL)off(salaRef,'value',lobbyL);if(tOut)clearTimeout(tOut);sm();if(!data.matchId){const matchId=push(ref(db,'matches')).key;const mData={jugadores:data.jugadores.map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:data.cartas?data.cartas[j.uid]:repartirCartas(1)[0]})),apuesta:ap,modalidad:mJ,creado:Date.now()};await set(ref(db,`matches/${matchId}`),mData);await update(salaRef,{matchId});data.matchId=matchId;}if(!pP.has(data.matchId)){pP.add(data.matchId);ePart=true;await update(ref(db,`presencia/${cU}`),{status:'playing'}).catch(()=>{});await ejecutarPartida(data.matchId,data,ap,lPath,sId);ePart=false;}}});tOut=setTimeout(async()=>{if(pIni)return;if(lobbyL)off(salaRef,'value',lobbyL);const snap=await get(salaRef);const data=snap.val();if(data&&data.estado==='esperando'&&data.host===cU&&data.jugadores&&data.jugadores.length<maxJ){await set(salaRef,null).catch(()=>{});}if(!ePart)resetSearch();},90000);}catch(error){if(lobbyL&&lPath&&sId)off(ref(db,lPath+'/'+sId),'value',lobbyL);if(tOut)clearTimeout(tOut);if(!ePart)resetSearch();mT('Error de conexión','error');}});
+async function buscarPartidaConBots(modo, monto, esInvitado=false) {
+  const maxJ = MJ[modo];
+  let jugadores = [];
+  
+  if (esInvitado) {
+    // Invitado: siempre juega con bots
+    const guestId = localStorage.getItem('guestId') || 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    localStorage.setItem('guestId', guestId);
+    
+    const botsNecesarios = maxJ - 1;
+    const botsSeleccionados = seleccionarBotsAleatorios(botsNecesarios);
+    
+    jugadores = [
+      { uid: 'invitado_' + guestId, alias: 'Tú', es_invitado: true, carta: repartirCartas(1)[0] },
+      ...botsSeleccionados.map((b, i) => ({
+        uid: 'bot_' + b.alias + '_' + i,
+        alias: b.alias,
+        es_bot: true,
+        carta: repartirCartas(1)[0]
+      }))
+    ];
+  } else {
+    // Registrado: buscar reales + completar con bots
+    const jugadoresReales = await obtenerJugadoresReales(modo, monto);
+    if (jugadoresReales.length >= maxJ) {
+      return crearPartidaReal(jugadoresReales);
+    }
+    const botsNecesarios = maxJ - jugadoresReales.length;
+    const botsSeleccionados = seleccionarBotsAleatorios(botsNecesarios);
+    jugadores = [
+      ...jugadoresReales,
+      ...botsSeleccionados.map((b, i) => ({
+        uid: 'bot_' + b.alias + '_' + i,
+        alias: b.alias,
+        es_bot: true,
+        carta: repartirCartas(1)[0]
+      }))
+    ];
+  }
+  
+  const partida = {
+    jugadores,
+    apuesta: monto,
+    modalidad: modo,
+    es_mixta: true,
+    creado: Date.now()
+  };
+  
+  return partida;
+}
 
-function resetSearch(){eP=false;bP.disabled=false;bP.textContent='Buscar Partida';bP.classList.remove('canceling','cooldown');sI.classList.add('hidden');lP.classList.remove('visible');updPot(MJ[mJ]);updTbl();update(ref(db,`presencia/${cU}`),{status:'online'}).catch(()=>{});lPath=null;sId=null;}
+function seleccionarBotsAleatorios(cantidad) {
+  const shuffled = [...BOTS_DISPONIBLES].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, cantidad);
+}
 
-async function ejecutarPartida(matchId,lData,ap,lPath2,sId2){cMId=matchId;bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');bP.disabled=true;resetMazo();try{const mSnap=await get(ref(db,`matches/${matchId}`));let mData=mSnap.val();if(!mData||!mData.jugadores){const jgs=(lData.jugadores||[]).map(j=>({uid:j.uid,alias:j.alias||'Jugador',carta:lData.cartas?lData.cartas[j.uid]:repartirCartas(1)[0]}));mData={jugadores:jgs,apuesta:ap,modalidad:mJ};await set(ref(db,`matches/${matchId}`),mData).catch(()=>{});}const jgs=mData.jugadores;const mi=jgs.findIndex(j=>j.uid===cU);if(mi===-1){resetSearch();return;}const tPot=ap*jgs.length;updPot(jgs.length);rGame(jgs);scart();await esp(1500);bP.textContent='Revelando...';document.querySelectorAll('.card-wrapper').forEach(cw=>cw.classList.add('flipped'));await esp(1200);bP.textContent='Calculando...';const pesos=jgs.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let gan=jgs.filter(j=>j.carta.peso===maxP)[0];if(jgs.filter(j=>j.carta.peso===maxP).length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};gan=jgs.filter(j=>j.carta.peso===maxP).reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}const yG=gan.uid===cU;const com=jgs.length===2?Math.floor(ap*0.05):Math.floor(ap*0.10);const gnr=(tPot-ap)-com;if(yG){sg();}else{sp();}if(yG&&pA){pA.classList.add('pot-won');setTimeout(()=>pA.classList.remove('pot-won'),600);}const reo=[];reo.push(jgs.find(j=>j.uid===cU));jgs.forEach(j=>{if(j.uid!==cU)reo.push(j);});reo.forEach((j,i)=>{const lbl=document.getElementById('cl'+i);if(!lbl)return;lbl.classList.remove('winner','loser');if(j.uid===gan.uid){lbl.classList.add('winner');lbl.textContent='🏆 '+(j.uid===cU?'Tú':(j.alias||'Oponente'));}else if(j.uid===cU){lbl.classList.add('loser');}});try{if(yG){await mSald(cU,gnr,'Ganó partida',matchId);mT(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`,'success');await update(ref(db,'adminData'),{total_comisiones:increment(com),dinero_movido:increment(tPot),partidas_jugando:increment(1)}).catch(()=>{});}else{await mSald(cU,-ap,'Perdió partida',matchId);mT(`😔 Perdiste $${ap.toLocaleString('es-CO')}`,'warning');}}catch(e){}bP.textContent=yG?'🎉 ¡Ganaste!':'😔 Perdiste';await esp(4000);try{await set(ref(db,`matches/${matchId}`),null);if(lPath2&&sId2)await set(ref(db,lPath2+'/'+sId2),null);}catch(e){}}catch(error){}finally{resetSearch();}}
+async function obtenerJugadoresReales(modo, monto) {
+  // Simulación: retornar jugadores reales de la base de datos
+  return [];
+}
 
-onAuthStateChanged(auth,async(user)=>{if(user){cU=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;const isA=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();auv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');gv.classList.add('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');if(isA){gv.classList.remove('hidden');bN.classList.remove('hidden');aP.classList.remove('hidden');salP.classList.remove('hidden');initSalas();limpiarLobbiesFantasmas();document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');const cfg=(await get(ref(db,'configuracion'))).val()||{};if(configCodigo)configCodigo.value=cfg.codigo_acceso||'4927';if(configHoraInicio)configHoraInicio.value=cfg.hora_inicio||'20:00';if(configHoraFin)configHoraFin.value=cfg.hora_fin||'22:00';if(configJornadaActiva)configJornadaActiva.checked=cfg.jornada_activa!==false;}else{await verificarAcceso();av.classList.remove('hidden');}tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});if(isA){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});}onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{sAct=snap.val()||0;sd.textContent='$'+sAct.toLocaleString('es-CO');sd.classList.remove('zero');if(sAct<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}});onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});initChat();initRanking();initStats();initHistorial();}else{gv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');auv.classList.remove('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');if(chatL)off(ref(db,'chat/global'),'value',chatL);if(chatCI)clearInterval(chatCI);if(histCI)clearInterval(histCI);}});
+// ✅ JUEGO - EJECUTAR PARTIDA
+async function ejecutarPartida(matchId, lData, ap, lPath2, sId2) {
+  cMId = matchId;
+  bP.textContent = 'Repartiendo...';
+  bP.classList.remove('canceling');
+  bP.classList.add('cooldown');
+  bP.disabled = true;
+  resetMazo();
+  
+  try {
+    const mSnap = await get(ref(db, `matches/${matchId}`));
+    let mData = mSnap.val();
+    if (!mData || !mData.jugadores) {
+      const jgs = (lData.jugadores || []).map(j => ({
+        uid: j.uid,
+        alias: j.alias || 'Jugador',
+        carta: lData.cartas ? lData.cartas[j.uid] : repartirCartas(1)[0]
+      }));
+      mData = { jugadores: jgs, apuesta: ap, modalidad: mJ };
+      await set(ref(db, `matches/${matchId}`), mData);
+    }
+    
+    const jgs = mData.jugadores;
+    const mi = jgs.findIndex(j => j.uid === cU);
+    if (mi === -1) { resetSearch(); return; }
+    const tPot = ap * jgs.length;
+    updPot(jgs.length);
+    rGame(jgs);
+    scart();
+    await esp(1500);
+    bP.textContent = 'Revelando...';
+    document.querySelectorAll('.card-wrapper').forEach(cw => cw.classList.add('flipped'));
+    await esp(1200);
+    bP.textContent = 'Calculando...';
+    const pesos = jgs.map(j => j.carta.peso);
+    const maxP = Math.max(...pesos);
+    let gan = jgs.filter(j => j.carta.peso === maxP)[0];
+    if (jgs.filter(j => j.carta.peso === maxP).length > 1) {
+      const pp = {'♠':4,'♥':3,'♦':2,'♣':1};
+      gan = jgs.filter(j => j.carta.peso === maxP).reduce((a,b) => (pp[b.carta.pinta.icon]||0) > (pp[a.carta.pinta.icon]||0) ? b : a);
+    }
+    const yG = gan.uid === cU;
+    const com = jgs.length === 2 ? Math.floor(ap * 0.05) : Math.floor(ap * 0.10);
+    const gnr = (tPot - ap) - com;
+    
+    if (yG) {
+      sg();
+      // ✅ Actualizar ganancias sin recarga (si no ha recargado)
+      const recargaPrevia = await verificarRecargaPrevia(cU);
+      if (!recargaPrevia) {
+        await actualizarGananciasSinRecarga(cU, gnr);
+        // Verificar límite
+        if (!await verificarLimiteGanancias(cU)) {
+          mT('⚠️ Has alcanzado el límite de $' + LIMITE_GANANCIAS_SIN_RECARGA.toLocaleString() + '. Recarga para continuar.', 'warning');
+        }
+      }
+      
+      await mSald(cU, gnr, 'Ganó partida', matchId);
+      mT(`🎉 ¡Ganaste $${gnr.toLocaleString('es-CO')}!`, 'success');
+      await update(ref(db, 'adminData'), {
+        total_comisiones: increment(com),
+        dinero_movido: increment(tPot),
+        partidas_jugando: increment(1)
+      }).catch(() => {});
+    } else {
+      sp();
+      await mSald(cU, -ap, 'Perdió partida', matchId);
+      mT(`😔 Perdiste $${ap.toLocaleString('es-CO')}`, 'warning');
+    }
+    
+    bP.textContent = yG ? '🎉 ¡Ganaste!' : '😔 Perdiste';
+    await esp(4000);
+    
+    try {
+      await set(ref(db, `matches/${matchId}`), null);
+      if (lPath2 && sId2) await set(ref(db, lPath2 + '/' + sId2), null);
+    } catch (e) {}
+  } catch (error) {
+    mT('❌ Error en partida', 'error');
+  } finally {
+    resetSearch();
+  }
+}
 
-bA.addEventListener('click',async()=>{const em=ei.value.trim(),alias=ai.value.trim(),pw=pi.value;if(!em||!pw)return mT('Completa los campos','error');if(pw.length<6)return mT('Mínimo 6 caracteres','error');if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');bA.disabled=true;try{if(tl.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mT('✅ Bienvenido','success');}else{const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,fechaRegistro:Date.now()});await set(ref(db,`indice/${em.replace(/\./g,',')}`),r.user.uid);mT('🎉 ¡Bienvenido '+alias+'!','success');}}catch(e){mT('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}bA.disabled=false;});
-bL.addEventListener('click',()=>signOut(auth));bRec.addEventListener('click',()=>{sc();nM.classList.remove('hidden');});bMC.addEventListener('click',()=>nM.classList.add('hidden'));
-bWC.addEventListener('click',()=>{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${cAlias}. Solicito recarga en Royal High. Adjunto comprobante de transferencia por Llave a ${LLAVE_ADMIN}`)}`,'_blank');nM.classList.add('hidden');mT('📱 Envía tu comprobante por WhatsApp','info');});
-bRet.addEventListener('click',async()=>{sc();if(sAct<=0)return mT('❌ Sin saldo','error');const llave=prompt('📱 Ingresa tu Llave Bre-B (ej: @tucelular, @tucorreo) para recibir el pago:');if(!llave||llave.trim().length<4)return mT('❌ Debes ingresar una Llave válida','error');const c=await mC('Confirmar retiro',`¿Retirar $${sAct.toLocaleString('es-CO')} a tu Llave?\n${llave.trim()}`);if(c){window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`💸 Solicito retiro de $${sAct.toLocaleString('es-CO')} en Royal High. Mi Llave: ${llave.trim()}`)}`,'_blank');mT('📱 Solicitud enviada','info');}});
-window.addEventListener('beforeunload',()=>{if(cU)set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});});
+// ✅ JUEGO - RESET BUSCAR
+function resetSearch() {
+  eP = false;
+  bP.disabled = false;
+  bP.textContent = 'Buscar Partida';
+  bP.classList.remove('canceling', 'cooldown');
+  sI.classList.add('hidden');
+  lP.classList.remove('visible');
+  updPot(MJ[mJ]);
+  updTbl();
+  if (cU) {
+    update(ref(db, `presencia/${cU}`), { status: 'online' }).catch(() => {});
+  }
+  lPath = null;
+  sId = null;
+}
+
+// ✅ JUEGO - BOTÓN JUGAR
+bP.addEventListener('click', async () => {
+  if (!cU) {
+    // INVITADO
+    const conf = await mC('🎮 Modo Invitado', 'Juega gratis con bots. Al registrarte podrás recargar y retirar.\n\n¿Continuar?');
+    if (!conf) return;
+    
+    const guestId = localStorage.getItem('guestId') || 'guest_' + Date.now();
+    localStorage.setItem('guestId', guestId);
+    
+    // Verificar saldo del invitado
+    const snap = await get(ref(db, `invitados/${guestId}`));
+    const invitado = snap.val() || { saldo_bonus: 10000 };
+    
+    if (invitado.saldo_bonus < apAct) {
+      return mT('❌ Saldo insuficiente. Bono máximo $10,000', 'error');
+    }
+    
+    // Crear partida con bots
+    const partida = await buscarPartidaConBots(mJ, apAct, true);
+    await ejecutarPartidaInvitado(partida, guestId);
+    return;
+  }
+  
+  // USUARIO REGISTRADO
+  // ✅ Verificar límite de ganancias antes de jugar
+  if (!await verificarLimiteGanancias(cU)) {
+    mT('⚠️ Has alcanzado el límite de $' + LIMITE_GANANCIAS_SIN_RECARGA.toLocaleString() + '. Recarga para continuar.', 'warning');
+    return;
+  }
+  
+  const sReal = await cSald(cU);
+  if (sReal <= 0) return mT('❌ Saldo en $0', 'error');
+  if (sReal < apAct) return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`, 'error');
+  
+  if (eP) {
+    bP.disabled = true;
+    bP.textContent = 'Cancelando...';
+    if (lPath && sId) {
+      try { await set(ref(db, lPath + '/' + sId), null); } catch (e) {}
+    }
+    await update(ref(db, `presencia/${cU}`), { status: 'online' }).catch(() => {});
+    eP = false;
+    bP.disabled = false;
+    bP.textContent = 'Buscar Partida';
+    bP.classList.remove('canceling', 'cooldown');
+    sI.classList.add('hidden');
+    lP.classList.remove('visible');
+    updPot(MJ[mJ]);
+    updTbl();
+    lPath = null;
+    sId = null;
+    return;
+  }
+  
+  const conf = await mC('Iniciar búsqueda', `¿Buscar ${mJ} por $${apAct.toLocaleString('es-CO')}?`);
+  if (!conf) return;
+  
+  sb();
+  bP.disabled = true;
+  bP.classList.add('canceling');
+  bP.textContent = 'Buscando...';
+  eP = true;
+  await update(ref(db, `presencia/${cU}`), { status: 'waiting', alias: cAlias }).catch(() => {});
+  
+  // Buscar partida con bots
+  const partida = await buscarPartidaConBots(mJ, apAct, false);
+  await ejecutarPartida('match_' + Date.now(), partida, apAct, null, null);
+});
+
+// ✅ JUEGO - EJECUTAR PARTIDA INVITADO
+async function ejecutarPartidaInvitado(partida, guestId) {
+  bP.disabled = true;
+  bP.textContent = 'Repartiendo...';
+  resetMazo();
+  
+  try {
+    const jgs = partida.jugadores;
+    updPot(jgs.length);
+    rGame(jgs);
+    scart();
+    await esp(1500);
+    bP.textContent = 'Revelando...';
+    document.querySelectorAll('.card-wrapper').forEach(cw => cw.classList.add('flipped'));
+    await esp(1200);
+    bP.textContent = 'Calculando...';
+    const pesos = jgs.map(j => j.carta.peso);
+    const maxP = Math.max(...pesos);
+    let gan = jgs.filter(j => j.carta.peso === maxP)[0];
+    if (jgs.filter(j => j.carta.peso === maxP).length > 1) {
+      const pp = {'♠':4,'♥':3,'♦':2,'♣':1};
+      gan = jgs.filter(j => j.carta.peso === maxP).reduce((a,b) => (pp[b.carta.pinta.icon]||0) > (pp[a.carta.pinta.icon]||0) ? b : a);
+    }
+    const yG = gan.uid === 'invitado_' + guestId;
+    
+    // Actualizar saldo del invitado
+    const snap = await get(ref(db, `invitados/${guestId}`));
+    const invitado = snap.val() || { saldo_bonus: 10000 };
+    let nuevoSaldo = invitado.saldo_bonus;
+    
+    if (yG) {
+      sg();
+      const ganancia = apAct * (jgs.length - 1);
+      nuevoSaldo += ganancia;
+      mT(`🎉 ¡Ganaste $${ganancia.toLocaleString('es-CO')} (bono)!`, 'success');
+    } else {
+      sp();
+      nuevoSaldo -= apAct;
+      mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}`, 'warning');
+    }
+    
+    await set(ref(db, `invitados/${guestId}/saldo_bonus`), nuevoSaldo);
+    
+    bP.textContent = yG ? '🎉 ¡Ganaste!' : '😔 Perdiste';
+    await esp(4000);
+  } catch (error) {
+    mT('❌ Error en partida', 'error');
+  } finally {
+    bP.disabled = false;
+    bP.textContent = 'Buscar Partida';
+    bP.classList.remove('cooldown');
+    updPot(MJ[mJ]);
+    updTbl();
+  }
+}
+
+// ✅ AUTH STATE
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    cU = user.uid;
+    const uSnap = await get(ref(db, `usuarios/${user.uid}`));
+    const uData = uSnap.val() || {};
+    cUN = user.email.split('@')[0];
+    cAlias = uData.alias || cUN;
+    const isA = user.email.toLowerCase() === CORREO_ADMIN.toLowerCase();
+    
+    auv.classList.add('hidden');
+    rv.classList.add('hidden');
+    av.classList.add('hidden');
+    gv.classList.add('hidden');
+    bN.classList.add('hidden');
+    aP.classList.add('hidden');
+    salP.classList.add('hidden');
+    
+    if (isA) {
+      gv.classList.remove('hidden');
+      bN.classList.remove('hidden');
+      aP.classList.remove('hidden');
+      salP.classList.remove('hidden');
+      initSalas();
+      limpiarLobbiesFantasmas();
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sectionJuego').classList.add('active');
+      const cfg = (await get(ref(db, 'configuracion'))).val() || {};
+      if (configCodigo) configCodigo.value = cfg.codigo_acceso || '4927';
+      if (configHoraInicio) configHoraInicio.value = cfg.hora_inicio || '20:00';
+      if (configHoraFin) configHoraFin.value = cfg.hora_fin || '22:00';
+      if (configJornadaActiva) configJornadaActiva.checked = cfg.jornada_activa !== false;
+    } else {
+      await verificarAcceso();
+      av.classList.remove('hidden');
+    }
+    
+    tu.textContent = cAlias;
+    ua.textContent = cAlias.charAt(0).toUpperCase();
+    updTbl();
+    
+    const pr = ref(db, `presencia/${user.uid}`);
+    onValue(ref(db, '.info/connected'), snap => {
+      if (snap.val() === true) {
+        set(pr, { email: user.email, username: cUN, alias: cAlias, status: 'online', lastSeen: Date.now() });
+        onDisconnect(pr).update({ status: 'offline', lastSeen: Date.now() });
+      }
+    });
+    
+    if (isA) {
+      onValue(ref(db, 'adminData'), snap => {
+        const d = snap.val() || {};
+        document.getElementById('adminComision').textContent = '$' + (d.total_comisiones || 0).toLocaleString('es-CO');
+        document.getElementById('adminMovido').textContent = '$' + (d.dinero_movido || 0).toLocaleString('es-CO');
+        document.getElementById('adminPlaying').textContent = d.partidas_jugando || 0;
+      });
+      onValue(ref(db, 'presencia'), snap => {
+        document.getElementById('adminOnline').textContent = Object.values(snap.val() || {}).filter(v => v.status === 'online').length;
+      });
+    }
+    
+    onValue(ref(db, `usuarios/${user.uid}/saldo`), snap => {
+      sAct = snap.val() || 0;
+      sd.textContent = '$' + sAct.toLocaleString('es-CO');
+      sd.classList.remove('zero');
+      if (sAct <= 0) {
+        sd.classList.add('zero');
+        sd.textContent = '$0 - ¡Recarga!';
+      }
+    });
+    
+    onValue(ref(db, 'presencia'), snap => {
+      const a = Object.values(snap.val() || {});
+      document.getElementById('statOnline').textContent = a.filter(v => v.status === 'online').length;
+      document.getElementById('statWaiting').textContent = a.filter(v => v.status === 'waiting').length;
+      document.getElementById('statPlaying').textContent = a.filter(v => v.status === 'playing').length;
+      document.getElementById('membershipText').textContent = a.filter(v => v.status === 'online').length + '/' + MAX_MIEMBROS;
+    });
+    
+    initChat();
+    initRanking();
+    initStats();
+    initHistorial();
+  } else {
+    gv.classList.add('hidden');
+    rv.classList.add('hidden');
+    av.classList.add('hidden');
+    auv.classList.remove('hidden');
+    bN.classList.add('hidden');
+    aP.classList.add('hidden');
+    salP.classList.add('hidden');
+    if (chatL) off(ref(db, 'chat/global'), 'value', chatL);
+    if (chatCI) clearInterval(chatCI);
+    if (histCI) clearInterval(histCI);
+  }
+});
+
+// ✅ REGISTRO / LOGIN
+bA.addEventListener('click', async () => {
+  const em = ei.value.trim();
+  const alias = ai.value.trim();
+  const pw = pi.value;
+  
+  if (!em || !pw) return mT('Completa los campos', 'error');
+  if (pw.length < 6) return mT('Mínimo 6 caracteres', 'error');
+  if (tr.classList.contains('active') && !alias) return mT('Elige un alias', 'error');
+  
+  bA.disabled = true;
+  try {
+    if (tl.classList.contains('active')) {
+      await signInWithEmailAndPassword(auth, em, pw);
+      mT('✅ Bienvenido', 'success');
+    } else {
+      // Verificar cupo de registros
+      const snapCupo = await get(ref(db, 'estadisticas/cupo_actual'));
+      const cupoActual = snapCupo.val() || 0;
+      if (cupoActual >= 50) {
+        mT('⛔ Cupo completado. Solo 50 usuarios registrados.', 'error');
+        bA.disabled = false;
+        return;
+      }
+      
+      const r = await createUserWithEmailAndPassword(auth, em, pw);
+      await set(ref(db, `usuarios/${r.user.uid}`), {
+        email: em,
+        alias: alias,
+        saldo: 0,
+        saldo_bonus: 10000, // Bono de bienvenida NO retirable
+        fechaRegistro: Date.now(),
+        cupo_registrado: true,
+        ganancias_sin_recarga: 0,
+        bloqueado_por_limite: false,
+        recargas_verificadas: []
+      });
+      await update(ref(db, 'estadisticas'), { cupo_actual: increment(1) });
+      mT('🎉 ¡Bienvenido ' + alias + '! Recibiste $10,000 de bono.', 'success');
+    }
+  } catch (e) {
+    mT('Error: ' + (e.code === 'auth/email-already-in-use' ? 'Email ya registrado' : 'Verifica tus datos'), 'error');
+  }
+  bA.disabled = false;
+});
+
+// ✅ LOGOUT
+bL.addEventListener('click', () => signOut(auth));
+
+// ✅ RECARGAR (con estrategias psicológicas)
+bRec.addEventListener('click', () => {
+  sc();
+  if (!cU) {
+    mT('📝 Para recargar y retirar, primero regístrate.', 'info');
+    return;
+  }
+  nM.classList.remove('hidden');
+});
+
+bMC.addEventListener('click', () => nM.classList.add('hidden'));
+
+bWC.addEventListener('click', () => {
+  if (!cU) {
+    mT('📝 Regístrate primero para recargar.', 'info');
+    nM.classList.add('hidden');
+    return;
+  }
+  
+  // Verificar oferta activa
+  let mensajeOferta = '';
+  if (ofertaActual && ofertaActual.activa) {
+    mensajeOferta = `\n\n🎁 OFERTA: Recarga $${(ofertaActual.monto_minimo).toLocaleString()} y recibe $${(ofertaActual.bono).toLocaleString()} extra.`;
+  }
+  
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${cAlias}. Solicito recarga en Royal High. Adjunto comprobante de transferencia por Llave a ${LLAVE_ADMIN}.${mensajeOferta}`)}`, '_blank');
+  nM.classList.add('hidden');
+  mT('📱 Envía tu comprobante por WhatsApp. Te acreditamos en menos de 5 minutos.', 'info');
+  
+  // Prueba social: anunciar recarga en chat
+  push(ref(db, 'chat/global'), {
+    uid: 'system',
+    alias: '🔔 Sistema',
+    texto: `${cAlias} está iniciando una recarga. ¡Únete!`,
+    timestamp: Date.now(),
+    es_sistema: true
+  });
+});
+
+// ✅ RETIRAR (con recarga previa obligatoria y cola)
+bRet.addEventListener('click', async () => {
+  sc();
+  if (!cU) {
+    mT('📝 Para retirar, primero regístrate.', 'info');
+    return;
+  }
+  
+  // ✅ Verificar recarga previa
+  if (!await verificarRecargaPrevia(cU)) {
+    mT('❌ Debes hacer al menos 1 recarga verificada antes de retirar.', 'error');
+    return;
+  }
+  
+  const saldoReal = await cSald(cU);
+  if (saldoReal <= 0) {
+    mT('❌ No tienes saldo retirable.', 'error');
+    return;
+  }
+  
+  const llave = prompt('📱 Ingresa tu Llave Bre-B (ej: @tucelular) para recibir el pago:');
+  if (!llave || llave.trim().length < 4) {
+    mT('❌ Debes ingresar una Llave válida', 'error');
+    return;
+  }
+  
+  const c = await mC('Confirmar retiro', `¿Retirar $${saldoReal.toLocaleString('es-CO')} a tu Llave?\n${llave.trim()}`);
+  if (c) {
+    // ✅ Encolar retiro (con mensaje estándar)
+    await encolarRetiro(cU, cAlias, saldoReal, llave.trim());
+    // Descontar saldo del usuario (se procesará cuando la cola avance)
+    await mSald(cU, -saldoReal, 'Retiro en cola');
+    mT('📱 Solicitud enviada. Te confirmamos en menos de 10 minutos.', 'info');
+  }
+});
+
+// ✅ PREVENIR PÉRDIDA DE SALDO (monitoreo)
+function monitorearSaldoBajo() {
+  if (!cU) return;
+  onValue(ref(db, `usuarios/${cU}/saldo`), snap => {
+    const saldo = snap.val() || 0;
+    if (saldo > 0 && saldo < 5000) {
+      mT(`⚠️ Te quedan solo $${saldo.toLocaleString()}. Recarga para no perder tu bono.`, 'warning');
+    }
+    if (saldo === 0) {
+      mT('💸 Saldo en $0. Recarga y vuelve a jugar.', 'error');
+    }
+  });
+}
+
+// ✅ COMPROMISO PÚBLICO (botón extra en el juego)
+function agregarBotonCompromiso() {
+  const btnCompromiso = document.createElement('button');
+  btnCompromiso.id = 'btnCompromiso';
+  btnCompromiso.className = 'btn-sm btn-dep';
+  btnCompromiso.textContent = '💪 Hoy recargo';
+  btnCompromiso.style.marginTop = '4px';
+  
+  btnCompromiso.addEventListener('click', async () => {
+    if (!cU) {
+      mT('📝 Regístrate primero para comprometerte.', 'info');
+      return;
+    }
+    
+    const conf = await mC('💪 ¿Te comprometes a recargar hoy?', 'Si recargas antes de las 8 PM, recibirás un bono extra de $2,000.');
+    if (!conf) return;
+    
+    // Publicar en chat
+    await push(ref(db, 'chat/global'), {
+      uid: 'system',
+      alias: '🔔 Sistema',
+      texto: `🔥 ${cAlias} se comprometió a recargar hoy. ¿Te unes?`,
+      timestamp: Date.now(),
+      es_sistema: true
+    });
+    
+    mT('💪 Compromiso registrado. Te recordaremos en 6 horas.', 'success');
+    
+    // Recordatorio automático
+    setTimeout(async () => {
+      const saldoActual = await cSald(cU);
+      const recargaHoy = await verificarRecargaHoy(cU);
+      if (!recargaHoy) {
+        mT('⏳ Te quedan 2 horas para cumplir tu compromiso de recarga.', 'info');
+      }
+    }, 6 * 60 * 60 * 1000);
+  });
+  
+  document.querySelector('.header-actions').appendChild(btnCompromiso);
+}
+
+async function verificarRecargaHoy(uid) {
+  const snap = await get(ref(db, `usuarios/${uid}/ultima_recarga`));
+  const ultimaRecarga = snap.val() || 0;
+  const hoy = new Date();
+  const hoyInicio = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()).getTime();
+  return ultimaRecarga > hoyInicio;
+}
+
+// ✅ INICIALIZAR SISTEMA
+document.addEventListener('DOMContentLoaded', () => {
+  agregarBotonCompromiso();
+  monitorearSaldoBajo();
+  
+  // Si es invitado, mostrar mensaje
+  if (!cU) {
+    setTimeout(() => {
+      mT('🎮 Bienvenido a Royal High. Juega gratis con bots. ¡Sin registro!', 'info');
+    }, 1000);
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  if (cU) {
+    set(ref(db, `presencia/${cU}`), { status: 'offline', lastSeen: Date.now() }).catch(() => {});
+  }
+});
 </script>
 </body>
 </html>
