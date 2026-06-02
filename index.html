@@ -99,14 +99,12 @@
         .card-label.winner{color:var(--success);font-weight:700;animation:winnerPulse .5s ease-out 3}.card-label.loser{color:var(--danger)}.card-label.tu-label{color:var(--gold)}
         @keyframes winnerPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
 
-        /* ANIMACIÓN DE BARAJA VIRTUAL */
         .deck-animation{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;pointer-events:none}
         .deck-card{position:absolute;width:40px;height:56px;background:linear-gradient(145deg,#1a2744,#0F1A2C);border:2px solid var(--gold);border-radius:6px;opacity:0;animation:dealCard 0.4s ease-out forwards}
         @keyframes dealCard{0%{opacity:0;transform:translate(0,0) scale(.5) rotate(0deg)}50%{opacity:1;transform:translate(var(--dx),var(--dy)) scale(1.1) rotate(var(--dr))}100%{opacity:0;transform:translate(var(--fx),var(--fy)) scale(.8) rotate(var(--fr))}}
 
         .recarga-banner{background:linear-gradient(135deg,rgba(201,168,76,0.15),rgba(201,168,76,0.05));border:1px solid var(--gold);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:8px;font-size:.7rem;color:var(--text-secondary);text-align:center;animation:fadeInUp .5s ease-out}
         .recarga-banner strong{color:var(--gold)}
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
         .controls-section{background:var(--bg-card);border-radius:var(--radius-lg);padding:12px;margin-bottom:8px;border:1px solid var(--border-subtle)}
         .section-label{font-size:.62rem;text-transform:uppercase;color:var(--text-muted);margin-bottom:7px;font-weight:600}
@@ -179,9 +177,9 @@
         .btn-modal-close{background:none;border:none;color:var(--text-muted);margin-top:10px;cursor:pointer;font-size:.78rem}
         .table-empty-msg{color:var(--text-muted);font-size:.75rem;text-align:center}.table-empty-msg strong{color:var(--primary)}
 
-        /* TUTORIAL */
         .tutorial-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
         .tutorial-container{background:var(--bg-card);border-radius:var(--radius-lg);padding:24px;max-width:420px;width:100%;text-align:center;border:2px solid var(--gold);animation:fadeInUp .5s ease-out}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
         .tutorial-header{font-size:1.8rem;margin-bottom:8px}.tutorial-title{font-size:1.1rem;font-weight:700;color:var(--gold);margin-bottom:16px}
         .tutorial-highlight{background:rgba(22,163,74,0.1);border:1px solid var(--success);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:12px;font-size:.7rem;color:var(--success);font-weight:600}
         .tutorial-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;text-align:left}
@@ -201,7 +199,6 @@
 <body>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- TUTORIAL OVERLAY -->
 <div id="tutorialOverlay" class="tutorial-overlay">
     <div class="tutorial-container" id="tutorialContainer">
         <div class="tutorial-header">🃏</div>
@@ -295,7 +292,6 @@ function sf(){playBeep(1000,0.05);setTimeout(()=>playBeep(1200,0.05),50);setTime
 function sDeal(){playBeep(440,0.08,'sine',0.15)}
 function sFlip(){playBeep(660,0.12,'sine',0.2)}
 
-// Elementos DOM
 const rv=document.getElementById('recoveryView'),av=document.getElementById('accessView'),auv=document.getElementById('authView'),gv=document.getElementById('gameView');
 const re=document.getElementById('recoveryEmail'),rm=document.getElementById('recoveryMsg'),br=document.getElementById('btnRecovery'),bl=document.getElementById('btnBackToLogin');
 const ac=document.getElementById('accessCode'),ae=document.getElementById('accessError'),ba=document.getElementById('btnAccess'),js=document.getElementById('jornadaStatus'),jst=document.getElementById('jornadaStatusText'),ash=document.getElementById('accessSchedule');
@@ -317,7 +313,7 @@ const configCodigo=document.getElementById('configCodigo'),configHoraInicio=docu
 const btnAdminVerSaldo=document.getElementById('btnAdminVerSaldo'),adminSaldoInfo=document.getElementById('adminSaldoInfo');
 const tutorialOverlay=document.getElementById('tutorialOverlay'),tutorialSteps=document.getElementById('tutorialSteps'),tutorialProgress=document.getElementById('tutorialProgress'),tutorialBtn=document.getElementById('tutorialBtn'),tutorialSkip=document.getElementById('tutorialSkip'),tutorialTitle=document.getElementById('tutorialTitle'),tutorialHighlight=document.getElementById('tutorialHighlight');
 
-let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cMId=null,cdA='';
+let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cdA='';
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
 const esp=(ms)=>new Promise(r=>setTimeout(r,ms));
 let mazoVirtual=[];
@@ -329,7 +325,7 @@ function resetMazo(){mazoVirtual=barajarMazo(crearMazo());}
 const BOTS_DISPONIBLES=[{alias:'Carlos',avatar:'C'},{alias:'Ana',avatar:'A'},{alias:'Luis',avatar:'L'},{alias:'Maria',avatar:'M'},{alias:'Jorge',avatar:'J'},{alias:'Laura',avatar:'L'},{alias:'Pedro',avatar:'P'},{alias:'Sofia',avatar:'S'}];
 function seleccionarBotsAleatorios(cantidad){const shuffled=[...BOTS_DISPONIBLES].sort(()=>0.5-Math.random());return shuffled.slice(0,cantidad);}
 
-// ✅ TUTORIAL MEJORADO
+// ✅ TUTORIAL
 const tutorialData=[
   {title:"¡Bienvenido a Royal High! 🃏",highlight:"",steps:[{num:"1",text:"<strong>Royal High</strong> es un juego de cartas donde compites por el pozo acumulado."},{num:"2",text:"Cada jugador recibe <strong>1 carta</strong> con un valor (2 al A) y una pinta (♠♥♦♣)."}]},
   {title:"¿Cómo se gana? 🏆",highlight:"",steps:[{num:"3",text:"Gana la carta <strong>MÁS ALTA</strong>: A > K > Q > J > 10 > ... > 2"},{num:"4",text:"En <strong>EMPATE</strong> (mismo número), decide la pinta: <strong>♠ > ♥ > ♦ > ♣</strong>"}]},
@@ -407,7 +403,7 @@ btnAdminVerSaldo.addEventListener('click',async()=>{const eb=aUE.value.trim().to
 bRAS.addEventListener('click',async()=>{if(!confirm('⚠️ ¿Estás SEGURO?'))return;if(!confirm('⛔ ULTIMA ADVERTENCIA'))return;bRAS.disabled=true;bRAS.textContent='⏳ Reseteando...';try{const usS=await get(ref(db,'usuarios'));const us=usS.val()||{};let cont=0;for(const uid in us){if(us[uid].saldo&&us[uid].saldo>0){await set(ref(db,`usuarios/${uid}/saldo`),0);cont++;}}mT(`✅ ${cont} cuentas reseteadas a $0`,'success');}catch(e){mT('❌ Error al resetear','error');}bRAS.disabled=false;bRAS.textContent='💀 Resetear TODOS los saldos a $0';});
 bAR.onclick=async()=>{const eb=aUE.value.trim().toLowerCase(),monto=parseInt(aMR.value);if(!eb||!monto||monto<1000)return mT('❌ Email y monto mínimo $1.000','error');try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,emailE='',aliasE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;emailE=us[uid].email;aliasE=us[uid].alias||'Usuario';break;}}if(!uidE)return mT('❌ Usuario no encontrado','error');await mSald(uidE,monto,'Recarga admin');await push(ref(db,'adminData/recargas'),{adminId:cU,userId:uidE,email:emailE,alias:aliasE,monto,timestamp:Date.now()});sf();const nuevoSaldo=await cSald(uidE);adminSaldoInfo.innerHTML=`✅ <strong>${aliasE}</strong> - Nuevo saldo: <strong style="color:var(--gold)">$${nuevoSaldo.toLocaleString('es-CO')}</strong>`;mT(`✅ $${monto.toLocaleString('es-CO')} a ${aliasE}`,'success');aMR.value='';}catch(error){mT('❌ Error al recargar','error');}};
 
-// ✅ PSICOLOGÍA SUTIL PARA MOTIVAR RECARGAS
+// ✅ PSICOLOGÍA SUTIL
 const MENSAJES_RECARGA=[
   "Muchos jugadores están retirando hoy. ¿Ya tienes saldo?",
   "El pozo está creciendo rápido esta noche...",
@@ -420,32 +416,34 @@ const MENSAJES_RECARGA=[
 let ultimoMensajeRecarga=0;
 
 function activarPsicologiaInvitado(){
-  // Banner sutil cada ciertos minutos
   setInterval(()=>{
-    if(cU)return; // Solo para invitados
+    if(cU)return;
     const ahora=Date.now();
-    if(ahora-ultimoMensajeRecarga>300000){ // Cada 5 min
+    if(ahora-ultimoMensajeRecarga>300000){
       ultimoMensajeRecarga=ahora;
       const msg=MENSAJES_RECARGA[Math.floor(Math.random()*MENSAJES_RECARGA.length)];
-      rb.innerHTML=`💡 ${msg} <strong style="color:var(--gold);cursor:pointer" onclick="document.getElementById('authView').classList.remove('hidden');document.getElementById('gameView').classList.add('hidden');document.getElementById('bottomNav').classList.add('hidden');">Regístrate aquí</strong>`;
+      rb.innerHTML=`💡 ${msg} <strong style="color:var(--gold);cursor:pointer" id="bannerRegistrate">Regístrate aquí</strong>`;
       rb.classList.remove('hidden');
+      setTimeout(()=>{
+        document.getElementById('bannerRegistrate')?.addEventListener('click',()=>{
+          gv.classList.add('hidden');bN.classList.add('hidden');auv.classList.remove('hidden');
+        });
+      },100);
       setTimeout(()=>rb.classList.add('hidden'),15000);
     }
   },60000);
 
-  // Toast sutil después de jugar 3 partidas
   let partidasJugadas=0;
-  const observer=new MutationObserver(()=>{
+  setInterval(()=>{
     const btn=bP.textContent;
-    if(btn==='🎉 ¡Ganaste!'||btn==='😔 Perdiste'){
+    if((btn==='🎉 ¡Ganaste!'||btn==='😔 Perdiste')&&!cU){
       partidasJugadas++;
-      if(partidasJugadas>=3&&!cU){
+      if(partidasJugadas>=3){
         setTimeout(()=>mT('💎 ¿Te gusta el juego? Regístrate y compite por dinero real contra otras personas.','info'),3000);
         partidasJugadas=0;
       }
     }
-  });
-  observer.observe(bP,{characterData:true,subtree:true});
+  },2000);
 }
 
 // ✅ JUEGO UI
@@ -457,27 +455,13 @@ function updTbl(){if(eP)return;const m=MJ[mJ];let h='<div class="cards-row">';fo
 updPot(2);
 function rSearch(e,t){let h='<div class="cards-row" style="gap:20px">';for(let i=0;i<t;i++){const o=i<e;h+=`<div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px">${i===0?'Tú':(o?'Jugador':'Buscando')}</div></div>`;}h+=`</div>`;tC.innerHTML=h;sI.classList.remove('hidden');lP.classList.add('visible');}
 
-// ✅ RENDERIZAR PARTIDA (estática)
-function rGameStatic(jugadores){
-  let h='<div class="cards-row">';
-  jugadores.forEach((p,i)=>{
-    const et=p.uid===cU||p.es_invitado;
-    h+=`<div class="card-slot ${et?'tu-carta':''}"><div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p.carta.pinta.color}">${p.carta.texto}</div><div style="font-size:1rem;color:${p.carta.pinta.color}">${p.carta.pinta.icon}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${et?'Tú':(p.es_bot?'🤖 '+p.alias:p.alias)}</div></div>`;
-  });
-  h+='</div>';
-  tC.innerHTML=h;
-}
-
 // ✅ ANIMACIÓN DE BARAJA VIRTUAL
 async function animarReparto(jugadores){
   tC.innerHTML='<div class="cards-row"></div>';
   const row=tC.querySelector('.cards-row');
-  
   for(let i=0;i<jugadores.length;i++){
     const p=jugadores[i];
     const et=p.uid===cU||p.es_invitado;
-    
-    // Crear animación de carta volando
     const deckCard=document.createElement('div');
     deckCard.className='deck-card';
     const angle=(i-jugadores.length/2)*15;
@@ -490,11 +474,8 @@ async function animarReparto(jugadores){
     deckCard.style.setProperty('--fr',angle+'deg');
     tF.appendChild(deckCard);
     sDeal();
-    
     await esp(500);
     deckCard.remove();
-    
-    // Crear slot de carta boca abajo
     const slot=document.createElement('div');
     slot.className='card-slot'+(et?' tu-carta':'');
     slot.innerHTML=`<div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p.carta.pinta.color}">${p.carta.texto}</div><div style="font-size:1rem;color:${p.carta.pinta.color}">${p.carta.pinta.icon}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${et?'Tú':(p.es_bot?'🤖 '+p.alias:p.alias)}</div>`;
@@ -547,7 +528,6 @@ async function ejecutarPartidaConBots(){
   const jugadores=[{uid:cU,alias:cAlias,carta:cartas[0],es_bot:false},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
   sI.classList.add('hidden');lP.classList.remove('visible');
   bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
-  
   await animarReparto(jugadores);
   scart();
   await esp(800);
@@ -555,7 +535,6 @@ async function ejecutarPartidaConBots(){
   await animarVolteo();
   await esp(800);
   bP.textContent='Calculando...';
-  
   const pesos=jugadores.map(j=>j.carta.peso);
   const maxP=Math.max(...pesos);
   let ganadores=jugadores.filter(j=>j.carta.peso===maxP);
@@ -579,7 +558,6 @@ async function ejecutarPartidaInvitado(guestId){
   const jugadores=[{uid:'invitado_'+guestId,alias:'Tú',carta:cartas[0],es_invitado:true},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
   sI.classList.add('hidden');lP.classList.remove('visible');
   bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
-  
   await animarReparto(jugadores);
   scart();
   await esp(800);
@@ -587,7 +565,6 @@ async function ejecutarPartidaInvitado(guestId){
   await animarVolteo();
   await esp(800);
   bP.textContent='Calculando...';
-  
   const pesos=jugadores.map(j=>j.carta.peso);
   const maxP=Math.max(...pesos);
   let ganadores=jugadores.filter(j=>j.carta.peso===maxP);
@@ -633,23 +610,6 @@ onAuthStateChanged(auth,async(user)=>{
   }else{
     gv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');auv.classList.remove('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');
     if(chatL)off(ref(db,'chat/global'),'value',chatL);if(chatCI)clearInterval(chatCI);if(histCI)clearInterval(histCI);
-    // Mostrar vista de invitado automáticamente
-    setTimeout(()=>{
-      if(!auth.currentUser){
-        auv.classList.add('hidden');
-        gv.classList.remove('hidden');
-        bN.classList.remove('hidden');
-        document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-        document.getElementById('sectionJuego').classList.add('active');
-        tu.textContent='Invitado';
-        ua.textContent='👤';
-        sd.textContent='$'+BONO_INVITADO.toLocaleString('es-CO');
-        sd.classList.remove('zero');
-        document.querySelector('.user-status').innerHTML='<span style="font-size:.6rem;color:var(--text-muted)">Modo práctica</span>';
-        activarPsicologiaInvitado();
-        sm();
-      }
-    },500);
   }
 });
 
@@ -678,21 +638,20 @@ bA.addEventListener('click',async()=>{
 const tutorialVisto=localStorage.getItem('tutorialVisto');
 if(!tutorialVisto){mostrarTutorial();}
 
-// Si no hay sesión, auto-invitadoif(!auth.currentUser){
-  setTimeout(()=>{
-    if(!auth.currentUser){
-      auv.classList.add('hidden');
-      gv.classList.remove('hidden');
-      bN.classList.remove('hidden');
-      document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-      document.getElementById('sectionJuego').classList.add('active');
-      tu.textContent='Invitado';
-      ua.textContent='👤';
-      sd.textContent='$'+BONO_INVITADO.toLocaleString('es-CO');
-      document.querySelector('.user-status').innerHTML='<span style="font-size:.6rem;color:var(--text-muted)">Modo práctica</span>';
-    }
-  },300);
-}
+setTimeout(()=>{
+  if(!auth.currentUser){
+    auv.classList.add('hidden');
+    gv.classList.remove('hidden');
+    bN.classList.remove('hidden');
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sectionJuego').classList.add('active');
+    tu.textContent='Invitado';
+    ua.textContent='👤';
+    sd.textContent='$'+BONO_INVITADO.toLocaleString('es-CO');
+    document.querySelector('.user-status').innerHTML='<span style="font-size:.6rem;color:var(--text-muted)">Modo práctica</span>';
+    activarPsicologiaInvitado();
+  }
+},500);
 
 window.addEventListener('beforeunload',()=>{
   if(cU){set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});}
