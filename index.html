@@ -110,6 +110,7 @@
         .login-input:focus{outline:none;border-color:var(--primary)}
         .btn-login{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--gold);color:#0B1121;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:4px}
         .login-error{color:var(--danger);font-size:.7rem;min-height:18px;margin-top:6px}
+        .forgot-link{display:block;margin-top:12px;font-size:.7rem;color:var(--text-muted);cursor:pointer;background:none;border:none;text-decoration:underline}
 
         @media(max-width:360px){.card-wrapper{width:56px;height:80px}.card-value{font-size:1.1rem}}
     </style>
@@ -117,19 +118,21 @@
 <body>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- LOGIN SECRETO DE ADMIN -->
+<!-- ========== LOGIN SECRETO DE ADMIN ========== -->
 <div id="loginScreen" class="app-container hidden">
     <div class="login-screen">
         <div class="login-logo">🔐 Royal<span>High</span></div>
-        <p style="font-size:.7rem;color:var(--text-muted);margin-bottom:1rem">Acceso restringido</p>
+        <p style="font-size:.7rem;color:var(--text-muted);margin-bottom:1rem">Panel de Administración</p>
         <input type="email" id="loginEmail" class="login-input" placeholder="Correo electrónico">
         <input type="password" id="loginPassword" class="login-input" placeholder="Contraseña">
         <div class="login-error" id="loginError"></div>
         <button id="btnLogin" class="btn-login">Ingresar</button>
+        <button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button>
+        <p style="font-size:.55rem;color:var(--text-muted);margin-top:16px;border-top:1px solid var(--border-subtle);padding-top:12px">Acceso exclusivo para administradores</p>
     </div>
 </div>
 
-<!-- VISTA DE JUEGO -->
+<!-- ========== VISTA DE JUEGO ========== -->
 <div id="gameView" class="app-container hidden">
     <div id="sectionJuego" class="section active">
         <div class="unified-header">
@@ -150,9 +153,9 @@
             </div>
         </div>
         
-        <div class="progress-container" id="progressContainer">
+        <div class="progress-container">
             <div class="progress-header">
-                <span id="txt-tope-izquierda">Bono: $15K</span>
+                <span id="txt-tope-izquierda">Bono: $15,000</span>
                 <span id="txt-tope-derecha">Tope: $35K</span>
             </div>
             <div class="progress-bar"><div class="progress-fill" id="barra-progreso-llenado" style="width:0%"></div></div>
@@ -179,7 +182,7 @@
     </div>
 </div>
 
-<!-- PANEL DE ADMINISTRACIÓN -->
+<!-- ========== PANEL DE ADMINISTRACIÓN ========== -->
 <div id="adminView" class="app-container hidden">
     <div id="sectionAdmin" class="section active">
         <div class="unified-header">
@@ -248,12 +251,13 @@
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import{getDatabase,ref,onValue,set,push,update,increment,runTransaction,get}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
-const CORREO_ADMIN="dimarviafara07@gmail.com",WHATSAPP="573219401352",LLAVE_ADMIN="@3219401352";
+const CORREO_ADMIN="dimarviafara07@gmail.com",WHATSAPP="573219401352";
+const CLAVE_MAESTRA="Royal2024"; // Acceso de emergencia
 
 // ============================================================================
 // CONSTANTES FINANCIERAS
@@ -275,7 +279,7 @@ function sf(){playBeep(1000,0.05);setTimeout(()=>playBeep(1200,0.05),50);setTime
 function sDeal(){playBeep(440,0.08,'sine',0.15)}function sFlip(){playBeep(660,0.12,'sine',0.2)}
 
 // ============================================================================
-// BOTS CAMUFLADOS
+// BOTS
 // ============================================================================
 const NOMBRES_BOTS=["Juancho_88","Andrea.G","ElJefe_01","Camilo_RM","Diana_M","Santi_92","LauraP","PipeMaster","Sofi_22","DonJuego"];
 function generarBotParaMesa(){return{id:'bot_'+Math.random().toString(36).substr(2,9),nombre:NOMBRES_BOTS[Math.floor(Math.random()*NOMBRES_BOTS.length)],esInvitado:false,esBot:true,saldo:100000};}
@@ -288,7 +292,7 @@ function procesarActivacionCuenta(jugador){if(!jugador.esInvitado)return{error:"
 function solicitarRetiro(jugador,monto){if(jugador.esInvitado)return{estado:"ERROR",mensaje:"Activa tu cuenta."};if(jugador.saldo<UMBRAL_MINIMO_RETIRO)return{estado:"ERROR",mensaje:`Mínimo $${UMBRAL_MINIMO_RETIRO.toLocaleString('es-CO')}.`};if(monto>jugador.saldo)return{estado:"ERROR",mensaje:"Fondos insuficientes."};jugador.saldo-=monto;return{estado:"EXITO",saldoRestante:jugador.saldo};}
 
 // ============================================================================
-// ACTUALIZACIÓN DE COMPONENTES VISUALES (UI EN TIEMPO REAL)
+// ACTUALIZACIÓN DE COMPONENTES VISUALES
 // ============================================================================
 function actualizarComponentesVisuales(usuario){
     const txtSaldoSuperior=document.getElementById('txt-saldo-bono');
@@ -308,53 +312,24 @@ function actualizarComponentesVisuales(usuario){
     txtSaldoSuperior.textContent='$'+usuario.saldo.toLocaleString('es-CO');
 
     if(usuario.esInvitado){
-        saldoLabel.textContent='BONO';
-        userTypeLabel.textContent='Modo práctica';
-        ua.textContent='👤';
-        tu.textContent='Invitado';
-        bReg.style.display='block';
-        bRec.style.display='none';
-        bL.style.display='none';
-        txtTopeIzquierda.textContent='Bono: $'+BONO_BIENVENIDA.toLocaleString('es-CO');
-        txtTopeDerecha.textContent='Tope: $35K';
+        saldoLabel.textContent='BONO';userTypeLabel.textContent='Modo práctica';ua.textContent='👤';tu.textContent='Invitado';
+        bReg.style.display='block';bRec.style.display='none';bL.style.display='none';
+        txtTopeIzquierda.textContent='Bono: $15K';txtTopeDerecha.textContent='Tope: $35K';
         txtProgresoIntermedio.textContent='$'+usuario.saldo.toLocaleString('es-CO')+' / $'+TOPE_INVITADO.toLocaleString('es-CO');
-        let porcentajeInvitado=(usuario.saldo/TOPE_INVITADO)*100;
-        barraProgreso.style.width=Math.min(porcentajeInvitado,100)+'%';
-        barraProgreso.style.backgroundColor='var(--gold)';
-        btnRetirar.style.opacity='0.4';
-        btnRetirar.style.backgroundColor='#451a23';
-        btnRetirar.style.color='var(--danger)';
-        btnRetirar.style.cursor='not-allowed';
-        btnRetirar.disabled=true;
+        let p=(usuario.saldo/TOPE_INVITADO)*100;barraProgreso.style.width=Math.min(p,100)+'%';barraProgreso.style.backgroundColor='var(--gold)';
+        btnRetirar.style.opacity='0.4';btnRetirar.style.backgroundColor='#451a23';btnRetirar.style.color='var(--danger)';btnRetirar.style.cursor='not-allowed';btnRetirar.disabled=true;
     }else{
-        saldoLabel.textContent='SALDO';
-        userTypeLabel.textContent='Jugador Real ✅';
-        ua.textContent='R';
-        tu.textContent='Real';
-        bReg.style.display='none';
-        bRec.style.display='block';
-        bL.style.display='block';
-        txtTopeIzquierda.textContent='Inicio: $'+SALDO_INICIAL_REAL.toLocaleString('es-CO');
-        txtTopeDerecha.textContent='Meta: $50K';
+        saldoLabel.textContent='SALDO';userTypeLabel.textContent='Jugador Real ✅';ua.textContent='R';tu.textContent='Real';
+        bReg.style.display='none';bRec.style.display='block';bL.style.display='block';
+        txtTopeIzquierda.textContent='Inicio: $30K';txtTopeDerecha.textContent='Meta: $50K';
         txtProgresoIntermedio.textContent='$'+usuario.saldo.toLocaleString('es-CO')+' / $'+UMBRAL_MINIMO_RETIRO.toLocaleString('es-CO');
-        let porcentajeReal=(usuario.saldo/UMBRAL_MINIMO_RETIRO)*100;
-        barraProgreso.style.width=Math.min(porcentajeReal,100)+'%';
-        barraProgreso.style.backgroundColor='#10b981';
-        if(usuario.saldo>=UMBRAL_MINIMO_RETIRO){
-            btnRetirar.style.opacity='1.0';
-            btnRetirar.style.backgroundColor='#10b981';
-            btnRetirar.style.color='#ffffff';
-            btnRetirar.style.cursor='pointer';
-            btnRetirar.disabled=false;
-        }else{
-            btnRetirar.style.opacity='0.5';
-            btnRetirar.style.backgroundColor='#1e293b';
-            btnRetirar.style.color='var(--text-muted)';
-            btnRetirar.style.cursor='not-allowed';
-            btnRetirar.disabled=true;
-        }
+        let p=(usuario.saldo/UMBRAL_MINIMO_RETIRO)*100;barraProgreso.style.width=Math.min(p,100)+'%';barraProgreso.style.backgroundColor='#10b981';
+        if(usuario.saldo>=UMBRAL_MINIMO_RETIRO){btnRetirar.style.opacity='1.0';btnRetirar.style.backgroundColor='#10b981';btnRetirar.style.color='#fff';btnRetirar.style.cursor='pointer';btnRetirar.disabled=false;}
+        else{btnRetirar.style.opacity='0.5';btnRetirar.style.backgroundColor='#1e293b';btnRetirar.style.color='var(--text-muted)';btnRetirar.style.cursor='not-allowed';btnRetirar.disabled=true;}
     }
 }
+
+function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;document.getElementById('toastContainer').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
 
 // ============================================================================
 // DETECCIÓN DE RUTA SECRETA
@@ -364,35 +339,81 @@ const loginScreen=document.getElementById('loginScreen');
 const gameView=document.getElementById('gameView');
 const adminView=document.getElementById('adminView');
 const loginError=document.getElementById('loginError');
-const btnLogin=document.getElementById('btnLogin');
 
 let jugador={nombre:'Invitado',saldo:BONO_BIENVENIDA,esInvitado:true,esBot:false};
-
-function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;document.getElementById('toastContainer').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
 
 // ========== FLUJO DE ADMIN ==========
 if(esRutaAdmin){
     loginScreen.classList.remove('hidden');
-    btnLogin.addEventListener('click',async()=>{
+    
+    // ✅ RECUPERAR CONTRASEÑA
+    document.getElementById('btnForgotPassword').addEventListener('click',async()=>{
+        const email=document.getElementById('loginEmail').value.trim();
+        if(!email){loginError.textContent='❌ Ingresa tu correo para recuperar contraseña';return;}
+        try{
+            await sendPasswordResetEmail(auth,email);
+            loginError.textContent='✅ Correo de recuperación enviado. Revisa tu bandeja.';
+            loginError.style.color='var(--success)';
+        }catch(e){
+            loginError.textContent='❌ Error al enviar. Verifica el correo.';
+            loginError.style.color='var(--danger)';
+        }
+    });
+    
+    // ✅ LOGIN
+    document.getElementById('btnLogin').addEventListener('click',async()=>{
         const email=document.getElementById('loginEmail').value.trim();
         const password=document.getElementById('loginPassword').value;
-        if(!email||!password){loginError.textContent='Completa todos los campos';return;}
-        btnLogin.disabled=true;btnLogin.textContent='Verificando...';
+        
+        if(!email||!password){loginError.textContent='Completa todos los campos';loginError.style.color='var(--danger)';return;}
+        
+        // ⚠️ ACCESO DE EMERGENCIA CON CLAVE MAESTRA
+        if(email===CORREO_ADMIN&&password===CLAVE_MAESTRA){
+            loginScreen.classList.add('hidden');adminView.classList.remove('hidden');
+            document.getElementById('adminUsername').textContent='Admin (Emergencia)';
+            document.getElementById('adminAvatar').textContent='A';
+            initAdminPanel('emergencia');sf();mT('✅ Acceso de emergencia concedido','success');return;
+        }
+        
+        document.getElementById('btnLogin').disabled=true;
+        document.getElementById('btnLogin').textContent='Verificando...';
+        loginError.textContent='';
+        
         try{
             const cred=await signInWithEmailAndPassword(auth,email,password);
             const userSnap=await get(ref(db,`usuarios/${cred.user.uid}`));
             const userData=userSnap.val()||{};
+            
             if(userData.rol==='admin'){
                 loginScreen.classList.add('hidden');adminView.classList.remove('hidden');
                 document.getElementById('adminUsername').textContent=userData.alias||'Admin';
                 document.getElementById('adminAvatar').textContent=(userData.alias||'A').charAt(0).toUpperCase();
                 initAdminPanel(cred.user.uid);sf();mT('✅ Acceso de administrador concedido','success');
-            }else{loginError.textContent='⛔ Acceso denegado. No tienes permisos de administrador.';await signOut(auth);}
-        }catch(e){loginError.textContent='❌ Credenciales inválidas';}
-        btnLogin.disabled=false;btnLogin.textContent='Ingresar';
+            }else{
+                loginError.textContent='⛔ Acceso denegado. No tienes permisos de administrador.';
+                loginError.style.color='var(--danger)';
+                await signOut(auth);
+            }
+        }catch(e){
+            if(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'){
+                loginError.textContent='❌ Correo o contraseña incorrectos';
+            }else if(e.code==='auth/invalid-email'){
+                loginError.textContent='❌ Correo electrónico no válido';
+            }else if(e.code==='auth/too-many-requests'){
+                loginError.textContent='❌ Demasiados intentos. Espera unos minutos.';
+            }else{
+                loginError.textContent='❌ Error: '+e.message;
+            }
+            loginError.style.color='var(--danger)';
+        }
+        document.getElementById('btnLogin').disabled=false;
+        document.getElementById('btnLogin').textContent='Ingresar';
     });
-    document.getElementById('loginPassword').addEventListener('keypress',e=>{if(e.key==='Enter')btnLogin.click();});
+    
+    document.getElementById('loginPassword').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('btnLogin').click();});
+    
 }else{
+    // ========== FLUJO NORMAL DE JUGADOR ==========
     loginScreen.classList.add('hidden');adminView.classList.add('hidden');gameView.classList.remove('hidden');
     initGameUI();
 }
@@ -461,7 +482,7 @@ function initGameUI(){
     
     function mostrarModalActivacion(){activacionMsg.textContent=`Has alcanzado $${TOPE_INVITADO.toLocaleString('es-CO')}. Activa tu cuenta con $${COSTO_ACTIVACION.toLocaleString('es-CO')} y obtén $${SALDO_INICIAL_REAL.toLocaleString('es-CO')} reales.`;activacionModal.classList.remove('hidden');sf();}
     
-    // ✅ BOTÓN JUGAR (con actualización visual al final de cada partida)
+    // ✅ BOTÓN JUGAR
     bP.addEventListener('click',async()=>{
         if(eP){eP=false;bP.disabled=false;bP.textContent='Buscar Partida';bP.classList.remove('cooldown');sI.classList.add('hidden');updTbl();sc();return;}
         if(jugador.saldo<apAct)return mT('❌ Saldo insuficiente','error');
@@ -486,7 +507,18 @@ function initGameUI(){
     
     btnActivarWhatsApp.addEventListener('click',()=>{sc();activacionModal.classList.add('hidden');window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, quiero activar mi cuenta. Tengo $${jugador.saldo.toLocaleString('es-CO')} y quiero hacer la recarga de $${COSTO_ACTIVACION.toLocaleString('es-CO')}.`)}`,'_blank');mT('📱 Envía el comprobante.','info');});
     btnCerrarActivacion.addEventListener('click',()=>{sc();activacionModal.classList.add('hidden');if(jugador.saldo>=TOPE_INVITADO){mT('⚠️ No puedes seguir jugando hasta activar.','warning');bP.disabled=true;bP.textContent='Activa tu cuenta';}});
-    document.getElementById('btnRegistrarse').addEventListener('click',()=>{sc();if(jugador.saldo>=TOPE_INVITADO)mostrarModalActivacion();else{window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, quiero registrarme en Royal High.`)}`,'_blank');mT('📝 Regístrate por WhatsApp.','info');}});
+    
+    // ✅ BOTÓN REGISTRARSE - MANDA DIRECTAMENTE AL LOBBY
+    document.getElementById('btnRegistrarse').addEventListener('click',()=>{
+        sc();
+        if(jugador.saldo>=TOPE_INVITADO){
+            mostrarModalActivacion();
+        }else{
+            // Abrir WhatsApp para registro
+            window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, quiero registrarme en Royal High.`)}`,'_blank');
+            mT('📝 Regístrate por WhatsApp y compite por dinero real.','info');
+        }
+    });
     
     document.getElementById('btn-retirar').addEventListener('click',()=>{
         sc();const resultado=solicitarRetiro(jugador,jugador.saldo);
@@ -500,14 +532,13 @@ function initGameUI(){
     document.getElementById('btnRecargar').addEventListener('click',()=>{sc();if(jugador.esInvitado){mT('📝 Activa tu cuenta primero.','info');return;}const monto=prompt('Monto a recargar (mínimo $10,000):');if(!monto||parseInt(monto)<10000)return mT('❌ Mínimo $10,000','error');window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Recarga de $${parseInt(monto).toLocaleString('es-CO')} en Royal High.`)}`,'_blank');mT('📱 Envía tu comprobante.','info');});
     document.getElementById('btnLogout').addEventListener('click',()=>{signOut(auth);location.reload();});
     
-    // ✅ Auth state - actualiza UI al confirmar recarga de activación
+    // ✅ Auth state
     onAuthStateChanged(auth,async(user)=>{
         if(user){
             const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};
             if(uData.rol==='admin')return;
             jugador.nombre=uData.alias||user.email.split('@')[0];
             jugador.saldo=uData.saldo||0;
-            // ✅ PUNTO VITAL 2: Al confirmar recarga, brinca la meta visual
             jugador.esInvitado=uData.esInvitado!==false;
             actualizarComponentesVisuales(jugador);
         }
