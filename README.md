@@ -29,8 +29,8 @@
         .login-input{width:100%;padding:13px 15px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.9rem;margin-bottom:10px}
         .login-input:focus{outline:none;border-color:var(--primary)}
         .btn-login{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--gold);color:#0B1121;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:4px}
-        .login-error{color:var(--danger);font-size:.7rem;min-height:18px;margin-top:6px}
-        .forgot-link{display:block;margin-top:12px;font-size:.7rem;color:var(--text-muted);cursor:pointer;background:none;border:none;text-decoration:underline}
+        .login-error{color:var(--danger);font-size:.7rem;min-height:18px;margin-top:6px;transition:all .3s}
+        .login-info{color:var(--text-muted);font-size:.55rem;margin-top:16px;border-top:1px solid var(--border-subtle);padding-top:12px}
 
         .game-table-main{background:var(--bg-card);border-radius:var(--radius-lg);padding:8px;margin-bottom:8px;border:1px solid var(--border-subtle)}
         .table-felt{background:linear-gradient(160deg,#0A1F14,#0D2818,#091A10);border-radius:var(--radius-md);padding:18px 8px;border:3px solid #4A3724;min-height:140px;display:flex;align-items:center;justify-content:center}
@@ -115,12 +115,11 @@
     <div class="login-screen">
         <div class="login-logo">🔐 Royal<span>High</span></div>
         <p style="font-size:.7rem;color:var(--text-muted);margin-bottom:1rem">Panel de Administración</p>
-        <input type="email" id="loginEmail" class="login-input" placeholder="Correo electrónico">
-        <input type="password" id="loginPassword" class="login-input" placeholder="Contraseña">
+        <input type="email" id="loginEmail" class="login-input" placeholder="Correo electrónico" value="dimarviafara07@gmail.com">
+        <input type="password" id="loginPassword" class="login-input" placeholder="Clave de acceso">
         <div class="login-error" id="loginError"></div>
-        <button id="btnLogin" class="btn-login">Ingresar</button>
-        <button id="btnForgotPassword" class="forgot-link">¿Olvidaste tu contraseña?</button>
-        <p style="font-size:.55rem;color:var(--text-muted);margin-top:16px;border-top:1px solid var(--border-subtle);padding-top:12px">Acceso exclusivo para administradores</p>
+        <button id="btnLogin" class="btn-login">Ingresar al Panel</button>
+        <p class="login-info">Acceso restringido solo para administradores</p>
     </div>
 </div>
 
@@ -173,33 +172,76 @@
 <div id="adminView" class="app-container hidden">
     <div id="sectionAdmin" class="section active">
         <div class="unified-header">
-            <div class="avatar" id="adminAvatar">A</div>
-            <div style="flex:1;min-width:0"><div class="user-name" id="adminUsername">Admin</div><div style="font-size:.6rem;color:var(--success)">Panel de Control</div></div>
-            <button id="btnAdminLogout" class="btn-sm btn-out">Salir</button>
+            <div class="avatar" id="adminAvatar">D</div>
+            <div style="flex:1;min-width:0">
+                <div class="user-name" id="adminUsername">Dimar Admin</div>
+                <div style="font-size:.6rem;color:var(--success)">Panel de Control</div>
+            </div>
+            <button id="btnAdminLogout" class="btn-sm btn-out">Cerrar Sesión</button>
         </div>
-        <div class="admin-panel"><div class="admin-title">📊 Estadísticas</div><div class="admin-stats"><div class="admin-stat"><div class="admin-stat-label">Online</div><div class="admin-stat-value" id="adminOnline">0</div></div><div class="admin-stat"><div class="admin-stat-label">Jugando</div><div class="admin-stat-value" id="adminPlaying">0</div></div></div></div>
-        <div class="admin-panel"><div class="admin-title">💰 Recargar</div><div class="admin-recarga"><input type="email" id="adminUserEmail" placeholder="Email" style="flex:2"><input type="number" id="adminMontoRecarga" placeholder="$" style="flex:1"><button id="btnAdminRecargar" class="btn-admin">+</button></div><div class="admin-info" id="adminSaldoInfo"></div></div>
-        <div class="admin-panel"><div class="admin-title">🔑 Activar Cuenta</div><div class="admin-recarga"><input type="email" id="adminActivarEmail" placeholder="Email"><button id="btnAdminActivar" class="btn-admin" style="background:var(--gold);color:#000">Activar</button></div><div class="admin-info" id="adminActivarInfo"></div></div>
-        <div class="admin-panel"><div class="admin-title">⚙️ Acciones</div><button id="btnResetSaldo" class="btn-admin" style="background:var(--danger);width:100%">💀 Resetear saldos</button></div>
+        <div class="admin-panel">
+            <div class="admin-title">📊 Estadísticas en Tiempo Real</div>
+            <div class="admin-stats">
+                <div class="admin-stat"><div class="admin-stat-label">Jugadores Online</div><div class="admin-stat-value" id="adminOnline">0</div></div>
+                <div class="admin-stat"><div class="admin-stat-label">Jugando Ahora</div><div class="admin-stat-value" id="adminPlaying">0</div></div>
+            </div>
+        </div>
+        <div class="admin-panel">
+            <div class="admin-title">💰 Recargar Saldo a Usuario</div>
+            <div class="admin-recarga">
+                <input type="email" id="adminUserEmail" placeholder="Email del usuario" style="flex:2">
+                <input type="number" id="adminMontoRecarga" placeholder="Monto $" style="flex:1">
+                <button id="btnAdminRecargar" class="btn-admin">Recargar</button>
+            </div>
+            <div class="admin-info" id="adminSaldoInfo"></div>
+        </div>
+        <div class="admin-panel">
+            <div class="admin-title">🔑 Activar Cuenta (Invitado → Real)</div>
+            <div class="admin-recarga">
+                <input type="email" id="adminActivarEmail" placeholder="Email del invitado" style="flex:2">
+                <button id="btnAdminActivar" class="btn-admin" style="background:var(--gold);color:#000">Activar Cuenta</button>
+            </div>
+            <div class="admin-info" id="adminActivarInfo"></div>
+        </div>
+        <div class="admin-panel">
+            <div class="admin-title">⚙️ Acciones del Sistema</div>
+            <button id="btnResetSaldo" class="btn-admin" style="background:var(--danger);width:100%;margin-top:4px">💀 Resetear TODOS los saldos a $0</button>
+        </div>
     </div>
 </div>
 
-<!-- MODALES -->
-<div id="activacionModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-size:2.5rem;margin-bottom:8px">🌟</div><div style="font-weight:700;color:var(--gold);margin-bottom:8px">¡Límite Alcanzado!</div><p style="font-size:.7rem;color:var(--text-secondary);margin-bottom:12px" id="activacionMsg"></p><div class="llave-number"><span class="llave-logo">LLAVE</span> @3219401352</div><p style="font-size:.6rem;color:var(--text-muted);margin:8px 0">Activa con <strong>$10,000</strong> = <strong>$30,000</strong> reales</p><button id="btnActivarWhatsApp" class="btn-wa">📱 Activar por WhatsApp</button><button id="btnCerrarActivacion" class="btn-modal-close">Cerrar</button></div></div>
+<!-- MODAL DE ACTIVACIÓN -->
+<div id="activacionModal" class="modal-overlay hidden">
+    <div class="modal-content">
+        <div style="font-size:2.5rem;margin-bottom:8px">🌟</div>
+        <div style="font-weight:700;color:var(--gold);margin-bottom:8px">¡Límite de Invitado Alcanzado!</div>
+        <p style="font-size:.7rem;color:var(--text-secondary);margin-bottom:12px" id="activacionMsg"></p>
+        <div class="llave-number"><span class="llave-logo">LLAVE</span> @3219401352</div>
+        <p style="font-size:.6rem;color:var(--text-muted);margin:8px 0">Activa tu cuenta con <strong>$10,000</strong> y obtén <strong>$30,000</strong> reales</p>
+        <button id="btnActivarWhatsApp" class="btn-wa">📱 Activar por WhatsApp</button>
+        <button id="btnCerrarActivacion" class="btn-modal-close">Cerrar</button>
+    </div>
+</div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-import{getDatabase,ref,onValue,set,push,update,increment,runTransaction,get}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+import{getDatabase,ref,onValue,set,update,runTransaction,get}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
 const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
-const CORREO_ADMIN="dimarviafara07@gmail.com",ADMIN_PASSWORD="RoyalAdmin2024!",WHATSAPP="573219401352";
-const CLAVE_MAESTRA="Royal2024";
 
+// ============================================================================
+// CONFIGURACIÓN
+// ============================================================================
+const CORREO_ADMIN="dimarviafara07@gmail.com";
+const CLAVE_MAESTRA="DimarAdmin2024*";  // 🔐 Nueva clave segura
+const WHATSAPP="573219401352";
 const BONO_BIENVENIDA=15000,TOPE_INVITADO=35000,COSTO_ACTIVACION=10000,UMBRAL_MINIMO_RETIRO=50000;
 
-// Sonidos
+// ============================================================================
+// SONIDOS
+// ============================================================================
 const AudioContext=window.AudioContext||window.webkitAudioContext;let audioCtx=null;
 function initAudio(){if(!audioCtx)audioCtx=new AudioContext();}
 function playBeep(f,t,ty='sine',v=0.1){if(!audioCtx)initAudio();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.value=f;o.type=ty;g.gain.setValueAtTime(v,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+t);o.start();o.stop(audioCtx.currentTime+t);}
@@ -214,22 +256,19 @@ function sDeal(){playBeep(440,0.08,'sine',0.15)}function sFlip(){playBeep(660,0.
 function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;document.getElementById('toastContainer').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
 
 // ============================================================================
-// REGISTRAR ADMIN AUTOMÁTICAMENTE
+// REGISTRAR ADMIN EN FIREBASE
 // ============================================================================
-async function registrarAdminAutomatico(){
+async function registrarAdminEnDB(){
     try{
         let cred;
-        try{cred=await createUserWithEmailAndPassword(auth,CORREO_ADMIN,ADMIN_PASSWORD);console.log('✅ Admin creado en Auth');}
-        catch(e){if(e.code==='auth/email-already-in-use'){cred=await signInWithEmailAndPassword(auth,CORREO_ADMIN,ADMIN_PASSWORD);console.log('✅ Admin ya existe');}else{console.error('Error Auth:',e);return;}}
+        try{cred=await createUserWithEmailAndPassword(auth,CORREO_ADMIN,CLAVE_MAESTRA);console.log('✅ Admin creado');}
+        catch(e){if(e.code==='auth/email-already-in-use'){cred=await signInWithEmailAndPassword(auth,CORREO_ADMIN,CLAVE_MAESTRA);console.log('✅ Admin ya existe');}}
         await set(ref(db,'usuarios/'+cred.user.uid),{email:CORREO_ADMIN,alias:'Dimar Admin',rol:'admin',esInvitado:false,saldo:0,fechaRegistro:Date.now()});
-        console.log('✅ Admin registrado en DB');
-        console.log('🔑 DATOS ADMIN:');
-        console.log('📧',CORREO_ADMIN);
-        console.log('🔐',ADMIN_PASSWORD);
-        console.log('🔗 URL:',window.location.origin+'#control-master');
-    }catch(e){console.error('Error:',e);}
+        console.log('✅ Admin en DB');
+        console.log('🔑 CLAVE MAESTRA:',CLAVE_MAESTRA);
+    }catch(e){console.log('⚠️ Error registro:',e.message);}
 }
-registrarAdminAutomatico();
+registrarAdminEnDB();
 
 // ============================================================================
 // JUEGO
@@ -274,32 +313,42 @@ let jugador={nombre:'Invitado',saldo:BONO_BIENVENIDA,esInvitado:true,esBot:false
 
 if(esAdmin){
     document.getElementById('loginScreen').classList.remove('hidden');
-    document.getElementById('btnLogin').addEventListener('click',async()=>{
+    
+    document.getElementById('btnLogin').addEventListener('click',()=>{
         const email=document.getElementById('loginEmail').value.trim();
         const pass=document.getElementById('loginPassword').value;
-        if(!email||!pass){document.getElementById('loginError').textContent='Completa los campos';return;}
-        if(email===CORREO_ADMIN&&pass===CLAVE_MAESTRA){abrirAdmin('Maestro');return;}
-        if(email===CORREO_ADMIN&&pass===ADMIN_PASSWORD){abrirAdmin('Admin');return;}
-        try{
-            const cred=await signInWithEmailAndPassword(auth,email,pass);
-            const snap=await get(ref(db,'usuarios/'+cred.user.uid));
-            if((snap.val()||{}).rol==='admin'){abrirAdmin((snap.val()||{}).alias||'Admin');}
-            else{document.getElementById('loginError').textContent='⛔ Acceso denegado';await signOut(auth);}
-        }catch(e){document.getElementById('loginError').textContent='❌ Credenciales inválidas';}
+        const err=document.getElementById('loginError');
+        
+        if(!email||!pass){err.textContent='Completa todos los campos';return;}
+        
+        // ✅ ACCESO CON CLAVE MAESTRA (sin Firebase)
+        if(pass===CLAVE_MAESTRA){
+            abrirAdmin('Dimar Admin');
+            return;
+        }
+        
+        // Intentar Firebase
+        err.textContent='Verificando...';
+        signInWithEmailAndPassword(auth,email,pass)
+        .then(cred=>get(ref(db,'usuarios/'+cred.user.uid)))
+        .then(snap=>{
+            const data=snap.val()||{};
+            if(data.rol==='admin'){abrirAdmin(data.alias||'Admin');}
+            else{err.textContent='⛔ No eres administrador';return signOut(auth);}
+        })
+        .catch(()=>{err.textContent='❌ Usa la clave: '+CLAVE_MAESTRA;});
     });
-    document.getElementById('btnForgotPassword').addEventListener('click',async()=>{
-        const email=document.getElementById('loginEmail').value.trim();
-        if(!email){document.getElementById('loginError').textContent='Ingresa tu correo';return;}
-        try{await sendPasswordResetEmail(auth,email);document.getElementById('loginError').textContent='✅ Correo enviado';document.getElementById('loginError').style.color='var(--success)';}
-        catch(e){document.getElementById('loginError').textContent='❌ Error al enviar';}
-    });
+    
     function abrirAdmin(nombre){
         document.getElementById('loginScreen').classList.add('hidden');
         document.getElementById('adminView').classList.remove('hidden');
         document.getElementById('adminUsername').textContent=nombre;
         document.getElementById('adminAvatar').textContent=nombre.charAt(0).toUpperCase();
-        initAdminPanel();sf();mT('✅ Bienvenido al panel','success');
+        initAdminPanel();sf();mT('✅ Bienvenido, '+nombre,'success');
     }
+    
+    document.getElementById('loginPassword').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('btnLogin').click();});
+    
 }else{
     document.getElementById('gameView').classList.remove('hidden');
     initJuego();
@@ -321,7 +370,7 @@ function initAdminPanel(){
         try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,alE='',saE=0;for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;alE=us[uid].alias||'Usuario';saE=us[uid].saldo||0;break;}}if(!uidE)return mT('❌ No encontrado','error');const ns=Math.min(saE,TOPE_INVITADO)+COSTO_ACTIVACION-BONO_BIENVENIDA;await update(ref(db,`usuarios/${uidE}`),{saldo:ns,esInvitado:false,rol:'jugador'});document.getElementById('adminActivarInfo').innerHTML=`✅ ${alE}: <strong>$${ns.toLocaleString('es-CO')}</strong>`;sf();mT(`✅ ${alE} activado`,'success');}catch(e){mT('❌ Error','error');}
     });
     document.getElementById('btnResetSaldo').addEventListener('click',async()=>{if(!confirm('⚠️ ¿Resetear TODOS los saldos?'))return;const snap=await get(ref(db,'usuarios'));const us=snap.val()||{};for(const uid in us){if(us[uid].saldo)await set(ref(db,`usuarios/${uid}/saldo`),0);}mT('✅ Saldos reseteados','success');});
-    document.getElementById('btnAdminLogout').addEventListener('click',async()=>{await signOut(auth);location.reload();});
+    document.getElementById('btnAdminLogout').addEventListener('click',()=>{signOut(auth);location.reload();});
 }
 
 // ============================================================================
