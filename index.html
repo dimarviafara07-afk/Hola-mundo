@@ -201,6 +201,12 @@
         .tutorial-btn:hover{background:#d4a853;transform:translateY(-1px)}
         .tutorial-skip{color:var(--text-muted);font-size:.65rem;margin-top:10px;cursor:pointer;background:none;border:none}
 
+        .retiro-step{display:flex;align-items:center;gap:8px;padding:8px 12px;margin:6px 0;border-radius:var(--radius-sm);font-size:.7rem;text-align:left}
+        .retiro-step.bloqueado{background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.2);color:var(--danger)}
+        .retiro-step.activo{background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:var(--success)}
+        .retiro-step.pendiente{background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:var(--warning)}
+        .retiro-icon{font-size:1.2rem}
+
         @media(max-width:360px){.card-wrapper{width:56px;height:80px}.card-value{font-size:1.1rem}}
     </style>
 </head>
@@ -273,6 +279,18 @@
 
     <div id="nequiModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-weight:700;margin-bottom:10px">💰 Recargar Saldo</div><p style="font-size:.7rem;color:var(--text-muted);margin-bottom:12px">Transfiere por <strong style="color:var(--llave-color)">Llave</strong> y envía el comprobante</p><div class="llave-number"><span class="llave-logo">LLAVE</span> @3219401352</div><p style="font-size:.65rem;color:var(--text-muted);margin:8px 0">Monto mínimo: <strong>$10,000</strong></p><button id="btnWaConfirm" class="btn-wa llave">📱 Enviar Comprobante por WhatsApp</button><button id="btnModalCerrar" class="btn-modal-close">Cancelar</button></div></div>
     <div id="confirmModal" class="modal-overlay hidden"><div class="modal-content"><div style="font-weight:700;margin-bottom:8px" id="confirmTitle"></div><p style="font-size:.7rem;color:var(--text-muted);margin-bottom:12px" id="confirmMsg"></p><button id="btnConfirmYes" class="btn-primary" style="margin-bottom:6px">Sí</button><button id="btnConfirmNo" class="btn-modal-close">Cancelar</button></div></div>
+    
+    <!-- MODAL DE RETIRO INVITADO -->
+    <div id="retiroInvitadoModal" class="modal-overlay hidden">
+        <div class="modal-content retiro-modal-content">
+            <div style="font-size:2rem;margin-bottom:8px" id="retiroIcon">💸</div>
+            <div style="font-weight:700;margin-bottom:4px" id="retiroTitle">Retirar Ganancias</div>
+            <p style="font-size:.65rem;color:var(--text-muted);margin-bottom:12px" id="retiroSubtitle"></p>
+            <div id="retiroSteps"></div>
+            <button id="btnRetiroAccion" class="btn-primary btn-gold" style="margin-top:10px"></button>
+            <button id="btnRetiroCerrar" class="btn-modal-close">Cerrar</button>
+        </div>
+    </div>
 </div>
 
 <script type="module">
@@ -287,6 +305,8 @@ const LIMITE_GANANCIAS_SIN_RECARGA=100000;
 const TIEMPO_VIDA_CHAT=300000,TIEMPO_VIDA_HISTORIAL=300000,TIEMPO_VIDA_RANKING=300000;
 const BONO_INVITADO=15000;
 const RECARGA_MINIMA=10000;
+const RECARGA_MINIMA_ACTIVACION=10000;
+const UMBRAL_MINIMO_RETIRO=50000;
 
 const AudioContext=window.AudioContext||window.webkitAudioContext;let audioCtx=null;
 function initAudio(){if(!audioCtx)audioCtx=new AudioContext();}
@@ -321,9 +341,11 @@ const histH=document.getElementById('historyHeaderJuego'),histColl=document.quer
 const configCodigo=document.getElementById('configCodigo'),configHoraInicio=document.getElementById('configHoraInicio'),configHoraFin=document.getElementById('configHoraFin'),configJornadaActiva=document.getElementById('configJornadaActiva'),btnConfigSave=document.getElementById('btnConfigSave');
 const btnAdminVerSaldo=document.getElementById('btnAdminVerSaldo'),adminSaldoInfo=document.getElementById('adminSaldoInfo');
 const tutorialOverlay=document.getElementById('tutorialOverlay'),tutorialSteps=document.getElementById('tutorialSteps'),tutorialProgress=document.getElementById('tutorialProgress'),tutorialBtn=document.getElementById('tutorialBtn'),tutorialSkip=document.getElementById('tutorialSkip'),tutorialTitle=document.getElementById('tutorialTitle'),tutorialHighlight=document.getElementById('tutorialHighlight');
+const retiroModal=document.getElementById('retiroInvitadoModal'),retiroIcon=document.getElementById('retiroIcon'),retiroTitle=document.getElementById('retiroTitle'),retiroSubtitle=document.getElementById('retiroSubtitle'),retiroSteps=document.getElementById('retiroSteps'),btnRetiroAccion=document.getElementById('btnRetiroAccion'),btnRetiroCerrar=document.getElementById('btnRetiroCerrar');
 
 let cU=null,cUN='',cAlias='',sAct=0,apAct=2000,mJ='1v1',eP=false,cdA='';
 let saldoInvitado=BONO_INVITADO;
+let haRealizadoRecargaActivacion=false;
 const pintas=[{icon:'♠',color:'#1E293B'},{icon:'♥',color:'#DC2626'},{icon:'♦',color:'#2563EB'},{icon:'♣',color:'#16A34A'}],nC=["2","3","4","5","6","7","8","9","10","J","Q","K","A"],MJ={'1v1':2,'3p':3};
 const esp=(ms)=>new Promise(r=>setTimeout(r,ms));
 let mazoVirtual=[];
@@ -337,21 +359,15 @@ function seleccionarBotsAleatorios(cantidad){const shuffled=[...BOTS_DISPONIBLES
 
 function actualizarSaldoInvitado(){
   sd.textContent='$'+saldoInvitado.toLocaleString('es-CO');
-  sd.classList.remove('zero');
+  sd.classList.remove('zero','up','down');
   if(saldoInvitado<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}
 }
 
 function actualizarVisibilidadBotones(){
   if(!cU){
-    bReg.style.display='block';
-    bL.style.display='none';
-    bRec.style.display='none';
-    bRet.style.display='none';
+    bReg.style.display='block';bL.style.display='none';bRec.style.display='none';bRet.style.display='block';
   }else{
-    bReg.style.display='none';
-    bL.style.display='block';
-    bRec.style.display='block';
-    bRet.style.display='block';
+    bReg.style.display='none';bL.style.display='block';bRec.style.display='block';bRet.style.display='block';
   }
 }
 
@@ -363,17 +379,9 @@ const tutorialData=[
   {title:"¿Listo para jugar? 🎮",highlight:"",steps:[{num:"7",text:"Elige <strong>modalidad</strong> (1vs1 o 3 jugadores) y el <strong>monto</strong> a apostar."},{num:"8",text:"Presiona <strong>Buscar Partida</strong>. Las cartas se reparten una a una y se revelan con suspenso."}]}
 ];
 let tutStep=0;
-
-function mostrarTutorial(){
-  tutStep=0;
-  tutorialOverlay.style.display='flex';
-  tutorialOverlay.classList.remove('hidden');
-  renderTutorialStep();
-}
-
+function mostrarTutorial(){tutStep=0;tutorialOverlay.style.display='flex';tutorialOverlay.classList.remove('hidden');renderTutorialStep();}
 function renderTutorialStep(){
-  const data=tutorialData[tutStep];
-  tutorialTitle.textContent=data.title;
+  const data=tutorialData[tutStep];tutorialTitle.textContent=data.title;
   if(data.highlight){tutorialHighlight.innerHTML=data.highlight;tutorialHighlight.classList.remove('hidden');}else{tutorialHighlight.classList.add('hidden');}
   let dots='';for(let i=0;i<tutorialData.length;i++)dots+=`<div class="tutorial-dot ${i===tutStep?'active':''}"></div>`;
   tutorialProgress.innerHTML=dots;
@@ -386,14 +394,7 @@ tutorialSkip.addEventListener('click',cerrarTutorial);
 function cerrarTutorial(){tutorialOverlay.style.display='none';tutorialOverlay.classList.add('hidden');localStorage.setItem('tutorialVisto','true');sm();setTimeout(()=>{mT('🎮 ¡A jugar! Elige modalidad y presiona Buscar Partida.','info');},500);}
 
 // ✅ BOTÓN REGISTRARSE
-bReg.addEventListener('click',()=>{
-  sc();
-  gv.classList.add('hidden');
-  bN.classList.add('hidden');
-  auv.classList.remove('hidden');
-  tr.click();
-  mT('📝 Crea tu cuenta gratis y compite por dinero real.','info');
-});
+bReg.addEventListener('click',()=>{sc();gv.classList.add('hidden');bN.classList.add('hidden');auv.classList.remove('hidden');tr.click();mT('📝 Crea tu cuenta gratis y compite por dinero real.','info');});
 
 // ✅ UTILIDADES
 function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;tCon.appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
@@ -405,43 +406,110 @@ async function actualizarGananciasSinRecarga(uid,monto){const snap=await get(ref
 async function verificarLimiteGanancias(uid){const snap=await get(ref(db,`usuarios/${uid}/ganancias_sin_recarga`));const ganancias=snap.val()||0;if(ganancias>=LIMITE_GANANCIAS_SIN_RECARGA){const recarga=await verificarRecargaPrevia(uid);return recarga;}return true;}
 async function encolarRetiro(uid,alias,monto,llave){await push(ref(db,'cola_retiros'),{uid,alias,monto,llave,timestamp:Date.now(),estado:'pendiente'});}
 
-function cambiarSeccion(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector(`[data-section="${id}"]`)?.classList.add('active');}
-document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('click',()=>{sc();cambiarSeccion(item.dataset.section);});});
-histH.addEventListener('click',()=>histColl.classList.toggle('open'));
+// ✅ SISTEMA DE RETIRO PARA INVITADOS (LÓGICA DEL PSEUDOCÓDIGO)
+function procesarRetiroInvitado(){
+  const saldoActual=saldoInvitado;
+  const gananciaReal=saldoActual-BONO_INVITADO;
+  
+  // PASO 1: Validar ganancia real neta
+  if(gananciaReal<=0){
+    retiroIcon.textContent='🔒';
+    retiroTitle.textContent='Solo Ganancias';
+    retiroSubtitle.textContent='Solo puedes retirar lo que exceda tu bono de $'+BONO_INVITADO.toLocaleString('es-CO');
+    retiroSteps.innerHTML=`
+      <div class="retiro-step bloqueado"><span class="retiro-icon">❌</span> Bono inicial: $${BONO_INVITADO.toLocaleString('es-CO')}</div>
+      <div class="retiro-step bloqueado"><span class="retiro-icon">❌</span> Ganancia real: $0</div>
+      <div class="retiro-step bloqueado"><span class="retiro-icon">🔒</span> Debes ganar más de $${BONO_INVITADO.toLocaleString('es-CO')} para retirar</div>
+    `;
+    btnRetiroAccion.textContent='Seguir jugando';
+    btnRetiroAccion.className='btn-primary';
+    btnRetiroAccion.onclick=()=>{retiroModal.classList.add('hidden');};
+    retiroModal.classList.remove('hidden');
+    return;
+  }
+  
+  // PASO 2: Validar recarga de activación
+  if(!haRealizadoRecargaActivacion){
+    const nuevoSaldoSimulado=gananciaReal+RECARGA_MINIMA_ACTIVACION;
+    retiroIcon.textContent='📱';
+    retiroTitle.textContent='Activa tu Retiro';
+    retiroSubtitle.textContent='Para retirar necesitas hacer una recarga mínima de activación';
+    retiroSteps.innerHTML=`
+      <div class="retiro-step activo"><span class="retiro-icon">✅</span> Ganancia real: <strong>$${gananciaReal.toLocaleString('es-CO')}</strong></div>
+      <div class="retiro-step pendiente"><span class="retiro-icon">📱</span> Recarga de activación: <strong>$${RECARGA_MINIMA_ACTIVACION.toLocaleString('es-CO')}</strong></div>
+      <div class="retiro-step activo"><span class="retiro-icon">💰</span> Saldo después de activar: <strong>$${nuevoSaldoSimulado.toLocaleString('es-CO')}</strong></div>
+    `;
+    btnRetiroAccion.textContent='📱 Activar por WhatsApp';
+    btnRetiroAccion.className='btn-wa llave';
+    btnRetiroAccion.onclick=()=>{
+      retiroModal.classList.add('hidden');
+      window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy invitado. Quiero activar mi retiro con la recarga mínima de $${RECARGA_MINIMA_ACTIVACION.toLocaleString('es-CO')}. Mi ganancia real es $${gananciaReal.toLocaleString('es-CO')}.`)}`,'_blank');
+      mT('📱 Envía el comprobante y activa tu retiro.','info');
+    };
+    retiroModal.classList.remove('hidden');
+    return;
+  }
+  
+  // PASO 3: Validar umbral mínimo de retiro real
+  if(saldoActual<UMBRAL_MINIMO_RETIRO){
+    const faltante=UMBRAL_MINIMO_RETIRO-saldoActual;
+    retiroIcon.textContent='🎯';
+    retiroTitle.textContent='Meta de Retiro';
+    retiroSubtitle.textContent='Necesitas acumular más saldo para retirar';
+    retiroSteps.innerHTML=`
+      <div class="retiro-step activo"><span class="retiro-icon">✅</span> Saldo actual: <strong>$${saldoActual.toLocaleString('es-CO')}</strong></div>
+      <div class="retiro-step pendiente"><span class="retiro-icon">🎯</span> Meta mínima: <strong>$${UMBRAL_MINIMO_RETIRO.toLocaleString('es-CO')}</strong></div>
+      <div class="retiro-step bloqueado"><span class="retiro-icon">⏳</span> Te faltan: <strong>$${faltante.toLocaleString('es-CO')}</strong></div>
+    `;
+    btnRetiroAccion.textContent='Seguir jugando';
+    btnRetiroAccion.className='btn-primary';
+    btnRetiroAccion.onclick=()=>{retiroModal.classList.add('hidden');};
+    retiroModal.classList.remove('hidden');
+    return;
+  }
+  
+  // PASO 4: Autorización - Redirigir a WhatsApp
+  retiroIcon.textContent='✅';
+  retiroTitle.textContent='¡Retiro Aprobado!';
+  retiroSubtitle.textContent='Completa los datos para recibir tu pago';
+  retiroSteps.innerHTML=`
+    <div class="retiro-step activo"><span class="retiro-icon">✅</span> Ganancia real: <strong>$${gananciaReal.toLocaleString('es-CO')}</strong></div>
+    <div class="retiro-step activo"><span class="retiro-icon">✅</span> Recarga activada: <strong>Sí</strong></div>
+    <div class="retiro-step activo"><span class="retiro-icon">✅</span> Meta alcanzada: <strong>$${saldoActual.toLocaleString('es-CO')}</strong></div>
+  `;
+  btnRetiroAccion.textContent='📱 Solicitar Retiro por WhatsApp';
+  btnRetiroAccion.className='btn-wa llave';
+  btnRetiroAccion.onclick=()=>{
+    retiroModal.classList.add('hidden');
+    const llave=prompt('📱 Ingresa tu Llave Bre-B para recibir el pago:');
+    if(!llave||llave.trim().length<4){mT('❌ Debes ingresar una Llave válida','error');return;}
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, solicito retiro de $${saldoActual.toLocaleString('es-CO')}. Mi Llave es: ${llave.trim()}`)}`,'_blank');
+    mT('📱 Solicitud enviada. Te confirmamos pronto.','success');
+  };
+  retiroModal.classList.remove('hidden');
+}
 
-// ✅ CHAT
+btnRetiroCerrar.addEventListener('click',()=>{retiroModal.classList.add('hidden');});
+
+// ✅ CHAT, RANKING, STATS, HISTORIAL, SALAS, CONFIG ADMIN (sin cambios)
 let chatL=null,chatCI=null;
 function initChat(){if(chatL)off(ref(db,'chat/global'),'value',chatL);chatL=onValue(ref(db,'chat/global'),snap=>{const ms=snap.val();cCon.innerHTML='';if(ms){const ahora=Date.now();const mensajes=Object.entries(ms).filter(([id,m])=>m.timestamp&&(ahora-m.timestamp)<TIEMPO_VIDA_CHAT);mensajes.sort((a,b)=>a[1].timestamp-b[1].timestamp);mensajes.forEach(([id,m])=>{const em=m.uid===cU;cCon.innerHTML+=`<div class="chat-msg ${em?'mio':'otro'}"><div class="chat-author">${m.alias||'Anónimo'}</div>${m.texto}</div>`;});}cCon.scrollTop=cCon.scrollHeight;});if(chatCI)clearInterval(chatCI);chatCI=setInterval(async()=>{const snap=await get(ref(db,'chat/global'));const ms=snap.val()||{};const ahora=Date.now();for(const id in ms){if(ms[id].timestamp&&(ahora-ms[id].timestamp)>TIEMPO_VIDA_CHAT){await set(ref(db,`chat/global/${id}`),null);}}},120000);}
 cS.addEventListener('click',async()=>{const t=cI.value.trim();if(!t||!cU)return;await push(ref(db,'chat/global'),{uid:cU,alias:cAlias,texto:t,timestamp:Date.now()});cI.value='';});
 cI.addEventListener('keypress',e=>{if(e.key==='Enter')cS.click();});
-
-// ✅ RANKING
 function initRanking(){onValue(ref(db,'usuarios'),snap=>{const us=snap.val()||{};const rank=[];const ahora=Date.now();for(const uid in us){const u=us[uid];if(u.historial){let g=0,p=0;Object.values(u.historial).forEach(h=>{if(!h.timestamp||(ahora-h.timestamp)>TIEMPO_VIDA_RANKING)return;if(h.resultado==='RECARGA')return;p++;if(h.resultado==='GANÓ')g+=h.monto||0;else if(h.resultado==='PERDIÓ')g-=(h.monto||0);});if(p>0)rank.push({alias:u.alias||'Anónimo',ganancias:g,partidas:p});}}rank.sort((a,b)=>b.ganancias-a.ganancias);let h='';if(rank.length>0){rank.slice(0,15).forEach((r,i)=>{const p=i+1;h+=`<div class="ranking-item"><div class="ranking-pos ${p===1?'gold':''}">${p===1?'👑':p}</div><div style="flex:1">${r.alias}</div><div style="font-size:.6rem;color:var(--text-muted);margin-right:8px">${r.partidas} jug</div><div style="color:var(--success);font-weight:600">$${r.ganancias.toLocaleString('es-CO')}</div></div>`;});}else{h='<div style="text-align:center;color:var(--text-muted);padding:20px;font-size:.7rem">Aún no hay partidas</div>';}rL.innerHTML=h;});}
-
-// ✅ ESTADÍSTICAS
 function initStats(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const h=snap.val()||{};let g=0,p=0,v=0,d=0;Object.values(h).forEach(r=>{if(r.resultado==='RECARGA')return;p++;if(r.resultado==='GANÓ'){v++;g+=r.monto||0;}else{d++;g-=r.monto||0;}});sGan.textContent='$'+g.toLocaleString('es-CO');sPar.textContent=p;sVic.textContent=v;sDer.textContent=d;const wr=p>0?Math.round((v/p)*100):0;sD.innerHTML=`<div style="display:flex;justify-content:space-around;padding:10px;background:var(--bg-card);border-radius:var(--radius-sm);border:1px solid var(--border-subtle);margin-top:8px"><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:${wr>=50?'var(--success)':'var(--danger)'}">${wr}%</div><div style="font-size:.55rem;color:var(--text-muted)">Winrate</div></div><div style="text-align:center"><div style="font-size:1.3rem;font-weight:700;color:var(--gold)">$${p>0?Math.round(g/p).toLocaleString('es-CO'):'0'}</div><div style="font-size:.55rem;color:var(--text-muted)">Promedio</div></div></div>`;});}
-
-// ✅ HISTORIAL
 let histCI=null;
 function initHistorial(){onValue(ref(db,`usuarios/${cU}/historial`),snap=>{const d=snap.val();const ahora=Date.now();if(d){const partidas=Object.entries(d).filter(([id,h])=>h.timestamp&&(ahora-h.timestamp)<TIEMPO_VIDA_HISTORIAL).sort((a,b)=>b[1].timestamp-a[1].timestamp).slice(0,10);if(partidas.length>0){let html='';partidas.forEach(([id,i])=>{const w=i.resultado==='GANÓ'||i.resultado==='RECARGA';html+=`<tr><td class="${w?'result-win':'result-lose'}">${i.resultado==='RECARGA'?'💳 Recarga':(w?'✅ Ganó':'❌ Perdió')}</td><td>${i.mesa}</td><td class="${w?'amount-win':'amount-lose'}">${w?'+':'-'}$${i.monto.toLocaleString('es-CO')}</td></tr>`;});hB.innerHTML=html;}else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas recientes</td></tr>';}}else{hB.innerHTML='<tr><td colspan="3" class="history-empty">Sin partidas</td></tr>';}});if(histCI)clearInterval(histCI);histCI=setInterval(async()=>{if(!cU)return;const snap=await get(ref(db,`usuarios/${cU}/historial`));const h=snap.val()||{};const ahora=Date.now();for(const id in h){if(h[id].timestamp&&(ahora-h[id].timestamp)>TIEMPO_VIDA_HISTORIAL){await set(ref(db,`usuarios/${cU}/historial/${id}`),null);}}},120000);}
-
-// ✅ SALAS
 function initSalas(){const montos=[2000,4000,8000,16000,32000];onValue(ref(db,'lobbies'),snap=>{const lobbies=snap.val()||{};let h='';for(const monto of montos){let total=0;for(const mod of['1v1','3p']){const key=`${mod}_${monto}`;if(lobbies[key])total+=Object.keys(lobbies[key]).length;}const k=monto/1000;h+=`<div class="sala-chip ${total>0?'activa':''}"><div class="val">${total}</div><div class="lbl">$${k}K</div></div>`;}salR.innerHTML=h;});}
-
-// ✅ CONFIG ADMIN
 btnConfigSave.addEventListener('click',async()=>{const nc=configCodigo.value.trim()||'4927';await set(ref(db,'configuracion'),{codigo_acceso:nc,jornada_activa:configJornadaActiva.checked,hora_inicio:configHoraInicio.value||'20:00',hora_fin:configHoraFin.value||'22:00'});cdA=nc;mT('✅ Configuración guardada. Código: '+nc,'success');});
 tl.addEventListener('click',()=>{sc();tl.classList.add('active');tr.classList.remove('active');ai.classList.add('hidden');bA.textContent='Ingresar';});
 tr.addEventListener('click',()=>{sc();tr.classList.add('active');tl.classList.remove('active');ai.classList.remove('hidden');bA.textContent='Registrarse';});
 bf.addEventListener('click',()=>{auv.classList.add('hidden');rv.classList.remove('hidden');re.value=ei.value;});
 bl.addEventListener('click',()=>{rv.classList.add('hidden');auv.classList.remove('hidden');});
 br.addEventListener('click',async()=>{const e=re.value.trim();if(!e){rm.textContent='❌ Ingresa tu correo';return}br.disabled=true;try{await sendPasswordResetEmail(auth,e);rm.textContent='✅ Enviado';re.value='';}catch(err){rm.textContent='❌ Error';}br.disabled=false;});
-
-// ✅ ACCESO
 async function verificarAcceso(){try{const cfg=(await get(ref(db,'configuracion'))).val()||{};cdA=cfg.codigo_acceso||'4927';const activa=cfg.jornada_activa!==false,hi=cfg.hora_inicio||'20:00',hf=cfg.hora_fin||'22:00';ash.textContent=`${hi} a ${hf}`;const ahora=new Date(),ha=ahora.getHours().toString().padStart(2,'0')+':'+ahora.getMinutes().toString().padStart(2,'0');js.className=activa&&ha>=hi&&ha<=hf?'jornada-status active':'jornada-status inactive';jst.textContent=activa&&ha>=hi&&ha<=hf?'Jornada activa':'Fuera de horario';}catch(e){cdA='4927';}}
 ba.addEventListener('click',async()=>{const c=ac.value.trim();if(!c||c.length!==4){ae.textContent='Ingresa 4 dígitos';return}if(c===cdA){ae.textContent='';av.classList.add('hidden');gv.classList.remove('hidden');bN.classList.remove('hidden');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.querySelector('[data-section="sectionJuego"]')?.classList.add('active');sf();mT('✅ Acceso concedido','success');if(!cU)activarPsicologiaInvitado();}else{ae.textContent='Código incorrecto';ac.value='';}});
 ac.addEventListener('keypress',e=>{if(e.key==='Enter')ba.click();});
-
-// ✅ ADMIN BOTONES
 bRC.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{total_comisiones:0})});
 bRM.addEventListener('click',()=>{if(confirm('Reiniciar?'))update(ref(db,'adminData'),{dinero_movido:0})});
 bRA.addEventListener('click',async()=>{if(confirm('¿Reiniciar TODO?')){await set(ref(db,'adminData'),{total_comisiones:0,dinero_movido:0,partidas_jugando:0});alert('Listo')}});
@@ -461,22 +529,9 @@ const MENSAJES_RECARGA=[
   "Recargar es fácil: solo envías el comprobante y listo."
 ];
 let ultimoMensajeRecarga=0;
-
 function activarPsicologiaInvitado(){
-  setInterval(()=>{
-    if(cU)return;
-    const ahora=Date.now();
-    if(ahora-ultimoMensajeRecarga>300000){
-      ultimoMensajeRecarga=ahora;
-      const msg=MENSAJES_RECARGA[Math.floor(Math.random()*MENSAJES_RECARGA.length)];
-      rb.innerHTML=`💡 ${msg} <strong style="color:var(--gold);cursor:pointer" id="bannerRegistrate">Regístrate aquí</strong>`;
-      rb.classList.remove('hidden');
-      setTimeout(()=>{document.getElementById('bannerRegistrate')?.addEventListener('click',()=>{gv.classList.add('hidden');bN.classList.add('hidden');auv.classList.remove('hidden');tr.click();});},100);
-      setTimeout(()=>rb.classList.add('hidden'),15000);
-    }
-  },60000);
-  let partidasJugadas=0;
-  setInterval(()=>{const btn=bP.textContent;if((btn==='🎉 ¡Ganaste!'||btn==='😔 Perdiste')&&!cU){partidasJugadas++;if(partidasJugadas>=3){setTimeout(()=>mT('💎 ¿Te gusta el juego? Regístrate y compite por dinero real contra otras personas.','info'),3000);partidasJugadas=0;}}},2000);
+  setInterval(()=>{if(cU)return;const ahora=Date.now();if(ahora-ultimoMensajeRecarga>300000){ultimoMensajeRecarga=ahora;const msg=MENSAJES_RECARGA[Math.floor(Math.random()*MENSAJES_RECARGA.length)];rb.innerHTML=`💡 ${msg} <strong style="color:var(--gold);cursor:pointer" id="bannerRegistrate">Regístrate aquí</strong>`;rb.classList.remove('hidden');setTimeout(()=>{document.getElementById('bannerRegistrate')?.addEventListener('click',()=>{gv.classList.add('hidden');bN.classList.add('hidden');auv.classList.remove('hidden');tr.click();});},100);setTimeout(()=>rb.classList.add('hidden'),15000);}},60000);
+  let partidasJugadas=0;setInterval(()=>{const btn=bP.textContent;if((btn==='🎉 ¡Ganaste!'||btn==='😔 Perdiste')&&!cU){partidasJugadas++;if(partidasJugadas>=3){setTimeout(()=>mT('💎 ¿Te gusta el juego? Regístrate y compite por dinero real contra otras personas.','info'),3000);partidasJugadas=0;}}},2000);
 }
 
 // ✅ JUEGO UI
@@ -487,27 +542,9 @@ bCs.forEach(ch=>{ch.addEventListener('click',()=>{if(eP)return;sc();bCs.forEach(
 function updTbl(){if(eP)return;const m=MJ[mJ];let h='<div class="cards-row">';for(let i=0;i<m;i++)h+=`<div class="card-slot"><div class="card-wrapper"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:var(--text-muted)">?</div><div style="font-size:1rem;color:var(--text-muted)">🂠</div></div></div></div><div class="card-label">${i===0?'Tú':'Jugador '+(i+1)}</div></div>`;tC.innerHTML=h+'</div>';}
 updPot(2);
 function rSearch(e,t){let h='<div class="cards-row" style="gap:20px">';for(let i=0;i<t;i++){const o=i<e;h+=`<div style="text-align:center"><div style="width:46px;height:46px;border-radius:50%;background:var(--bg-input);display:flex;align-items:center;justify-content:center;font-size:1.3rem;border:2.5px solid ${o?'var(--success)':'var(--warning)'}">${o?'👤':'⏳'}</div><div style="font-size:.62rem;color:var(--text-secondary);margin-top:4px">${i===0?'Tú':(o?'Jugador':'Buscando')}</div></div>`;}h+=`</div>`;tC.innerHTML=h;sI.classList.remove('hidden');lP.classList.add('visible');}
-
-// ✅ ANIMACIÓN DE BARAJA VIRTUAL
 async function animarReparto(jugadores){
-  tC.innerHTML='<div class="cards-row"></div>';
-  const row=tC.querySelector('.cards-row');
-  for(let i=0;i<jugadores.length;i++){
-    const p=jugadores[i];
-    const et=p.uid===cU||p.es_invitado;
-    const deckCard=document.createElement('div');
-    deckCard.className='deck-card';
-    const angle=(i-jugadores.length/2)*15;
-    const targetX=(i-jugadores.length/2)*80;
-    deckCard.style.setProperty('--dx','0px');deckCard.style.setProperty('--dy','-80px');deckCard.style.setProperty('--dr','0deg');
-    deckCard.style.setProperty('--fx',targetX+'px');deckCard.style.setProperty('--fy','0px');deckCard.style.setProperty('--fr',angle+'deg');
-    tF.appendChild(deckCard);sDeal();
-    await esp(500);deckCard.remove();
-    const slot=document.createElement('div');
-    slot.className='card-slot'+(et?' tu-carta':'');
-    slot.innerHTML=`<div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p.carta.pinta.color}">${p.carta.texto}</div><div style="font-size:1rem;color:${p.carta.pinta.color}">${p.carta.pinta.icon}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${et?'Tú':(p.es_bot?'🤖 '+p.alias:p.alias)}</div>`;
-    row.appendChild(slot);
-  }
+  tC.innerHTML='<div class="cards-row"></div>';const row=tC.querySelector('.cards-row');
+  for(let i=0;i<jugadores.length;i++){const p=jugadores[i];const et=p.uid===cU||p.es_invitado;const deckCard=document.createElement('div');deckCard.className='deck-card';const angle=(i-jugadores.length/2)*15;const targetX=(i-jugadores.length/2)*80;deckCard.style.setProperty('--dx','0px');deckCard.style.setProperty('--dy','-80px');deckCard.style.setProperty('--dr','0deg');deckCard.style.setProperty('--fx',targetX+'px');deckCard.style.setProperty('--fy','0px');deckCard.style.setProperty('--fr',angle+'deg');tF.appendChild(deckCard);sDeal();await esp(500);deckCard.remove();const slot=document.createElement('div');slot.className='card-slot'+(et?' tu-carta':'');slot.innerHTML=`<div class="card-wrapper" id="cw${i}"><div class="card-inner"><div class="card-face card-back"><div style="position:relative;z-index:1;font-size:1.2rem;font-weight:700;color:rgba(201,168,76,0.4)">♠♥</div></div><div class="card-face card-front"><div class="card-value" style="color:${p.carta.pinta.color}">${p.carta.texto}</div><div style="font-size:1rem;color:${p.carta.pinta.color}">${p.carta.pinta.icon}</div></div></div></div><div class="card-label ${et?'tu-label':''}" id="cl${i}">${et?'Tú':(p.es_bot?'🤖 '+p.alias:p.alias)}</div>`;row.appendChild(slot);}
 }
 async function animarVolteo(){const wrappers=document.querySelectorAll('.card-wrapper');for(let i=0;i<wrappers.length;i++){await esp(400);wrappers[i].classList.add('flipped');sFlip();}}
 
@@ -518,40 +555,24 @@ bP.addEventListener('click',async()=>{
     if(saldoInvitado<apAct)return mT('❌ Saldo insuficiente. Bono máximo $'+BONO_INVITADO.toLocaleString('es-CO'),'error');
     const conf=await mC('Modo Invitado',`¿Jugar ${mJ} con bots?`);
     if(!conf)return;
-    eP=true;bP.disabled=true;bP.textContent='Buscando...';bP.classList.add('canceling');
-    sI.classList.remove('hidden');rSearch(1,MJ[mJ]);
-    await esp(800);
-    await ejecutarPartidaInvitado();
-    return;
+    eP=true;bP.disabled=true;bP.textContent='Buscando...';bP.classList.add('canceling');sI.classList.remove('hidden');rSearch(1,MJ[mJ]);await esp(800);await ejecutarPartidaInvitado();return;
   }
-  if(!await verificarLimiteGanancias(cU)){return mT('⚠️ Límite de $'+LIMITE_GANANCIAS_SIN_RECARGA.toLocaleString()+' sin recarga. Recarga para seguir.','warning');}
-  const sReal=await cSald(cU);
-  if(sReal<=0)return mT('❌ Saldo en $0','error');
-  if(sReal<apAct)return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`,'error');
-  const conf=await mC('Iniciar búsqueda',`¿Buscar ${mJ} por $${apAct.toLocaleString('es-CO')}?`);
-  if(!conf)return;
-  sb();eP=true;bP.disabled=true;bP.classList.add('canceling');bP.textContent='Buscando...';
-  sI.classList.remove('hidden');rSearch(1,MJ[mJ]);
+  if(!await verificarLimiteGanancias(cU)){return mT('⚠️ Límite de $'+LIMITE_GANANCIAS_SIN_RECARGA.toLocaleString()+' sin recarga.','warning');}
+  const sReal=await cSald(cU);if(sReal<=0)return mT('❌ Saldo en $0','error');if(sReal<apAct)return mT(`❌ Necesitas $${apAct.toLocaleString('es-CO')}`,'error');
+  const conf=await mC('Iniciar búsqueda',`¿Buscar ${mJ} por $${apAct.toLocaleString('es-CO')}?`);if(!conf)return;
+  sb();eP=true;bP.disabled=true;bP.classList.add('canceling');bP.textContent='Buscando...';sI.classList.remove('hidden');rSearch(1,MJ[mJ]);
   if(cU){await update(ref(db,`presencia/${cU}`),{status:'waiting',alias:cAlias}).catch(()=>{});}
   setTimeout(async()=>{if(!eP)return;await ejecutarPartidaConBots();},1500+Math.random()*2000);
 });
 
 async function ejecutarPartidaConBots(){
-  const maxJ=MJ[mJ];resetMazo();
-  const cartas=repartirCartas(maxJ);
-  const botsSeleccionados=seleccionarBotsAleatorios(maxJ-1);
+  const maxJ=MJ[mJ];resetMazo();const cartas=repartirCartas(maxJ);const botsSeleccionados=seleccionarBotsAleatorios(maxJ-1);
   const jugadores=[{uid:cU,alias:cAlias,carta:cartas[0],es_bot:false},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
-  sI.classList.add('hidden');lP.classList.remove('visible');
-  bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
-  await animarReparto(jugadores);scart();await esp(800);
-  bP.textContent='Revelando...';await animarVolteo();await esp(800);
-  bP.textContent='Calculando...';
-  const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);
-  let ganadores=jugadores.filter(j=>j.carta.peso===maxP);let ganador=ganadores[0];
+  sI.classList.add('hidden');lP.classList.remove('visible');bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
+  await animarReparto(jugadores);scart();await esp(800);bP.textContent='Revelando...';await animarVolteo();await esp(800);bP.textContent='Calculando...';
+  const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let ganadores=jugadores.filter(j=>j.carta.peso===maxP);let ganador=ganadores[0];
   if(ganadores.length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};ganador=ganadores.reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}
-  const yoGane=ganador.uid===cU;
-  const tPot=apAct*maxJ;const comision=maxJ===2?Math.floor(apAct*0.05):Math.floor(apAct*0.10);
-  const gananciaNeta=(tPot-apAct)-comision;
+  const yoGane=ganador.uid===cU;const tPot=apAct*maxJ;const comision=maxJ===2?Math.floor(apAct*0.05):Math.floor(apAct*0.10);const gananciaNeta=(tPot-apAct)-comision;
   if(yoGane){sg();const recargaPrevia=await verificarRecargaPrevia(cU);if(!recargaPrevia){await actualizarGananciasSinRecarga(cU,gananciaNeta);}await mSald(cU,gananciaNeta,'Ganó partida','bot_match');mT(`🎉 ¡Ganaste $${gananciaNeta.toLocaleString('es-CO')}!`,'success');bP.textContent='🎉 ¡Ganaste!';}
   else{sp();await mSald(cU,-apAct,'Perdió partida','bot_match');mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}. ${ganador.alias} ganó con ${ganador.carta.texto}${ganador.carta.pinta.icon}`,'warning');bP.textContent='😔 Perdiste';}
   try{await update(ref(db,'adminData'),{total_comisiones:increment(comision),dinero_movido:increment(tPot),partidas_jugando:increment(1)});}catch(e){}
@@ -560,26 +581,15 @@ async function ejecutarPartidaConBots(){
 }
 
 async function ejecutarPartidaInvitado(){
-  const maxJ=MJ[mJ];resetMazo();
-  const cartas=repartirCartas(maxJ);
-  const botsSeleccionados=seleccionarBotsAleatorios(maxJ-1);
+  const maxJ=MJ[mJ];resetMazo();const cartas=repartirCartas(maxJ);const botsSeleccionados=seleccionarBotsAleatorios(maxJ-1);
   const jugadores=[{uid:'invitado',alias:'Tú',carta:cartas[0],es_invitado:true},...botsSeleccionados.map((b,i)=>({uid:'bot_'+b.alias+'_'+i+'_'+Date.now(),alias:b.alias,carta:cartas[i+1],es_bot:true}))];
-  sI.classList.add('hidden');lP.classList.remove('visible');
-  bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
-  await animarReparto(jugadores);scart();await esp(800);
-  bP.textContent='Revelando...';await animarVolteo();await esp(800);
-  bP.textContent='Calculando...';
-  const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);
-  let ganadores=jugadores.filter(j=>j.carta.peso===maxP);let ganador=ganadores[0];
+  sI.classList.add('hidden');lP.classList.remove('visible');bP.textContent='Repartiendo...';bP.classList.remove('canceling');bP.classList.add('cooldown');
+  await animarReparto(jugadores);scart();await esp(800);bP.textContent='Revelando...';await animarVolteo();await esp(800);bP.textContent='Calculando...';
+  const pesos=jugadores.map(j=>j.carta.peso);const maxP=Math.max(...pesos);let ganadores=jugadores.filter(j=>j.carta.peso===maxP);let ganador=ganadores[0];
   if(ganadores.length>1){const pp={'♠':4,'♥':3,'♦':2,'♣':1};ganador=ganadores.reduce((a,b)=>(pp[b.carta.pinta.icon]||0)>(pp[a.carta.pinta.icon]||0)?b:a);}
   const yoGane=ganador.es_invitado;
-  if(yoGane){
-    sg();const ganancia=apAct*(maxJ-1);saldoInvitado+=ganancia;
-    mT(`🎉 ¡Ganaste $${ganancia.toLocaleString('es-CO')}!`,'success');bP.textContent='🎉 ¡Ganaste!';
-  }else{
-    sp();saldoInvitado-=apAct;
-    mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}`,'warning');bP.textContent='😔 Perdiste';
-  }
+  if(yoGane){sg();const ganancia=apAct*(maxJ-1);saldoInvitado+=ganancia;sd.classList.add('up');setTimeout(()=>sd.classList.remove('up'),600);mT(`🎉 ¡Ganaste $${ganancia.toLocaleString('es-CO')}!`,'success');bP.textContent='🎉 ¡Ganaste!';}
+  else{sp();saldoInvitado-=apAct;sd.classList.add('down');setTimeout(()=>sd.classList.remove('down'),600);mT(`😔 Perdiste $${apAct.toLocaleString('es-CO')}`,'warning');bP.textContent='😔 Perdiste';}
   if(saldoInvitado<0)saldoInvitado=0;
   actualizarSaldoInvitado();
   document.querySelectorAll('.card-label').forEach((label,i)=>{if(jugadores[i]?.uid===ganador.uid)label.classList.add('winner');else if(jugadores[i]?.es_invitado&&!yoGane)label.classList.add('loser');});
@@ -592,23 +602,37 @@ function resetSearch(){eP=false;bP.disabled=false;bP.textContent='Buscar Partida
 bRec.addEventListener('click',()=>{sc();if(!cU){mT('📝 Regístrate para recargar. Mínimo $'+RECARGA_MINIMA.toLocaleString('es-CO')+'.','info');return;}nM.classList.remove('hidden');});
 bMC.addEventListener('click',()=>nM.classList.add('hidden'));
 bWC.addEventListener('click',()=>{if(!cU){mT('📝 Regístrate primero para recargar.','info');nM.classList.add('hidden');return;}window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(`Hola, soy ${cAlias}. Solicito recarga en Royal High. Adjunto comprobante de transferencia por Llave a ${LLAVE_ADMIN}.`)}`,'_blank');nM.classList.add('hidden');mT('📱 Envía tu comprobante por WhatsApp. Te acreditamos pronto.','info');});
-bRet.addEventListener('click',async()=>{sc();if(!cU){mT('📝 Regístrate para retirar ganancias reales.','info');return;}if(!await verificarRecargaPrevia(cU)){mT('❌ Necesitas al menos 1 recarga verificada para retirar.','error');return;}const saldoReal=await cSald(cU);if(saldoReal<=0){mT('❌ No tienes saldo retirable.','error');return;}const llave=prompt('📱 Ingresa tu Llave Bre-B (ej: @tucelular):');if(!llave||llave.trim().length<4){mT('❌ Llave inválida','error');return;}const c=await mC('Confirmar retiro',`¿Retirar $${saldoReal.toLocaleString('es-CO')} a ${llave.trim()}?`);if(c){await encolarRetiro(cU,cAlias,saldoReal,llave.trim());await mSald(cU,-saldoReal,'Retiro en cola');mT('📱 Solicitud enviada. Confirmamos pronto.','info');}});
+
+// ✅ BOTÓN RETIRAR - LÓGICA PRINCIPAL
+bRet.addEventListener('click',()=>{
+  sc();
+  if(!cU){
+    // INVITADO: aplicar lógica del pseudocódigo
+    procesarRetiroInvitado();
+    return;
+  }
+  // REGISTRADO: lógica normal
+  (async()=>{
+    if(!await verificarRecargaPrevia(cU)){mT('❌ Necesitas al menos 1 recarga verificada para retirar.','error');return;}
+    const saldoReal=await cSald(cU);if(saldoReal<=0){mT('❌ No tienes saldo retirable.','error');return;}
+    const llave=prompt('📱 Ingresa tu Llave Bre-B (ej: @tucelular):');if(!llave||llave.trim().length<4){mT('❌ Llave inválida','error');return;}
+    const c=await mC('Confirmar retiro',`¿Retirar $${saldoReal.toLocaleString('es-CO')} a ${llave.trim()}?`);
+    if(c){await encolarRetiro(cU,cAlias,saldoReal,llave.trim());await mSald(cU,-saldoReal,'Retiro en cola');mT('📱 Solicitud enviada. Confirmamos pronto.','info');}
+  })();
+});
+
 bL.addEventListener('click',()=>signOut(auth));
 
 // ✅ AUTH STATE
 onAuthStateChanged(auth,async(user)=>{
   if(user){
     cU=user.uid;const uSnap=await get(ref(db,`usuarios/${user.uid}`));const uData=uSnap.val()||{};
-    cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;
-    const isA=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
+    cUN=user.email.split('@')[0];cAlias=uData.alias||cUN;const isA=user.email.toLowerCase()===CORREO_ADMIN.toLowerCase();
     auv.classList.add('hidden');rv.classList.add('hidden');av.classList.add('hidden');gv.classList.add('hidden');bN.classList.add('hidden');aP.classList.add('hidden');salP.classList.add('hidden');
     if(isA){gv.classList.remove('hidden');bN.classList.remove('hidden');aP.classList.remove('hidden');salP.classList.remove('hidden');initSalas();document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');const cfg=(await get(ref(db,'configuracion'))).val()||{};if(configCodigo)configCodigo.value=cfg.codigo_acceso||'4927';if(configHoraInicio)configHoraInicio.value=cfg.hora_inicio||'20:00';if(configHoraFin)configHoraFin.value=cfg.hora_fin||'22:00';if(configJornadaActiva)configJornadaActiva.checked=cfg.jornada_activa!==false;}
     else{await verificarAcceso();av.classList.remove('hidden');}
-    tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();
-    document.querySelector('.user-status').innerHTML='<span class="status-dot"></span>En línea';
-    actualizarVisibilidadBotones();
-    const pr=ref(db,`presencia/${user.uid}`);
-    onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
+    tu.textContent=cAlias;ua.textContent=cAlias.charAt(0).toUpperCase();updTbl();document.querySelector('.user-status').innerHTML='<span class="status-dot"></span>En línea';actualizarVisibilidadBotones();
+    const pr=ref(db,`presencia/${user.uid}`);onValue(ref(db,'.info/connected'),snap=>{if(snap.val()===true){set(pr,{email:user.email,username:cUN,alias:cAlias,status:'online',lastSeen:Date.now()});onDisconnect(pr).update({status:'offline',lastSeen:Date.now()});}});
     if(isA){onValue(ref(db,'adminData'),snap=>{const d=snap.val()||{};document.getElementById('adminComision').textContent='$'+(d.total_comisiones||0).toLocaleString('es-CO');document.getElementById('adminMovido').textContent='$'+(d.dinero_movido||0).toLocaleString('es-CO');document.getElementById('adminPlaying').textContent=d.partidas_jugando||0;});onValue(ref(db,'presencia'),snap=>{document.getElementById('adminOnline').textContent=Object.values(snap.val()||{}).filter(v=>v.status==='online').length;});}
     onValue(ref(db,`usuarios/${user.uid}/saldo`),snap=>{sAct=snap.val()||0;sd.textContent='$'+sAct.toLocaleString('es-CO');sd.classList.remove('zero');if(sAct<=0){sd.classList.add('zero');sd.textContent='$0 - ¡Recarga!';}});
     onValue(ref(db,'presencia'),snap=>{const a=Object.values(snap.val()||{});document.getElementById('statOnline').textContent=a.filter(v=>v.status==='online').length;document.getElementById('statWaiting').textContent=a.filter(v=>v.status==='waiting').length;document.getElementById('statPlaying').textContent=a.filter(v=>v.status==='playing').length;document.getElementById('membershipText').textContent=a.filter(v=>v.status==='online').length+'/'+MAX_MIEMBROS;});
@@ -622,20 +646,11 @@ onAuthStateChanged(auth,async(user)=>{
 // ✅ REGISTRO / LOGIN
 bA.addEventListener('click',async()=>{
   const em=ei.value.trim();const alias=ai.value.trim();const pw=pi.value;
-  if(!em||!pw)return mT('Completa los campos','error');
-  if(pw.length<6)return mT('Mínimo 6 caracteres','error');
-  if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');
+  if(!em||!pw)return mT('Completa los campos','error');if(pw.length<6)return mT('Mínimo 6 caracteres','error');if(tr.classList.contains('active')&&!alias)return mT('Elige un alias','error');
   bA.disabled=true;
   try{
     if(tl.classList.contains('active')){await signInWithEmailAndPassword(auth,em,pw);mT('✅ Bienvenido de vuelta','success');}
-    else{
-      const snapCupo=await get(ref(db,'estadisticas/cupo_actual'));const cupoActual=snapCupo.val()||0;
-      if(cupoActual>=50){mT('⛔ Cupo completado.','error');bA.disabled=false;return;}
-      const r=await createUserWithEmailAndPassword(auth,em,pw);
-      await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,saldo_bonus:10000,fechaRegistro:Date.now(),cupo_registrado:true,ganancias_sin_recarga:0,bloqueado_por_limite:false,recargas_verificadas:[]});
-      await update(ref(db,'estadisticas'),{cupo_actual:increment(1)});
-      mT('🎉 ¡Bienvenido '+alias+'! Ahora compites contra personas reales.','success');
-    }
+    else{const snapCupo=await get(ref(db,'estadisticas/cupo_actual'));const cupoActual=snapCupo.val()||0;if(cupoActual>=50){mT('⛔ Cupo completado.','error');bA.disabled=false;return;}const r=await createUserWithEmailAndPassword(auth,em,pw);await set(ref(db,`usuarios/${r.user.uid}`),{email:em,alias:alias,saldo:0,saldo_bonus:10000,fechaRegistro:Date.now(),cupo_registrado:true,ganancias_sin_recarga:0,bloqueado_por_limite:false,recargas_verificadas:[]});await update(ref(db,'estadisticas'),{cupo_actual:increment(1)});mT('🎉 ¡Bienvenido '+alias+'! Ahora compites contra personas reales.','success');}
   }catch(e){mT('Error: '+(e.code==='auth/email-already-in-use'?'Email ya registrado':'Verifica tus datos'),'error');}
   bA.disabled=false;
 });
@@ -643,27 +658,10 @@ bA.addEventListener('click',async()=>{
 // ✅ INICIAR
 const tutorialVisto=localStorage.getItem('tutorialVisto');
 if(!tutorialVisto){mostrarTutorial();}
-
 setTimeout(()=>{
-  if(!auth.currentUser){
-    auv.classList.add('hidden');
-    gv.classList.remove('hidden');
-    bN.classList.remove('hidden');
-    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-    document.getElementById('sectionJuego').classList.add('active');
-    tu.textContent='Invitado';
-    ua.textContent='👤';
-    saldoInvitado=BONO_INVITADO;
-    actualizarSaldoInvitado();
-    document.querySelector('.user-status').innerHTML='<span style="font-size:.6rem;color:var(--text-muted)">Modo práctica</span>';
-    actualizarVisibilidadBotones();
-    activarPsicologiaInvitado();
-  }
+  if(!auth.currentUser){auv.classList.add('hidden');gv.classList.remove('hidden');bN.classList.remove('hidden');document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));document.getElementById('sectionJuego').classList.add('active');tu.textContent='Invitado';ua.textContent='👤';saldoInvitado=BONO_INVITADO;actualizarSaldoInvitado();document.querySelector('.user-status').innerHTML='<span style="font-size:.6rem;color:var(--text-muted)">Modo práctica</span>';actualizarVisibilidadBotones();activarPsicologiaInvitado();}
 },500);
-
-window.addEventListener('beforeunload',()=>{
-  if(cU){set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});}
-});
+window.addEventListener('beforeunload',()=>{if(cU){set(ref(db,`presencia/${cU}`),{status:'offline',lastSeen:Date.now()}).catch(()=>{});}});
 </script>
 </body>
 </html>
