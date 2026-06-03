@@ -29,7 +29,7 @@
         .login-input{width:100%;padding:13px 15px;border-radius:var(--radius-sm);border:1px solid var(--border-subtle);background:var(--bg-input);color:var(--text-main);font-size:.9rem;margin-bottom:10px}
         .login-input:focus{outline:none;border-color:var(--primary)}
         .btn-login{width:100%;padding:14px;border:none;border-radius:var(--radius-sm);background:var(--gold);color:#0B1121;font-weight:700;font-size:.95rem;cursor:pointer;margin-top:4px}
-        .login-error{color:var(--danger);font-size:.7rem;min-height:18px;margin-top:6px;transition:all .3s}
+        .login-error{color:var(--danger);font-size:.7rem;min-height:18px;margin-top:6px}
         .login-info{color:var(--text-muted);font-size:.55rem;margin-top:16px;border-top:1px solid var(--border-subtle);padding-top:12px}
 
         .game-table-main{background:var(--bg-card);border-radius:var(--radius-lg);padding:8px;margin-bottom:8px;border:1px solid var(--border-subtle)}
@@ -110,7 +110,6 @@
 <body>
 <div class="toast-container" id="toastContainer"></div>
 
-<!-- ========== LOGIN DE ADMIN ========== -->
 <div id="loginScreen" class="app-container hidden">
     <div class="login-screen">
         <div class="login-logo">🔐 Royal<span>High</span></div>
@@ -123,7 +122,6 @@
     </div>
 </div>
 
-<!-- ========== JUEGO ========== -->
 <div id="gameView" class="app-container hidden">
     <div id="sectionJuego" class="section active">
         <div class="unified-header">
@@ -168,7 +166,6 @@
     </div>
 </div>
 
-<!-- ========== PANEL ADMIN ========== -->
 <div id="adminView" class="app-container hidden">
     <div id="sectionAdmin" class="section active">
         <div class="unified-header">
@@ -210,7 +207,6 @@
     </div>
 </div>
 
-<!-- MODAL DE ACTIVACIÓN -->
 <div id="activacionModal" class="modal-overlay hidden">
     <div class="modal-content">
         <div style="font-size:2.5rem;margin-bottom:8px">🌟</div>
@@ -224,18 +220,32 @@
 </div>
 
 <script type="module">
+// ============================================================================
+// NUEVA CONFIGURACIÓN DE FIREBASE - cartamayor-febda
+// ============================================================================
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import{getAuth,signInWithEmailAndPassword,createUserWithEmailAndPassword,onAuthStateChanged,signOut,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import{getDatabase,ref,onValue,set,update,runTransaction,get}from"https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-const firebaseConfig={apiKey:"AIzaSyDh8g0vyKbRfPPOZ1C0M0guBr0EJ77AyF8",authDomain:"carta-facil-a4e22.firebaseapp.com",databaseURL:"https://carta-facil-a4e22-default-rtdb.firebaseio.com",projectId:"carta-facil-a4e22",storageBucket:"carta-facil-a4e22.appspot.com",messagingSenderId:"530927580102",appId:"1:530927580102:web:865211e2b16e84869038c7"};
+// ✅ NUEVA CONFIGURACIÓN
+const firebaseConfig={
+    apiKey:"AIzaSyAbnxUnKCzm6pI6P-DgNwDwlBBGeApPrFc",
+    authDomain:"cartamayor-febda.firebaseapp.com",
+    databaseURL:"https://cartamayor-febda-default-rtdb.firebaseio.com",
+    projectId:"cartamayor-febda",
+    storageBucket:"cartamayor-febda.firebasestorage.app",
+    messagingSenderId:"1027069815767",
+    appId:"1:1027069815767:web:30a3041b4e7995618db992",
+    measurementId:"G-2Q4NKCVV6H"
+};
+
 const app=initializeApp(firebaseConfig),auth=getAuth(app),db=getDatabase(app);
 
 // ============================================================================
 // CONFIGURACIÓN
 // ============================================================================
 const CORREO_ADMIN="dimarviafara07@gmail.com";
-const CLAVE_MAESTRA="DimarAdmin2024*";  // 🔐 Nueva clave segura
+const CLAVE_MAESTRA="DimarAdmin2024*";
 const WHATSAPP="573219401352";
 const BONO_BIENVENIDA=15000,TOPE_INVITADO=35000,COSTO_ACTIVACION=10000,UMBRAL_MINIMO_RETIRO=50000;
 
@@ -256,17 +266,38 @@ function sDeal(){playBeep(440,0.08,'sine',0.15)}function sFlip(){playBeep(660,0.
 function mT(m,t='info'){const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;document.getElementById('toastContainer').appendChild(d);setTimeout(()=>{d.style.opacity='0';d.style.transition='opacity .3s';setTimeout(()=>d.remove(),300);},3000);}
 
 // ============================================================================
-// REGISTRAR ADMIN EN FIREBASE
+// REGISTRAR ADMIN EN NUEVO FIREBASE
 // ============================================================================
 async function registrarAdminEnDB(){
     try{
         let cred;
-        try{cred=await createUserWithEmailAndPassword(auth,CORREO_ADMIN,CLAVE_MAESTRA);console.log('✅ Admin creado');}
-        catch(e){if(e.code==='auth/email-already-in-use'){cred=await signInWithEmailAndPassword(auth,CORREO_ADMIN,CLAVE_MAESTRA);console.log('✅ Admin ya existe');}}
-        await set(ref(db,'usuarios/'+cred.user.uid),{email:CORREO_ADMIN,alias:'Dimar Admin',rol:'admin',esInvitado:false,saldo:0,fechaRegistro:Date.now()});
-        console.log('✅ Admin en DB');
+        try{
+            cred=await createUserWithEmailAndPassword(auth,CORREO_ADMIN,CLAVE_MAESTRA);
+            console.log('✅ Admin creado en Authentication');
+        }catch(e){
+            if(e.code==='auth/email-already-in-use'){
+                cred=await signInWithEmailAndPassword(auth,CORREO_ADMIN,CLAVE_MAESTRA);
+                console.log('✅ Admin ya existe en Authentication');
+            }else{
+                console.error('Error Auth:',e.message);
+                return;
+            }
+        }
+        await set(ref(db,'usuarios/'+cred.user.uid),{
+            email:CORREO_ADMIN,
+            alias:'Dimar Admin',
+            rol:'admin',
+            esInvitado:false,
+            saldo:0,
+            fechaRegistro:Date.now(),
+            recargas_verificadas:[{monto:10000,fecha:Date.now()}]
+        });
+        console.log('✅ Admin registrado en Realtime Database');
         console.log('🔑 CLAVE MAESTRA:',CLAVE_MAESTRA);
-    }catch(e){console.log('⚠️ Error registro:',e.message);}
+        console.log('🔗 URL Panel:',window.location.origin+'#control-master');
+    }catch(e){
+        console.log('⚠️ Error:',e.message);
+    }
 }
 registrarAdminEnDB();
 
@@ -321,7 +352,7 @@ if(esAdmin){
         
         if(!email||!pass){err.textContent='Completa todos los campos';return;}
         
-        // ✅ ACCESO CON CLAVE MAESTRA (sin Firebase)
+        // ACCESO CON CLAVE MAESTRA
         if(pass===CLAVE_MAESTRA){
             abrirAdmin('Dimar Admin');
             return;
@@ -336,7 +367,7 @@ if(esAdmin){
             if(data.rol==='admin'){abrirAdmin(data.alias||'Admin');}
             else{err.textContent='⛔ No eres administrador';return signOut(auth);}
         })
-        .catch(()=>{err.textContent='❌ Usa la clave: '+CLAVE_MAESTRA;});
+        .catch(()=>{err.textContent='❌ Usa la clave maestra';});
     });
     
     function abrirAdmin(nombre){
@@ -358,19 +389,71 @@ if(esAdmin){
 // PANEL ADMIN
 // ============================================================================
 function initAdminPanel(){
-    onValue(ref(db,'presencia'),snap=>{const p=snap.val()||{};document.getElementById('adminOnline').textContent=Object.values(p).filter(v=>v.status==='online').length;});
-    document.getElementById('btnAdminRecargar').addEventListener('click',async()=>{
-        const eb=document.getElementById('adminUserEmail').value.trim().toLowerCase(),mo=parseInt(document.getElementById('adminMontoRecarga').value);
-        if(!eb||!mo||mo<1000)return mT('❌ Datos inválidos','error');
-        try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,alE='';for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;alE=us[uid].alias||'Usuario';break;}}if(!uidE)return mT('❌ No encontrado','error');const sRef=ref(db,`usuarios/${uidE}/saldo`);await runTransaction(sRef,(s)=>(s||0)+mo);const ns=(await get(sRef)).val();document.getElementById('adminSaldoInfo').innerHTML=`✅ ${alE}: <strong>$${ns.toLocaleString('es-CO')}</strong>`;sf();mT(`✅ $${mo.toLocaleString('es-CO')} a ${alE}`,'success');}catch(e){mT('❌ Error','error');}
+    onValue(ref(db,'presencia'),snap=>{
+        const p=snap.val()||{};
+        document.getElementById('adminOnline').textContent=Object.values(p).filter(v=>v.status==='online').length;
     });
+    
+    document.getElementById('btnAdminRecargar').addEventListener('click',async()=>{
+        const eb=document.getElementById('adminUserEmail').value.trim().toLowerCase();
+        const mo=parseInt(document.getElementById('adminMontoRecarga').value);
+        if(!eb||!mo||mo<1000)return mT('❌ Datos inválidos','error');
+        try{
+            const usS=await get(ref(db,'usuarios')),us=usS.val()||{};
+            let uidE=null,alE='';
+            for(const uid in us){
+                if(us[uid].email&&us[uid].email.toLowerCase()===eb){
+                    uidE=uid;alE=us[uid].alias||'Usuario';break;
+                }
+            }
+            if(!uidE)return mT('❌ No encontrado','error');
+            const sRef=ref(db,`usuarios/${uidE}/saldo`);
+            await runTransaction(sRef,(s)=>(s||0)+mo);
+            const ns=(await get(sRef)).val();
+            document.getElementById('adminSaldoInfo').innerHTML=`✅ ${alE}: <strong>$${ns.toLocaleString('es-CO')}</strong>`;
+            sf();mT(`✅ $${mo.toLocaleString('es-CO')} a ${alE}`,'success');
+            document.getElementById('adminMontoRecarga').value='';
+        }catch(e){mT('❌ Error','error');}
+    });
+    
     document.getElementById('btnAdminActivar').addEventListener('click',async()=>{
         const eb=document.getElementById('adminActivarEmail').value.trim().toLowerCase();
         if(!eb)return mT('❌ Ingresa email','error');
-        try{const usS=await get(ref(db,'usuarios')),us=usS.val()||{};let uidE=null,alE='',saE=0;for(const uid in us){if(us[uid].email&&us[uid].email.toLowerCase()===eb){uidE=uid;alE=us[uid].alias||'Usuario';saE=us[uid].saldo||0;break;}}if(!uidE)return mT('❌ No encontrado','error');const ns=Math.min(saE,TOPE_INVITADO)+COSTO_ACTIVACION-BONO_BIENVENIDA;await update(ref(db,`usuarios/${uidE}`),{saldo:ns,esInvitado:false,rol:'jugador'});document.getElementById('adminActivarInfo').innerHTML=`✅ ${alE}: <strong>$${ns.toLocaleString('es-CO')}</strong>`;sf();mT(`✅ ${alE} activado`,'success');}catch(e){mT('❌ Error','error');}
+        try{
+            const usS=await get(ref(db,'usuarios')),us=usS.val()||{};
+            let uidE=null,alE='',saE=0;
+            for(const uid in us){
+                if(us[uid].email&&us[uid].email.toLowerCase()===eb){
+                    uidE=uid;alE=us[uid].alias||'Usuario';saE=us[uid].saldo||0;break;
+                }
+            }
+            if(!uidE)return mT('❌ No encontrado','error');
+            const ns=Math.min(saE,TOPE_INVITADO)+COSTO_ACTIVACION-BONO_BIENVENIDA;
+            await update(ref(db,`usuarios/${uidE}`),{
+                saldo:ns,
+                esInvitado:false,
+                rol:'jugador',
+                recargas_verificadas:[{monto:COSTO_ACTIVACION,fecha:Date.now()}]
+            });
+            document.getElementById('adminActivarInfo').innerHTML=`✅ ${alE}: <strong>$${ns.toLocaleString('es-CO')}</strong>`;
+            sf();mT(`✅ ${alE} activado`,'success');
+            document.getElementById('adminActivarEmail').value='';
+        }catch(e){mT('❌ Error','error');}
     });
-    document.getElementById('btnResetSaldo').addEventListener('click',async()=>{if(!confirm('⚠️ ¿Resetear TODOS los saldos?'))return;const snap=await get(ref(db,'usuarios'));const us=snap.val()||{};for(const uid in us){if(us[uid].saldo)await set(ref(db,`usuarios/${uid}/saldo`),0);}mT('✅ Saldos reseteados','success');});
-    document.getElementById('btnAdminLogout').addEventListener('click',()=>{signOut(auth);location.reload();});
+    
+    document.getElementById('btnResetSaldo').addEventListener('click',async()=>{
+        if(!confirm('⚠️ ¿Resetear TODOS los saldos a $0?'))return;
+        const snap=await get(ref(db,'usuarios'));
+        const us=snap.val()||{};
+        for(const uid in us){
+            if(us[uid].saldo)await set(ref(db,`usuarios/${uid}/saldo`),0);
+        }
+        mT('✅ Saldos reseteados','success');
+    });
+    
+    document.getElementById('btnAdminLogout').addEventListener('click',()=>{
+        signOut(auth);location.reload();
+    });
 }
 
 // ============================================================================
